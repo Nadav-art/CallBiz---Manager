@@ -1,0 +1,17 @@
+/* ============================================================
+   CallBiz Manager – v13: פילטרים פעילים בטולבר
+   ============================================================ */
+button.select { cursor: pointer; font-family: inherit; }
+button.select:hover { border-color: #D9D9E6; color: var(--text); }
+button.select.sel { background: var(--brand-soft); color: var(--brand-600); border-color: var(--brand-soft); }
+button.select svg { width: 14px; height: 14px; }
+
+.filter-menu { position: fixed; z-index: 70; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 11px; box-shadow: var(--shadow-lg); padding: 7px; min-width: 160px; max-height: 320px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 2px; }
+.filter-menu button { border: none; background: transparent; text-align: right; padding: 8px 11px; border-radius: 7px;
+  font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 7px; }
+.filter-menu button:hover { background: var(--surface-2); }
+.filter-menu button.on { background: var(--brand-soft); color: var(--brand-600); }
+.filter-menu button.on::before { content: '✓'; font-weight: 800; }
+.filter-menu button:not(.on)::before { content: ''; width: 9px; }

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CallBiz Manager – מסך עבודה אחוד</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=39">
+  <link rel="stylesheet" href="css/v2.css?v=39">
+  <link rel="stylesheet" href="css/v3.css?v=39">
+  <link rel="stylesheet" href="css/v4.css?v=39">
+  <link rel="stylesheet" href="css/v5.css?v=39">
+  <link rel="stylesheet" href="css/v6.css?v=39">
+  <link rel="stylesheet" href="css/v7.css?v=39">
+  <link rel="stylesheet" href="css/v8.css?v=39">
+  <link rel="stylesheet" href="css/v9.css?v=39">
+  <link rel="stylesheet" href="css/v10.css?v=39">
+  <link rel="stylesheet" href="css/v11.css?v=39">
+  <link rel="stylesheet" href="css/v12.css?v=39">
+  <link rel="stylesheet" href="css/platform.css?v=39">
+  <link rel="stylesheet" href="css/dock.css?v=39">
+  <link rel="stylesheet" href="css/v13.css?v=39">
+  <link rel="stylesheet" href="css/v14.css?v=39">
+  <link rel="stylesheet" href="css/v15.css?v=39">
+  <link rel="stylesheet" href="css/v16.css?v=39">
+  <link rel="stylesheet" href="css/v17.css?v=39">
+</head>
+<body>
+  <div class="app">
+    <!-- סרגל ניווט ימני -->
+    <aside class="sidebar">
+      <div class="logo">Callbiz<span>Manager</span></div>
+      <nav class="nav" id="nav"></nav>
+      <div class="user">
+        <div class="av" style="width:38px;height:38px;background:#5B4CE6;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;border-radius:50%">י"כ</div>
+        <div>יואב כהן</div>
+      </div>
+    </aside>
+
+    <!-- אזור ראשי -->
+    <div class="main">
+      <header class="topbar">
+        <div class="page-title">פגישות ותורים</div>
+        <div class="proc-tabs" id="procTabs"></div>
+        <div class="top-actions">
+          <div class="search"><span id="searchIc"></span><input placeholder="חיפוש לקוח, טלפון, הערות…"></div>
+          <button class="bell" id="tasksBtn" title="משימות פתוחות"><span id="tasksIc"></span><span class="badge-count" id="tasksCount">0</span></button>
+          <button class="bell" id="bell"><span id="bellIc"></span><span class="badge-count">18</span></button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <div id="viewHost"></div>
+      </main>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true"></aside>
+
+  <div class="modal-wrap" id="modalWrap"><div class="modal" id="modal"></div></div>
+  <div class="toast-host" id="toastHost"></div>
+
+  <script src="js/data.js?v=39"></script>
+  <script src="js/app.js?v=39"></script>
+  <script src="js/flows.js?v=39"></script>
+  <script src="js/views.js?v=39"></script>
+  <script src="js/views2.js?v=39"></script>
+  <script src="js/chat.js?v=39"></script>
+  <script src="js/platform.js?v=39"></script>
+  <script src="js/dock.js?v=39"></script>
+</body>
+</html>

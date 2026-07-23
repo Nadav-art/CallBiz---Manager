@@ -1,0 +1,80 @@
+/* ============================================================
+   CallBiz Manager – v15: פאנל דוק בעיצוב "צ'אט צוות" + הערת מועד
+   ============================================================ */
+
+/* פאנל הדוק – ראש לבן */
+.dp-head { padding: 14px 16px 10px; background: #fff; border-bottom: 1px solid oklch(94% 0.006 250); }
+.dp-top-actions { display: flex; gap: 6px; margin-bottom: 8px; }
+.dp-tbtn { border: none; background: oklch(96% 0.006 250); width: 28px; height: 28px; border-radius: 8px; color: oklch(45% 0.01 250); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.dp-tbtn:hover { background: oklch(93% 0.01 250); }
+.dp-tbtn svg { width: 15px; height: 15px; }
+.dp-brand { display: flex; align-items: center; gap: 10px; }
+.dp-brand > div { flex: 1; }
+.dp-brand b { font-size: 17px; font-weight: 800; }
+.dp-brand small { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: oklch(52% 0.15 145); font-weight: 600; }
+.dp-logo { width: 40px; height: 40px; border-radius: 11px; background: var(--pblue); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.dp-logo svg { width: 21px; height: 21px; }
+
+/* כפתורים */
+.dp-btns { display: flex; gap: 8px; padding: 12px 16px 0; }
+.dp-btns .pbtn { border-radius: 10px; }
+.dp-btns .pbtn.solid { flex: 1.3; justify-content: center; }
+.dp-btns .pbtn.ghost { flex: 1; justify-content: center; }
+
+/* חיפוש */
+.dp-search { position: relative; margin: 12px 16px 0; }
+.dp-search input { width: 100%; box-sizing: border-box; border: 1px solid oklch(90% 0.006 250); border-radius: 10px; padding: 10px 14px 10px 38px; font-family: inherit; font-size: 12.5px; outline: none; }
+.dp-search input:focus { border-color: var(--pblue); }
+.dp-search span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: flex; }
+.dp-search svg { width: 15px; height: 15px; color: oklch(60% 0.01 250); }
+
+/* פילטרים (טאבים) */
+.dp-pills { display: flex; gap: 2px; margin: 12px 10px 0; padding: 0 4px; border-bottom: 1px solid oklch(93% 0.006 250); overflow-x: auto; }
+.dp-pill { border: none; background: transparent; padding: 9px 8px; font-size: 11px; font-weight: 700; color: oklch(50% 0.01 250);
+  cursor: pointer; font-family: inherit; white-space: nowrap; border-bottom: 2px solid transparent; display: inline-flex; align-items: center; gap: 5px; }
+.dp-pill span { background: oklch(95% 0.01 250); color: oklch(45% 0.01 250); font-size: 10px; border-radius: 8px; padding: 0 6px; min-width: 16px; text-align: center; }
+.dp-pill.on { color: var(--pblue); border-bottom-color: var(--pblue); }
+.dp-pill.on span { background: var(--pblue-soft); color: var(--pblue); }
+
+/* גוף */
+.dp-body { flex: 1; min-height: 0; overflow-y: auto; }
+.dp-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 220px; gap: 5px; text-align: center; padding: 20px; }
+.dpe-ic { width: 60px; height: 60px; border-radius: 50%; background: oklch(93% 0.06 145); color: oklch(52% 0.15 145); display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+.dpe-ic svg { width: 30px; height: 30px; }
+.dp-empty b { font-size: 16px; font-weight: 800; color: oklch(30% 0.01 250); }
+.dp-empty small { font-size: 12px; color: oklch(55% 0.01 250); }
+
+/* הערת מועד פגישה בעורך "הפעולה הבאה" */
+.na-note { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--brand-600);
+  background: var(--brand-soft); border-radius: 8px; padding: 6px 9px; margin-top: 8px; }
+.na-note svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+/* ---- פאנל פולו-אפ נקי עם תאריכים ---- */
+.modal-body.fu2 { padding: 16px 18px; }
+.fu2-lbl { font-size: 12px; font-weight: 800; color: var(--text-2); display: flex; align-items: center; gap: 6px; margin: 14px 0 9px; }
+.fu2-lbl:first-child { margin-top: 0; }
+.fu2-lbl svg { width: 14px; height: 14px; color: var(--brand-600); }
+/* בורר יום */
+.fu2-days { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.fu2-day { border: 1px solid var(--border); background: var(--surface); border-radius: 10px; padding: 9px; text-align: center; font-family: inherit; cursor: pointer; }
+.fu2-day b { display: block; font-size: 13px; } .fu2-day small { color: var(--text-3); font-size: 11px; }
+.fu2-day:hover { border-color: #D9D9E6; }
+.fu2-day.on { background: var(--brand); border-color: var(--brand); }
+.fu2-day.on b, .fu2-day.on small { color: #fff; }
+/* חלונות – רשימה נקייה */
+.fu2-wins { display: flex; flex-direction: column; gap: 7px; }
+.fu2-win { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border); background: var(--surface);
+  border-radius: 10px; padding: 11px 14px; font-family: inherit; cursor: pointer; }
+.fu2-win:hover:not(.full) { border-color: var(--brand); background: var(--brand-soft-2); }
+.fw-time { font-size: 14px; font-weight: 700; }
+.fw-cap { font-size: 11.5px; font-weight: 700; color: var(--green); background: var(--green-bg); padding: 3px 10px; border-radius: 20px; }
+.fw-cap.low { color: var(--amber); background: var(--amber-bg); }
+.fw-cap.full { color: var(--red); background: var(--red-bg); }
+.fu2-win.full { opacity: .6; cursor: not-allowed; }
+.fu2-win.full .fw-time { color: var(--text-3); }
+/* שינוי מהיר – עם מועד מתחת */
+.fu2-quick { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.fu2-q { border: 1px solid var(--border); background: var(--surface); border-radius: 10px; padding: 9px 6px; text-align: center; font-family: inherit; cursor: pointer; }
+.fu2-q b { display: block; font-size: 12px; } .fu2-q small { color: var(--brand-600); font-size: 10.5px; font-weight: 700; }
+.fu2-q:hover { border-color: var(--brand); background: var(--brand-soft-2); }
+@media (max-width: 460px) { .fu2-quick { grid-template-columns: 1fr 1fr; } }

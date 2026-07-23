@@ -1,0 +1,108 @@
+/* ============================================================
+   CallBiz Manager – v4: מסכי משנה + דשבורד מלוטש
+   ============================================================ */
+
+/* ---- Topbar: חיפוש + פעמון ---- */
+.top-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.search { display: flex; align-items: center; gap: 7px; background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 20px; padding: 7px 13px; width: 230px; }
+.search svg { width: 15px; height: 15px; color: var(--text-3); }
+.search input { border: none; background: transparent; outline: none; font-family: inherit; font-size: 12.5px; width: 100%; }
+.bell { position: relative; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-2); display: flex; align-items: center; justify-content: center; }
+.bell svg { width: 18px; height: 18px; }
+.bell:hover { background: var(--surface-2); }
+.badge-count { position: absolute; top: -3px; left: -3px; background: var(--red); color: #fff; font-size: 10px;
+  font-weight: 700; min-width: 17px; height: 17px; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+@media (max-width: 1500px) { .search { width: 150px; } }
+
+/* ---- כרטיסי סיכום: אייקון + דלתא ---- */
+.sc-head { display: flex; justify-content: flex-start; }
+.sc-ic { width: 30px; height: 30px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+.sc-ic svg { width: 16px; height: 16px; }
+.sc-ic.brand { background: var(--brand-soft); color: var(--brand-600); } .sc-ic.orange { background: var(--orange-bg); color: var(--orange); }
+.sc-ic.red { background: var(--red-bg); color: var(--red); } .sc-ic.blue { background: var(--blue-bg); color: var(--blue); }
+.sc-ic.green { background: var(--green-bg); color: var(--green); } .sc-ic.amber { background: var(--amber-bg); color: var(--amber); }
+.sum-card .delta { font-size: 10px; color: var(--text-3); font-weight: 600; }
+
+/* ---- Side rail: תור + מקרא ---- */
+.side-rail { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+@media (max-width: 1180px) { .side-rail { width: 100%; } }
+.legend { padding: 12px 14px; }
+.legend-group { display: flex; flex-wrap: wrap; gap: 8px 14px; }
+.leg { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); }
+.leg i { width: 10px; height: 10px; border-radius: 50%; }
+.leg svg { width: 14px; height: 14px; color: var(--brand-600); }
+.legend-sub { font-size: 11px; font-weight: 700; margin: 12px 0 8px; }
+
+/* ---- כותרת מסך משנה ---- */
+.view-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+.vh-title { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 9px; }
+.vh-title .num { width: 22px; height: 22px; border-radius: 6px; background: var(--brand); color: #fff; font-size: 12px;
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+
+/* ---- Toggle ---- */
+.toggle { width: 38px; height: 22px; border-radius: 20px; background: #D6D7E2; position: relative; cursor: pointer; transition: .18s; flex-shrink: 0; display: inline-block; }
+.toggle i { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: .18s; box-shadow: var(--shadow-sm); }
+.toggle.on { background: var(--brand); }
+.toggle.on i { right: 18px; }
+
+/* ---- הגדרות ---- */
+.emp-tabs { display: flex; gap: 6px; }
+.emp-tab { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 7px 13px; font-size: 12.5px; font-weight: 600; color: var(--text-2); }
+.emp-tab.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+.settings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; align-items: start; }
+.set-card.wide { grid-column: span 2; }
+@media (max-width: 1100px) { .settings-grid { grid-template-columns: 1fr; } .set-card.wide { grid-column: span 1; } }
+.set-body { padding: 12px 16px; }
+.set-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border-2); font-size: 13px; }
+.set-row:last-child { border-bottom: none; }
+.num-in { width: 60px; border: 1px solid var(--border); border-radius: 8px; padding: 6px 9px; font-family: inherit; text-align: center; font-weight: 700; }
+.mini-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.mini-table th { text-align: right; color: var(--text-3); font-weight: 700; font-size: 11px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.mini-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-2); }
+.mini-table tr.off { opacity: .5; }
+.chips-title { font-size: 12px; font-weight: 700; color: var(--text-2); margin-bottom: 8px; }
+.chips-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
+.pill { background: var(--brand-soft-2); border: 1px solid var(--brand-soft); color: var(--brand-700); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; }
+
+/* ---- אוטומציות ---- */
+.auto-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 1100px) { .auto-grid { grid-template-columns: 1fr; } }
+.auto-list { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+.auto-item { display: flex; align-items: center; gap: 12px; border: 1px solid var(--border-2); border-radius: var(--radius); padding: 12px 14px; }
+.auto-body { flex: 1; }
+.auto-top { display: flex; align-items: center; gap: 8px; }
+.auto-top b { font-size: 13.5px; }
+.auto-desc { font-size: 11.5px; color: var(--text-2); margin-top: 3px; }
+
+/* תרשים זרימה */
+.flow-wrap { padding: 16px; }
+.flow-node { display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); border-radius: var(--radius); padding: 11px 14px; }
+.flow-node .fn-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.flow-node.blue .fn-dot { background: var(--blue); } .flow-node.gray .fn-dot { background: var(--text-3); }
+.flow-node.amber .fn-dot { background: var(--orange); } .flow-node.green .fn-dot { background: var(--green); }
+.flow-node.brand .fn-dot { background: var(--brand); }
+.fn-body b { display: block; font-size: 13px; } .fn-body small { color: var(--text-3); font-size: 11px; }
+.flow-arrow { display: flex; justify-content: center; color: var(--text-3); padding: 3px 0; }
+.flow-arrow svg { width: 18px; height: 18px; }
+
+/* ---- יומן רב-עובדים ---- */
+.mcal { display: grid; }
+.mcal-corner { border-bottom: 1px solid var(--border); border-inline-start: 1px solid var(--border-2); }
+.mcal-owner { padding: 12px; text-align: center; font-weight: 800; font-size: 13px; border-bottom: 1px solid var(--border); border-inline-start: 1px solid var(--border-2); }
+.mcal-hour { padding: 6px 8px; font-size: 11px; color: var(--text-3); text-align: left; border-top: 1px solid var(--border-2); }
+.mcal-cell { min-height: 42px; border-top: 1px solid var(--border-2); border-inline-start: 1px solid var(--border-2); padding: 3px; }
+.mcal-ev { border-radius: 8px; padding: 6px 9px; font-size: 11px; font-weight: 700; border-inline-start: 3px solid; cursor: pointer; }
+.mcal-ev small { display: block; font-weight: 500; opacity: .8; font-size: 10px; }
+.mcal-ev.brand { background: var(--brand-soft); color: var(--brand-700); border-color: var(--brand); }
+.mcal-ev.green { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+.mcal-ev.blue { background: var(--blue-bg); color: var(--blue); border-color: var(--blue); }
+.mcal-ev.orange { background: var(--orange-bg); color: var(--orange); border-color: var(--orange); }
+.mcal-ev.gray { background: #EFEFF4; color: var(--text-2); border-color: var(--text-3); }
+
+/* ---- מנוע Workflow דינמי ---- */
+.wf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; margin-bottom: 16px; }
+.wf-stages { padding: 10px 12px; display: flex; flex-direction: column; gap: 5px; }
+.wf-stage { display: flex; align-items: center; gap: 9px; font-size: 12.5px; padding: 6px 8px; border-radius: 8px; background: var(--surface-2); }
+.wf-num { width: 20px; height: 20px; border-radius: 50%; background: var(--brand-soft); color: var(--brand-600); font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }

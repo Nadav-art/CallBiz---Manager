@@ -1,0 +1,87 @@
+/* ============================================================
+   CallBiz Manager – v9: חלון צ'אט (הצלבה עם "צ'אט צוות · קוליביז")
+   פלטת oklch תואמת לפלטפורמת הצ'אט
+   ============================================================ */
+.cbchat { display: flex; flex-direction: column; height: 100%; font-family: 'Heebo', var(--font); }
+
+/* טאבים */
+.cc-tabs { display: flex; align-items: center; gap: 4px; padding: 8px 10px; border-bottom: 1px solid oklch(93% 0.006 250); background: #fff; }
+.cc-tab { border: none; background: transparent; padding: 8px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 700;
+  color: oklch(50% 0.01 250); display: flex; align-items: center; gap: 6px; font-family: inherit; }
+.cc-tab svg { width: 15px; height: 15px; }
+.cc-tab.on { background: oklch(95% 0.03 250); color: oklch(48% 0.18 250); }
+.cc-close { margin-inline-start: auto; }
+
+/* כותרת */
+.cc-head { display: flex; align-items: center; gap: 10px; padding: 13px 18px; color: #fff; }
+.cc-head.client   { background: oklch(52% 0.15 145); }   /* לקוח – ירקרק (WhatsApp) */
+.cc-head.internal { background: oklch(52% 0.18 250); }   /* פנימי – כחול הפלטפורמה */
+.cc-recip { display: flex; align-items: center; gap: 9px; flex: 1; }
+.cc-recip b { font-size: 15px; font-weight: 800; }
+.cc-recip small { display: block; font-size: 11px; opacity: .9; }
+.cc-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.cc-back { border: none; background: oklch(100% 0 0 / .18); color: #fff; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.cc-back svg { width: 16px; height: 16px; }
+.cc-badge { font-size: 10.5px; font-weight: 800; padding: 4px 9px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; background: oklch(100% 0 0 / .2); }
+.cc-badge svg { width: 12px; height: 12px; }
+
+/* באנר הקשר (פנימי) */
+.cc-context { background: oklch(97% 0.03 250); color: oklch(45% 0.06 250); font-size: 11.5px; padding: 8px 16px;
+  display: flex; align-items: center; gap: 7px; border-bottom: 1px solid oklch(93% 0.01 250); }
+.cc-context svg { width: 14px; height: 14px; }
+
+/* תיל השיחה */
+.cc-thread { flex: 1; min-height: 0; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 10px;
+  background: oklch(98.5% 0.004 250); }
+.cc-row { display: flex; flex-direction: column; max-width: 78%; }
+.cc-row.me { align-self: flex-end; }        /* היוזר הנוכחי — תמיד משמאל */
+.cc-row.them { align-self: flex-start; }    /* הצד השני (אדם/קבוצה) — תמיד מימין */
+.cc-bubble { padding: 9px 13px; border-radius: 12px; font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-break: break-word; }
+.cc-bubble.me { background: oklch(52% 0.18 250); color: #fff; border-top-left-radius: 3px; }
+.cc-bubble.them { background: #fff; color: oklch(22% 0.01 250); border: 1px solid oklch(92% 0.006 250); border-top-right-radius: 3px; }
+.cc-meta { font-size: 9.5px; color: oklch(58% 0.01 250); margin-top: 3px; }
+.cc-row.me .cc-meta { text-align: left; }
+.cc-row.them .cc-meta { text-align: right; }
+.cc-empty { margin: auto; text-align: center; color: oklch(60% 0.01 250); }
+.cc-empty svg { width: 34px; height: 34px; opacity: .5; }
+.cc-empty p { font-size: 13px; margin-top: 8px; }
+
+/* קומפוזר */
+.cc-composer { background: #fff; border-top: 1px solid oklch(93% 0.006 250); padding: 10px 14px; }
+.cc-emoji-row { display: flex; gap: 2px; flex-wrap: wrap; margin-bottom: 8px; }
+.cc-emoji { border: none; background: transparent; font-size: 18px; cursor: pointer; padding: 3px; border-radius: 6px; line-height: 1; }
+.cc-emoji:hover { background: oklch(95% 0.01 250); }
+.cc-input-row { display: flex; gap: 8px; align-items: flex-end; }
+.cc-input-row textarea { flex: 1; box-sizing: border-box; height: 42px; min-height: 42px; border: 1px solid oklch(88% 0.006 250);
+  border-radius: 9px; padding: 10px 14px; font-size: 13px; font-family: inherit; outline: none; resize: none; line-height: 1.4; overflow-y: hidden; }
+.cc-input-row textarea:focus { border-color: oklch(58% 0.16 250); }
+/* "שלח" נשאר תמיד בגובה שורה אחת — מוצמד לתחתית */
+.cc-send { border: none; background: oklch(52% 0.18 250); color: #fff; height: 42px; width: 46px; border-radius: 9px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; align-self: flex-end; }
+.cc-send svg { width: 18px; height: 18px; }
+
+/* בורר עמיתים (התייעצות) */
+.cc-picker { flex: 1; overflow-y: auto; padding: 16px 18px; display: flex; flex-direction: column; }
+.cc-note { display: flex; align-items: flex-start; gap: 7px; font-size: 11.5px; color: oklch(48% 0.08 70);
+  background: oklch(97% 0.03 70); border: 1px solid oklch(90% 0.05 70); border-radius: 9px; padding: 9px 11px; margin-bottom: 12px; }
+.cc-note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
+.cc-search { width: 100%; box-sizing: border-box; border: 1px solid oklch(88% 0.006 250); border-radius: 9px; padding: 9px 12px;
+  font-size: 13px; font-family: inherit; outline: none; margin-bottom: 12px; }
+.cc-search:focus { border-color: oklch(58% 0.16 250); }
+.cc-col-title { font-size: 12px; font-weight: 800; color: oklch(45% 0.01 250); margin-bottom: 8px; }
+.cc-col-list { display: flex; flex-direction: column; gap: 8px; }
+.cc-col { display: flex; align-items: center; gap: 11px; border: 1px solid oklch(93% 0.006 250); border-radius: 11px; padding: 10px;
+  background: #fff; cursor: pointer; text-align: right; font-family: inherit; }
+.cc-col:hover { border-color: oklch(80% 0.04 250); }
+.cc-av { position: relative; width: 38px; height: 38px; border-radius: 50%; background: oklch(58% 0.14 250); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+.cc-av-dot { position: absolute; bottom: 0; right: 0; width: 11px; height: 11px; border-radius: 50%; border: 2px solid #fff; }
+.cc-col-info { flex: 1; min-width: 0; }
+.cc-col-info b { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.cc-col-info small { display: block; font-size: 11px; color: oklch(52% 0.01 250); }
+.cc-shared { color: oklch(50% 0.12 145) !important; }
+.cc-noshared { color: oklch(58% 0.13 70) !important; }
+.cc-req { font-size: 9px; font-weight: 700; color: oklch(50% 0.14 70); background: oklch(95% 0.05 70); padding: 1px 6px; border-radius: 6px; }
+.cc-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; font-size: 10px; color: oklch(52% 0.01 250); }
+.cc-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.cc-legend i { width: 8px; height: 8px; border-radius: 50%; }

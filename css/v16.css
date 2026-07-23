@@ -1,0 +1,71 @@
+/* ============================================================
+   CallBiz Manager – v16: צ'יפ זז · בקרה משודרגת · מסכי סיידבר
+   ============================================================ */
+
+/* ---- טאבים עליונים: segmented עם מחוון מחליק ---- */
+.proc-seg { position: relative; display: inline-flex; gap: 2px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 3px; }
+.proc-seg .seg-ind { position: absolute; top: 3px; bottom: 3px; width: 0; background: var(--brand); border-radius: 9px; transition: left .25s cubic-bezier(.4,0,.2,1), width .25s cubic-bezier(.4,0,.2,1); }
+.proc-seg .proc-tab { position: relative; z-index: 1; border: none; background: transparent; color: var(--text-2); transition: color .2s; }
+.proc-seg .proc-tab:hover { border: none; background: transparent; }
+.proc-seg .proc-tab.active { background: transparent; border: none; color: #fff; }
+
+/* ---- בקרה: 7 KPI + פילטרים ---- */
+.plat-kpis.seven { grid-template-columns: repeat(7, 1fr); }
+@media (max-width: 1250px) { .plat-kpis.seven { grid-template-columns: repeat(4, 1fr); } }
+.ad-filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.ad-search { border: 1px solid oklch(90% 0.006 250); border-radius: 10px; padding: 9px 13px; font-family: inherit; font-size: 12.5px; outline: none; min-width: 190px; background: #fff; }
+.ad-search:focus { border-color: var(--pblue); }
+.ad-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-inline-start: auto; }
+.ad-chip { border: 1px solid oklch(90% 0.006 250); background: #fff; border-radius: 20px; padding: 7px 14px; font-size: 12px; font-weight: 700; font-family: inherit; color: oklch(45% 0.01 250); cursor: pointer; }
+.ad-chip.on { background: var(--pblue); border-color: var(--pblue); color: #fff; }
+.ad-eye { margin-inline-start: auto; }
+.tdots { font-style: normal; letter-spacing: 1px; animation: typingDot 1s infinite; }
+.flag.slow { color: oklch(50% 0.12 300); background: oklch(95% 0.03 300); }
+
+/* ---- פאנל פירוט: סטטיסטיקות ראש ---- */
+.ad-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px 22px 0; }
+.ad-stat { background: oklch(97.5% 0.004 250); border: 1px solid oklch(93% 0.006 250); border-radius: 11px; padding: 10px; text-align: center; }
+.ad-stat b { display: block; font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ad-stat small { font-size: 10.5px; color: oklch(52% 0.01 250); }
+
+/* קופסאות פירוט */
+.ad-box-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.ad-box-ic { width: 36px; height: 36px; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.ad-box-head b { display: block; font-size: 14px; } .ad-box-head small { font-size: 11px; color: oklch(52% 0.01 250); }
+.ad-box.slow { background: oklch(97% 0.02 300); border: 1px solid oklch(90% 0.04 300); }
+.ad-q { background: #fff; border: 1px solid oklch(92% 0.03 70); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
+.ad-q summary { display: flex; align-items: center; gap: 9px; padding: 10px 12px; cursor: pointer; list-style: none; font-size: 13px; }
+.ad-q summary::-webkit-details-marker { display: none; }
+.ad-q summary::after { content: '▾'; margin-inline-start: auto; color: oklch(55% 0.01 250); transition: transform .15s; }
+.ad-q[open] summary::after { transform: rotate(180deg); }
+.ad-times { background: oklch(95% 0.05 70); color: oklch(48% 0.14 70); font-size: 11px; font-weight: 800; border-radius: 8px; padding: 2px 9px; flex-shrink: 0; }
+.ad-q > *:not(summary) { margin: 0 12px 10px; }
+.ad-warn { font-size: 11.5px; font-weight: 700; color: oklch(50% 0.16 25); }
+.ad-occ-title { font-size: 11px; font-weight: 800; color: oklch(48% 0.11 70); background: oklch(97% 0.03 70); border-radius: 7px; padding: 5px 9px; }
+.ad-occ { background: oklch(98.5% 0.004 250); border: 1px solid oklch(93% 0.006 250); border-radius: 9px; padding: 9px 11px; margin-bottom: 6px !important; }
+.ad-occ-q { font-size: 12.5px; font-weight: 600; }
+.ad-occ small { display: block; font-size: 10.5px; color: oklch(55% 0.01 250); margin: 2px 0 4px; }
+.ad-ans { background: oklch(95% 0.05 145); border: 1px solid oklch(88% 0.07 145); border-radius: 8px; padding: 7px 10px; font-size: 12px; color: oklch(35% 0.08 145); margin: 4px 0 6px; }
+.ad-ans small { color: oklch(45% 0.1 145); margin: 0 0 2px; }
+.ad-occ .btn { margin-top: 2px; }
+.ad-slow-row { font-size: 12px; margin: 4px 0; }
+.ad-red { color: oklch(55% 0.2 25); }
+
+/* ---- משימות ---- */
+.task-list { padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.task-row { display: flex; align-items: center; gap: 11px; border: 1px solid var(--border-2); border-radius: 10px; padding: 10px 13px; }
+.task-row.done { opacity: .55; } .task-row.done .task-body b { text-decoration: line-through; }
+.task-body { flex: 1; } .task-body b { display: block; font-size: 13.5px; }
+.task-body small { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--text-3); }
+.task-body small svg { width: 12px; height: 12px; }
+
+/* ---- דוא"ל ---- */
+.mail-row { display: flex; align-items: center; gap: 11px; width: 100%; text-align: right; border: none; background: transparent;
+  border-bottom: 1px solid var(--border-2); padding: 13px 16px; font-family: inherit; cursor: pointer; }
+.mail-row:hover { background: var(--surface-2); }
+.mail-dot { width: 8px; height: 8px; border-radius: 50%; background: transparent; flex-shrink: 0; }
+.mail-dot.on { background: var(--brand); }
+.mail-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.mail-body b { font-size: 13px; } .mail-row.unread .mail-body span { font-weight: 700; }
+.mail-body span { font-size: 12.5px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mail-row small { color: var(--text-3); font-size: 11px; white-space: nowrap; }

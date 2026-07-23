@@ -1,0 +1,46 @@
+/* ============================================================
+   CallBiz Manager – v7: הגדרות קומפקטיות (צמצום מרווחים + אריזה)
+   ============================================================ */
+
+/* פריסה צפופה יותר – 3 עמודות עם מילוי חכם של פערים */
+.settings-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  grid-auto-flow: row dense;
+  align-items: start;
+}
+.settings-grid .card { align-self: start; }
+.set-card.wide { grid-column: span 2; }
+@media (max-width: 1280px) { .settings-grid { grid-template-columns: repeat(2, 1fr); } .set-card.wide { grid-column: span 2; } }
+@media (max-width: 860px)  { .settings-grid { grid-template-columns: 1fr; } .set-card.wide { grid-column: span 1; } }
+
+/* כותרת מסך צמודה יותר */
+.view-head { margin-bottom: 12px; }
+
+/* פנים הכרטיס – מרווחים מצומצמים */
+.settings-grid .card-head { padding: 9px 13px; }
+.settings-grid .card-head .title { font-size: 13.5px; }
+.set-body { padding: 6px 13px 8px; }
+.set-row { padding: 5px 0; font-size: 12.5px; }
+
+/* טבלאות מיני צפופות */
+.settings-grid .mini-table th { padding: 5px 8px; font-size: 10.5px; }
+.settings-grid .mini-table td { padding: 5px 8px; }
+
+/* שדות קטנים */
+.num-in { width: 52px; padding: 4px 7px; }
+.toggle { width: 34px; height: 20px; }
+.toggle i { width: 16px; height: 16px; }
+.toggle.on i { right: 16px; }
+
+/* צ'יפים/פילים צמודים */
+.chips-title { margin-bottom: 6px; }
+.chips-wrap { gap: 6px; }
+.pill { padding: 4px 10px; font-size: 11.5px; }
+
+/* רמזים קומפקטיים */
+.settings-grid .hint { margin-top: 6px; padding: 6px 9px; }
+
+/* מטריצת הרשאות – שורות נמוכות */
+.perm-table td, .perm-table th { padding: 4px 6px; }
+.perm-table .perm-cell { line-height: 1; }

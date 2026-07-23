@@ -1,0 +1,68 @@
+/* ============================================================
+   CallBiz Manager – v5: דוחות, KPI, משפך, AI, הרשאות, המתנה
+   ============================================================ */
+
+/* ---- אריחי KPI ---- */
+.kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 16px; }
+@media (max-width: 1400px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 900px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+.kpi-tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 13px 14px; box-shadow: var(--shadow-sm); }
+.kpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.kpi-ic { width: 30px; height: 30px; border-radius: 9px; background: var(--brand-soft); color: var(--brand-600);
+  display: inline-flex; align-items: center; justify-content: center; }
+.kpi-ic svg { width: 16px; height: 16px; }
+.trend { font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 20px; }
+.trend.green { color: var(--green); background: var(--green-bg); }
+.trend.red { color: var(--red); background: var(--red-bg); }
+.kpi-val { font-size: 24px; font-weight: 800; line-height: 1; }
+.kpi-val small { font-size: 12px; font-weight: 600; color: var(--text-3); margin-inline-start: 3px; }
+.kpi-label { font-size: 11.5px; color: var(--text-2); font-weight: 600; margin-top: 5px; }
+
+/* ---- שורות דוח ---- */
+.report-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; align-items: start; }
+@media (max-width: 1000px) { .report-row { grid-template-columns: 1fr; } }
+
+/* ---- משפך ---- */
+.funnel { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.fn-row { display: flex; align-items: center; gap: 12px; }
+.fn-label { width: 78px; font-size: 12.5px; display: flex; justify-content: space-between; }
+.fn-label b { font-weight: 800; }
+.fn-bar-wrap { flex: 1; background: var(--surface-2); border-radius: 8px; height: 26px; overflow: hidden; }
+.fn-bar { height: 100%; border-radius: 8px; transition: width .4s; }
+.fn-bar.blue { background: var(--blue); } .fn-bar.brand { background: var(--brand); }
+.fn-bar.amber { background: var(--amber); } .fn-bar.green { background: var(--green); }
+.fn-conv { width: 42px; text-align: center; font-size: 12px; font-weight: 800; color: var(--green); }
+
+/* ---- פגישות לפי נציג ---- */
+.repbars { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.rep-row { display: flex; align-items: center; gap: 12px; }
+.rep-name { width: 78px; font-size: 12.5px; font-weight: 600; }
+.rep-bar-wrap { flex: 1; }
+.rep-bar { background: var(--brand); color: #fff; height: 26px; border-radius: 8px; display: flex; align-items: center;
+  justify-content: flex-start; padding: 0 10px; font-size: 12px; font-weight: 800; min-width: 34px; transition: width .4s; }
+.rep-util { width: 82px; text-align: left; }
+
+/* ---- סטטיסטיקת פולו-אפ ---- */
+.fu-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 18px; }
+.fu-stat { text-align: center; border: 1px solid var(--border-2); border-radius: var(--radius); padding: 14px 8px; }
+.fu-stat b { display: block; font-size: 26px; font-weight: 800; }
+.fu-stat b.green { color: var(--green); } .fu-stat b.red { color: var(--red); } .fu-stat b.blue { color: var(--blue); }
+.fu-stat span { font-size: 11.5px; color: var(--text-2); }
+
+/* ---- תובנות AI ---- */
+.card-head .ai-badge { margin: 0; }
+.ai-insights { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.ai-ins { border: 1px solid var(--border-2); border-radius: var(--radius); padding: 12px 14px; border-inline-start: 3px solid var(--brand); }
+.ai-ins.high { border-inline-start-color: var(--red); }
+.ai-ins.medium { border-inline-start-color: var(--orange); }
+.ai-ins.info { border-inline-start-color: var(--blue); }
+.ai-ins-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.ai-ins-type { font-size: 11px; font-weight: 800; color: var(--brand-600); }
+.ai-ins-name { font-size: 12px; font-weight: 700; }
+.ai-ins-text { font-size: 12px; color: var(--text-2); margin-bottom: 9px; }
+
+/* ---- מטריצת הרשאות ---- */
+.perm-table th:not(:first-child), .perm-table td:not(:first-child) { text-align: center; }
+.perm-cell { text-align: center; }
+.perm-table .toggle { transform: scale(.85); }
