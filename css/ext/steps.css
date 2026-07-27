@@ -206,3 +206,21 @@
 .sm-list li svg { width: 11px; height: 11px; flex: 0 0 auto; margin-top: 3px; color: var(--ok, #16a34a); }
 .sm-list li.muted { color: var(--text-3, var(--text-2)); font-style: italic; }
 @media (max-width: 640px) { .sm-grid { grid-template-columns: 1fr; } .sm-m { flex: 1 1 45%; } }
+
+/* ---------- שלב התזכורת ---------- */
+.rg-box { display: flex; flex-direction: column; gap: 9px; }
+.rg-state { display: flex; align-items: flex-start; gap: 9px; padding: 10px 12px; border-radius: 12px;
+  border: 1px solid var(--line); background: var(--surface-2); }
+.rg-state > svg { width: 14px; height: 14px; flex: 0 0 auto; margin-top: 1px; color: var(--text-2); }
+.rg-state b { display: block; font-size: 12.5px; }
+.rg-state small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
+.rg-state.due { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 8%, transparent); }
+.rg-state.due > svg { color: var(--brand); }
+.rg-state.none { border-style: dashed; }
+.rg-lead { display: flex; align-items: center; gap: 9px; font-size: 12px; }
+.rg-lead span { display: inline-flex; align-items: center; gap: 5px; color: var(--text-2); }
+.rg-lead svg { width: 12px; height: 12px; }
+.rg-lead select { flex: 1 1 auto; max-width: 200px; }
+.rg-note { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; color: var(--text-2); line-height: 1.55; }
+.rg-note svg { width: 12px; height: 12px; flex: 0 0 auto; margin-top: 1px; }
+.rg-note.ok { color: var(--ok, #16a34a); }
