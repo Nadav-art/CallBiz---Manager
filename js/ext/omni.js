@@ -391,9 +391,12 @@
     files: ['js/ext/omni.js', 'css/ext/omni.css'],
     install() {
       if (typeof SET_GROUPS === 'undefined' || typeof applySetMode !== 'function') return;
+      /* המסך הזה הוא הצד הטכני — לוגים, Webhooks, מודל המחברים.
+         הוא נשאר להגדרות ומיועד למנהל CallBiz; הלקוח עובד במסך
+         "ערוצים" שבתפריט הראשי (omni-ui). */
       const g = SET_GROUPS.find(x => x.key === 'manage');
       if (g && !g.items.some(i => i.m === 'omni'))
-        CBX.push('omni', g.items, { m: 'omni', label: 'ערוצי תקשורת', icon: 'chat', desc: 'אומניצ׳אנל · חיבורים, ניתוב והרשאות' });
+        CBX.push('omni', g.items, { m: 'omni', label: 'ערוצים · תצוגת מנהל', icon: 'lock', desc: 'לוגים, Webhooks ומודל המחברים — CallBiz בלבד' });
 
       CBX.wrap('omni', 'applySetMode', o => function (m) { omMode = m === 'omni'; return o.apply(this, arguments); });
       if (typeof currentSetModeKey === 'function')

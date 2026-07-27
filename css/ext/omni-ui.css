@@ -1,0 +1,123 @@
+/* ============================================================
+   מסך הערוצים — חוויית מוצר (omniui)
+   ============================================================ */
+.ou { display: flex; flex-direction: column; gap: 14px; }
+
+/* ---------- פס התקדמות ---------- */
+.ou-prog { padding: 13px 15px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); }
+.ou-prog-h { display: flex; align-items: baseline; gap: 8px; font-size: 13px; }
+.ou-prog-h span { margin-inline-start: auto; font-size: 12px; color: var(--brand); font-weight: 700; }
+.ou-bar { height: 7px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin: 8px 0 9px; }
+.ou-bar i { display: block; height: 100%; border-radius: 999px; background: var(--brand);
+  transition: width .4s cubic-bezier(.2,.9,.3,1); }
+.ou-prog-l { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.ou-prog-l span { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-2); }
+.ou-prog-l span.on { color: var(--ok, #16a34a); font-weight: 600; }
+.ou-prog-l svg { width: 12px; height: 12px; }
+
+/* ---------- נותר שלב אחד ---------- */
+.ou-todo { display: flex; align-items: center; gap: 11px; flex-wrap: wrap; padding: 12px 14px; border-radius: 14px;
+  border: 1px solid var(--amber, #B7791F); background: color-mix(in srgb, var(--amber, #B7791F) 8%, transparent); }
+.ou-todo > svg { width: 16px; height: 16px; flex: 0 0 auto; color: var(--amber, #B7791F); }
+.ou-todo > div { flex: 1 1 190px; min-width: 0; }
+.ou-todo b { display: block; font-size: 13px; }
+.ou-todo small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
+
+/* ---------- כרטיסי ערוצים ---------- */
+.ou-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(275px, 1fr)); gap: 12px; }
+.ou-card { display: flex; flex-direction: column; gap: 11px; padding: 15px; border-radius: 16px;
+  border: 1px solid var(--line); background: var(--surface); transition: border-color .15s, box-shadow .15s; }
+.ou-card:hover { box-shadow: 0 4px 18px rgba(20,22,34,.06); }
+.ou-card.ok { border-color: color-mix(in srgb, var(--ok, #16a34a) 32%, transparent); }
+.ou-card.warn { border-color: color-mix(in srgb, var(--amber, #B7791F) 40%, transparent); }
+.ou-card.bad { border-color: color-mix(in srgb, var(--danger, #dc2626) 40%, transparent); }
+.ou-c-top { display: flex; align-items: center; gap: 11px; }
+.ou-ic { width: 42px; height: 42px; flex: 0 0 auto; border-radius: 13px; display: flex; align-items: center;
+  justify-content: center; background: color-mix(in srgb, var(--ch) 13%, transparent); color: var(--ch); }
+.ou-ic svg { width: 21px; height: 21px; }
+.ou-c-t b { display: block; font-size: 14.5px; }
+.ou-status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); margin-top: 3px; }
+.ou-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: var(--text-3, #9A9EB1); }
+.ou-dot.ok { background: var(--ok, #16a34a); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok, #16a34a) 18%, transparent); }
+.ou-dot.warn { background: var(--amber, #B7791F); box-shadow: 0 0 0 3px color-mix(in srgb, var(--amber, #B7791F) 18%, transparent); }
+.ou-dot.bad { background: var(--danger, #dc2626); box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger, #dc2626) 18%, transparent); }
+.ou-c-sub { font-size: 11.5px; color: var(--text-2); line-height: 1.6; margin: 0; }
+.ou-c-acc { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; padding: 9px 11px; border-radius: 11px;
+  background: var(--surface-2); font-size: 12.5px; }
+.ou-c-acc svg { width: 13px; height: 13px; color: var(--text-2); }
+.ou-c-acc small { flex: 1 1 100%; font-size: 10.5px; color: var(--text-2); }
+.ou-c-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
+.ou-c-acts .block { width: 100%; justify-content: center; }
+
+/* ---------- מסך ראשון ---------- */
+.ou-first { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 18px; border-radius: 16px;
+  border: 1.5px dashed color-mix(in srgb, var(--brand) 40%, transparent);
+  background: color-mix(in srgb, var(--brand) 5%, transparent); }
+.ou-first > svg { width: 20px; height: 20px; color: var(--brand); }
+.ou-first > div { flex: 1 1 200px; }
+.ou-first b { display: block; font-size: 14px; }
+.ou-first small { display: block; font-size: 12px; color: var(--text-2); margin-top: 3px; }
+
+/* ---------- חלון החיבור ---------- */
+.ou-f-l { font-size: 13px; color: var(--text-2); line-height: 1.7; margin: 2px 0 12px; }
+.ou-f-safe { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--text-2);
+  padding: 9px 11px; border-radius: 11px; background: var(--surface-2); }
+.ou-f-safe svg { width: 13px; height: 13px; color: var(--ok, #16a34a); }
+.ou-assets { display: flex; flex-direction: column; gap: 7px; }
+.ou-asset { display: flex; align-items: center; gap: 10px; font: inherit; text-align: start; cursor: pointer;
+  padding: 12px 13px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+.ou-asset b { font-size: 13px; }
+.ou-a-r { width: 17px; height: 17px; flex: 0 0 auto; border-radius: 50%; border: 1.5px solid var(--line); }
+.ou-asset.on { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 7%, transparent); }
+.ou-asset.on .ou-a-r { border-color: var(--brand); border-width: 5px; }
+.ou-ok { display: flex; align-items: center; gap: 11px; padding: 13px; border-radius: 13px; margin-bottom: 13px;
+  border: 1px solid color-mix(in srgb, var(--ok, #16a34a) 40%, transparent);
+  background: color-mix(in srgb, var(--ok, #16a34a) 8%, transparent); }
+.ou-ok > svg { width: 20px; height: 20px; color: var(--ok, #16a34a); }
+.ou-ok b { display: block; font-size: 14px; }
+.ou-ok small { display: block; font-size: 12px; color: var(--text-2); margin-top: 2px; }
+.ou-next-h { font-size: 12.5px; font-weight: 600; margin-bottom: 7px; }
+.ou-next { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.ou-next li { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--text-2);
+  padding: 8px 11px; border-radius: 10px; background: var(--surface-2); }
+.ou-next svg { width: 13px; height: 13px; color: var(--brand); }
+
+/* ---------- אשף ---------- */
+.ou-steps { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.ou-steps span { font-size: 10.5px; padding: 3px 9px; border-radius: 999px; color: var(--text-2);
+  border: 1px solid var(--line); background: var(--surface-2); }
+.ou-steps span.on { color: #fff; background: var(--brand); border-color: var(--brand); font-weight: 600; }
+.ou-wiz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 9px; }
+.ou-wiz-c { display: flex; flex-direction: column; align-items: center; gap: 7px; font: inherit; cursor: pointer;
+  padding: 15px 10px; border-radius: 13px; border: 1px solid var(--line); background: var(--surface); }
+.ou-wiz-c b { font-size: 12.5px; }
+.ou-wiz-c small { display: flex; align-items: center; gap: 4px; font-size: 10.5px; color: var(--ok, #16a34a); }
+.ou-wiz-c small svg { width: 11px; height: 11px; }
+.ou-wiz-c:hover:not(:disabled) { border-color: var(--brand); background: var(--surface-2); }
+.ou-wiz-c:disabled { opacity: .6; cursor: default; }
+
+/* ---------- הגדרות ---------- */
+.ou-cfg-sub { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
+.ou-cfg-b { display: flex; flex-direction: column; gap: 13px; max-height: 56vh; overflow-y: auto; padding-inline-end: 2px; }
+.ou-f { display: flex; flex-direction: column; gap: 6px; }
+.ou-f > span { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); }
+.ou-f > span svg { width: 13px; height: 13px; }
+.ou-f2 { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+.ou-f2 .ou-f { flex: 0 0 150px; }
+.ou-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ou-chip { font: inherit; font-size: 12px; cursor: pointer; padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
+.ou-chip.on { border-color: var(--brand); color: var(--brand); font-weight: 600;
+  background: color-mix(in srgb, var(--brand) 9%, transparent); }
+.ou-chips.days .ou-chip { min-width: 36px; text-align: center; }
+.ou-hours { display: flex; align-items: center; gap: 9px; }
+.ou-hours input { flex: 0 0 125px; }
+.ou-hours span { font-size: 12px; color: var(--text-2); }
+.ou-sw { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+
+/* ---------- תג בתפריט ---------- */
+.ou-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px;
+  padding: 0 5px; margin-inline-start: 6px; border-radius: 999px; font-size: 10.5px; font-weight: 700;
+  color: #fff; background: var(--amber, #B7791F); }
+
+@media (max-width: 640px) { .ou-grid { grid-template-columns: 1fr; } }
