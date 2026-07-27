@@ -30671,6 +30671,9 @@ function openExtPanel() {
         const bad = rows.filter(x => x.block || !x.staff.ok);
         const prodBad = rd && !rd.ok && rd.blame === 'product';
         const critBad = rd && !rd.ok && rd.blame === 'crit' && (rd.reasons || []).length;
+        /* מה שלא עומד בקריטריונים כבר נעול ולא ניתן לבחירה, ולכן אין
+           טעם להכריז שהבחירה תקינה — מציגים רק כשיש בעיה בפועל. */
+        if (!bad.length && (!rd || rd.ok)) return '';
         /* לפני שנענו הקריטריונים אי-אפשר לקבוע שהמוצר "מתאים" —
            כל מה שידוע בשלב הזה הוא שיש מועדים פנויים. */
         const answered = Object.keys(r.needs || {}).some(k => k !== 'note' && (r.needs || {})[k]);
