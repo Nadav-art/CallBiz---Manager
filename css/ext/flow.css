@@ -254,3 +254,11 @@
   background: color-mix(in srgb, var(--amber, #B7791F) 9%, transparent); }
 .ck-tag.btn-like { cursor: pointer; font: inherit; font-size: 10.5px; font-weight: 600; }
 .ck-tag.btn-like:hover { filter: brightness(.95); }
+
+
+/* מעבר בין שלבים — הבהוב עדין של התוכן בלבד */
+#modal.fl-modal { transition: none; }
+#modal.fl-modal .modal-body, #modal.fl-modal .modal-head, #modal.fl-modal .modal-foot {
+  transition: opacity .1s ease, transform .1s ease; }
+#modal.fl-swapping .modal-body { opacity: 0; transform: translateY(4px); }
+#modal.fl-swapping .modal-foot { opacity: .45; }

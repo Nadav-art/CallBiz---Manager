@@ -156,6 +156,23 @@
     m.classList.remove('fl-modal');
     m.style.height = ''; m.style.width = '';
   }
+  /* החלפת שלב בתוך אותו חלון: הבהוב עדין של התוכן בלבד, בלי
+     שהחלון ייסגר וייפתח — כדי שהמעבר ירגיש רציף ולא כמו קפיצה
+     למסך אחר. הגובה והרוחב כבר נעולים ב-sizeModal. */
+  function swapStep(fn) {
+    const m = document.getElementById('modal');
+    if (!m) { fn(); return; }
+    m.classList.add('fl-swapping');
+    setTimeout(() => {
+      fn();
+      const m2 = document.getElementById('modal');
+      if (!m2) return;
+      m2.classList.add('fl-swapping');
+      requestAnimationFrame(() => m2.classList.remove('fl-swapping'));
+      setTimeout(() => m2.classList.remove('fl-swapping'), 30);
+    }, 110);
+  }
+
   function stripRects(host) {
     const m = {};
     (host ? host.querySelectorAll('[data-flgo]') : []).forEach(el => { m[el.dataset.flgo] = el.getBoundingClientRect().left; });
@@ -210,8 +227,8 @@
         jumpTo1 = false;
         if (first && first.key === cur) return;                    // כבר במסך הנכון
         if (first && first.key === 'crit') { const bf = snapshot(r);
-          if (typeof openNeedsClarify === 'function') openNeedsClarify(r, () => checkAfterCritChange(r, bf)); }
-        else if (first && first.key === 'svc') { if (typeof openServiceSelect === 'function') openServiceSelect(r); }
+          swapStep(() => openNeedsClarify(r, () => checkAfterCritChange(r, bf))); }
+        else if (first && first.key === 'svc') { swapStep(() => { if (typeof openServiceSelect === 'function') openServiceSelect(r); }); }
       }, 360);
     }));
   }
@@ -219,9 +236,8 @@
     $$('[data-flgo]', host).forEach(b => b.addEventListener('click', () => {
       const k = b.dataset.flgo;
       if (k === 'crit') { const before = snapshot(r);
-        if (typeof closeModal === 'function' && document.querySelector('#modal .svc-sel')) { /* נשאר פתוח */ }
-        openNeedsClarify(r, () => { if (typeof after === 'function') after(); checkAfterCritChange(r, before); }); }
-      else if (k === 'svc') { if (typeof openServiceSelect === 'function') openServiceSelect(r); }
+        swapStep(() => openNeedsClarify(r, () => { if (typeof after === 'function') after(); checkAfterCritChange(r, before); })); }
+      else if (k === 'svc') { swapStep(() => { if (typeof openServiceSelect === 'function') openServiceSelect(r); }); }
       else if (k === 'cal') {
         const rd = readiness(r);
         if (!rd.ok) { toast(rd.blame === 'product' ? 'המוצר שנבחר אינו מתאים — יש לבחור חלופה' : 'צריך לעדכן קריטריונים — אין מועד מתאים'); return; }
@@ -439,17 +455,18 @@
               const nt = document.getElementById('needsNoteM'); if (nt) rec.needs.note = nt.value;
               const miss = reqMissing(rec);
               if (miss.length) { toast('חסר קריטריון חובה: ' + miss.join(' · ')); return; }
-              if (typeof closeModal === 'function') closeModal();
               if (typeof done === 'function') done();
-              setTimeout(() => {
-                if (nxt.key === 'svc') { if (typeof openServiceSelect === 'function') openServiceSelect(rec); return; }
-                if (nxt.key === 'cal') {
-                  const rd2 = readiness(rec);
-                  if (!rd2.ok) { toast(rd2.blame === 'product' ? 'המוצר שנבחר אינו מתאים — יש לבחור חלופה' : 'אין מועד בקריטריונים שנבחרו');
-                    if (typeof openServiceSelect === 'function') openServiceSelect(rec); return; }
-                  if (typeof openProposedTimes === 'function') openProposedTimes(rec);
-                }
-              }, 60);
+              /* המעבר מתבצע *בתוך* אותו חלון — לא סוגרים ופותחים
+                 מחדש, אחרת המסך "קופץ" ונראה כאילו עברנו למקום אחר. */
+              if (nxt.key === 'svc') return swapStep(() => {
+                if (typeof openServiceSelect === 'function') openServiceSelect(rec); });
+              if (nxt.key === 'cal') {
+                const rd2 = readiness(rec);
+                if (!rd2.ok) { toast(rd2.blame === 'product' ? 'המוצר שנבחר אינו מתאים — יש לבחור חלופה' : 'אין מועד בקריטריונים שנבחרו');
+                  return swapStep(() => { if (typeof openServiceSelect === 'function') openServiceSelect(rec); }); }
+                if (typeof closeModal === 'function') closeModal();
+                setTimeout(() => { if (typeof openProposedTimes === 'function') openProposedTimes(rec); }, 60);
+              }
             });
           }
         } catch (e) { console.error('[flow] needs', e); }
