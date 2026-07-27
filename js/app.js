@@ -1197,7 +1197,8 @@ function flowHTML(r) {
   const pinned = getStagePin();
   // מכווצים שלבים שהושלמו (יש תקציר ממילא); מציגים: שלבים לא-מולאו + הנוכחי + הבאים. נעץ = תמיד הכל.
   // חריג: "בחירת שירות / מוצר" תמיד גלוי כל עוד הוא במסלול — הפריטים הנבחרים חייבים להיות מול העיניים.
-  const ALWAYS_VISIBLE_STAGES = ['service', 'svc', 'services'];
+  // KEEP_STAGES_OPEN — רשימה שהרחבות יכולות להוסיף אליה (נשארת ריקה בלעדיהן)
+  const ALWAYS_VISIBLE_STAGES = ['service', 'svc', 'services'].concat(window.KEEP_STAGES_OPEN || []);
   const isDoneFilled = s => s.state === 'done' && !s.noContent && !ALWAYS_VISIBLE_STAGES.includes(s.key);
   const completed = stages.filter(isDoneFilled);
   const visible = stages.filter(s => !isDoneFilled(s));

@@ -121,7 +121,11 @@ function rotChipHTML(seg, dayName, si) {
   </button>`;
 }
 let rotPopKey = null;
-function closeRotPicker() { const p = document.getElementById('rotPop'); if (p) p.remove(); rotPopKey = null; }
+function closeRotPicker() {
+  const p = document.getElementById('rotPop');
+  if (p) { if (p.__cleanup) p.__cleanup(); p.remove(); }
+  rotPopKey = null;
+}
 function openRotPicker(dayName, si, anchor, rerender) {
   closeRotPicker();
   const emp = (typeof whEmp === 'function') ? whEmp() : null; if (!emp) return;
@@ -153,11 +157,29 @@ function openRotPicker(dayName, si, anchor, rerender) {
     if (wt) wt.addEventListener('change', () => { const c = rotGet(dayName, si, emp); rotSet(dayName, si, { every: c.every, offset: c.offset, from: c.from, to: wt.value }, emp); render(); if (rerender) rerender(true); });
     const wc = $('#rotWinClr', pop); if (wc) wc.addEventListener('click', () => { const c = rotGet(dayName, si, emp); rotSet(dayName, si, { every: c.every, offset: c.offset, from: '', to: '' }, emp); render(); if (rerender) rerender(true); });
     $('#rotDone', pop).addEventListener('click', () => { closeRotPicker(); if (rerender) rerender(); });
+    if (pop.__place) pop.__place();   // התוכן משנה גובה — ממקמים מחדש
   };
   document.body.appendChild(pop); render();
-  const rc = anchor.getBoundingClientRect();
-  pop.style.top = Math.min(window.innerHeight - 20, rc.bottom + 6) + 'px';
-  pop.style.insetInlineStart = Math.max(8, rc.left) + 'px';
+  /* מיקום מול הכפתור שנלחץ. inset-inline-start מתהפך ב-RTL ולכן שלח את
+     הפופ-אפ לצד השני של המסך — כאן ממקמים ב-left/top מפורשים, עם צמידות
+     לקצה הימני של הכפתור (כיוון הקריאה) והיפוך למעלה כשאין מקום למטה. */
+  const place = () => {
+    const rc = anchor.getBoundingClientRect();
+    const pw = pop.offsetWidth || 300, ph = pop.offsetHeight || 320;
+    const rtl = getComputedStyle(document.documentElement).direction === 'rtl';
+    let left = rtl ? rc.right - pw : rc.left;
+    left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+    let top = rc.bottom + 6;
+    if (top + ph > window.innerHeight - 8) top = Math.max(8, rc.top - ph - 6);
+    pop.style.left = left + 'px';
+    pop.style.right = 'auto';
+    pop.style.insetInlineStart = 'auto';
+    pop.style.top = top + 'px';
+  };
+  pop.__place = place; place();
+  window.addEventListener('resize', place);
+  window.addEventListener('scroll', place, true);
+  pop.__cleanup = () => { window.removeEventListener('resize', place); window.removeEventListener('scroll', place, true); };
   setTimeout(() => document.addEventListener('mousedown', rotOutside), 0);
 }
 function rotOutside(e) { const p = document.getElementById('rotPop'); if (p && !p.contains(e.target) && !e.target.closest('[data-segrot]')) { closeRotPicker(); document.removeEventListener('mousedown', rotOutside); } }

@@ -5936,6 +5936,97 @@ body:has(.cbc-wrap) { overflow: hidden; }
   <!-- ===== ext: סגנונות ההרחבות — למחיקה יחד עם בלוק הסקריפטים ===== -->
   <style>
 /* ============================================================
+   עורך המסלולים והשלבים — עיצוב מחודש
+   שלב אינו נמחק: חוסמים אותו והוא יורד לאזור קבוע בתחתית הטור.
+   ============================================================ */
+
+.wf-grid { gap: 14px; align-items: start; }
+.wf-card { border-radius: 16px; overflow: hidden; }
+.wf-card .card-head { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.wf-edit-head { display: flex; align-items: center; gap: 8px; }
+.wf-route-name { flex: 1 1 auto; min-width: 0; font: inherit; font-size: 13px; font-weight: 600;
+  padding: 7px 10px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface); }
+.wf-route-name:focus { outline: none; border-color: var(--brand); }
+.wf-rmroute { display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 9px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
+.wf-rmroute svg { width: 13px; height: 13px; }
+.wf-rmroute:hover { color: var(--danger, #dc2626); border-color: color-mix(in srgb, var(--danger, #dc2626) 45%, transparent); }
+
+.wf-stages { display: flex; flex-direction: column; gap: 6px; padding: 12px; }
+
+/* ---------- שורת שלב ---------- */
+.wf-stage { display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  padding: 9px 11px; border-radius: 12px; font-size: 12.5px;
+  border: 1px solid var(--line); background: var(--surface);
+  transition: border-color .15s, background .15s; }
+.wf-stage.editable:hover { border-color: color-mix(in srgb, var(--brand) 40%, transparent); background: var(--surface-2); }
+.wf-num { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center;
+  min-width: 21px; height: 21px; padding: 0 5px; border-radius: 7px;
+  font-size: 11px; font-weight: 600; color: var(--text-2); background: var(--surface-2); }
+.wf-num svg { width: 11px; height: 11px; }
+.wf-st-title { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.wf-meta { font-size: 10.5px; color: var(--text-2); }
+.wf-offtag { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px;
+  padding: 1px 7px; border-radius: 999px; color: var(--text-2);
+  border: 1px solid var(--line); background: var(--surface-2); }
+.wf-offtag svg { width: 10px; height: 10px; }
+.wf-stage.off-default { opacity: .78; }
+
+/* ---------- אשכול הפעולות ---------- */
+.wf-st-act { flex: 0 0 auto; display: flex; align-items: center; gap: 4px; }
+.wf-st-act > button, .wf-move > button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  width: 27px; height: 27px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 11px;
+  border: 1px solid transparent; background: transparent; color: var(--text-2); }
+.wf-st-act > button svg, .wf-move > button svg { width: 13px; height: 13px; }
+.wf-st-act > button:hover, .wf-move > button:hover:not(:disabled) { background: var(--surface-2); border-color: var(--line); }
+.wf-move { display: inline-flex; border-radius: 9px; overflow: hidden; background: var(--surface-2); }
+.wf-move > button { width: 24px; height: 24px; border-radius: 0; }
+.wf-move > button:disabled { opacity: .3; cursor: default; }
+.wf-move .dn svg { transform: rotate(180deg); }
+.wf-st-act .eye.on { color: var(--brand); background: color-mix(in srgb, var(--brand) 11%, transparent); }
+.wf-st-act .block:hover { color: var(--danger, #dc2626);
+  background: color-mix(in srgb, var(--danger, #dc2626) 10%, transparent);
+  border-color: color-mix(in srgb, var(--danger, #dc2626) 35%, transparent); }
+.wf-st-act .unbin { width: auto; padding: 0 10px; color: var(--brand);
+  border-color: color-mix(in srgb, var(--brand) 35%, transparent); background: var(--surface); }
+.wf-st-act .unbin:hover { background: color-mix(in srgb, var(--brand) 10%, transparent); }
+
+/* ---------- אזור החסומים — קבוע בתחתית ---------- */
+.wf-blocked { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.wf-blocked-sep { display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+  padding: 0 3px 8px; font-size: 11.5px; color: var(--text-2); }
+.wf-blocked-sep svg { width: 13px; height: 13px; }
+.wf-blocked-sep b { font-size: 12px; color: var(--text); }
+.wf-blocked-sep small { font-size: 10.5px; }
+.wf-bcount { margin-inline-start: auto; min-width: 20px; text-align: center;
+  padding: 1px 7px; border-radius: 999px; font-size: 11px;
+  background: var(--surface-2); border: 1px solid var(--line); }
+.wf-stage.blocked { opacity: .62; background: var(--surface-2); border-style: dashed; margin-bottom: 6px; }
+.wf-stage.blocked .wf-st-title { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+/* ---------- הוספת שלב ---------- */
+.wf-addstage { display: flex; gap: 6px; margin-top: 4px; }
+.wf-addstage input { flex: 1 1 auto; min-width: 0; font: inherit; font-size: 12px;
+  padding: 8px 10px; border-radius: 10px; border: 1px dashed var(--line); background: var(--surface); }
+.wf-addstage input:focus { outline: none; border-color: var(--brand); border-style: solid; }
+
+/* ---------- מסלול חדש ---------- */
+.wf-add-route { border-style: dashed; background: transparent; }
+.wf-addroute-inner { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 22px 14px; }
+.wf-addroute-inner svg { width: 18px; height: 18px; color: var(--brand); }
+.wf-addroute-inner input { width: 100%; font: inherit; font-size: 12px;
+  padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); }
+
+@media (max-width: 720px) {
+  .wf-stage { gap: 7px; }
+  .wf-meta { flex: 1 1 100%; }
+}
+
+</style>
+  <style>
+/* ============================================================
    סגנונות ההרחבות — ext-core · מלאי · חנות
    קובץ אחד, מוסר יחד עם הבלוק ב-index.html.
    ============================================================ */
@@ -7061,6 +7152,224 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 .inv-switch .inv-back { margin-inline-start: auto; }
 .cb-mobile .inv-viewbar { flex-direction: column; align-items: stretch; }
 .cb-mobile .inv-vb-note { margin-inline-start: 0; }
+
+/* ---------------- סדר הבירור ---------------- */
+.fl-gate { margin-bottom: 14px; }
+.fl-mode-h { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12.5px; margin-bottom: 9px; }
+.fl-mode-h small { flex: 1 1 100%; font-size: 11px; color: var(--text-2); font-weight: 400; }
+.fl-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.fl-mode { font: inherit; text-align: start; padding: 11px 12px; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); }
+.fl-mode svg { width: 15px; height: 15px; color: var(--text-3); }
+.fl-mode b { display: block; font-size: 12.5px; margin-top: 4px; }
+.fl-mode small { display: block; font-size: 11px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
+.fl-mode.on { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 8%, transparent); }
+.fl-mode.on svg, .fl-mode.on b { color: var(--brand); }
+.fl-step { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border-radius: 12px;
+  border: 1px solid var(--line); margin-bottom: 10px; }
+.fl-step.now { border-color: color-mix(in srgb, var(--brand) 40%, transparent); background: color-mix(in srgb, var(--brand) 5%, transparent); }
+.fl-step.ok { border-color: color-mix(in srgb, #1f8a4c 35%, transparent); background: color-mix(in srgb, #1f8a4c 5%, transparent); }
+.fl-step.bad { border-color: color-mix(in srgb, #e5a13d 45%, transparent); background: color-mix(in srgb, #e5a13d 6%, transparent); }
+.fl-step > div { flex: 1 1 auto; min-width: 0; }
+.fl-step b { font-size: 12.5px; }
+.fl-step small { display: block; font-size: 11px; color: var(--text-2); margin-top: 3px; line-height: 1.55; }
+.fl-n { flex: 0 0 auto; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--surface-2); font-size: 11.5px; font-weight: 700; }
+.fl-step.now .fl-n { background: var(--brand); color: #fff; }
+.fl-step.ok .fl-n { background: color-mix(in srgb, #1f8a4c 15%, transparent); color: #1f8a4c; }
+.fl-step.bad .fl-n { background: color-mix(in srgb, #e5a13d 20%, transparent); color: #9c6a14; }
+.fl-n svg { width: 14px; height: 14px; }
+.fl-rows { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
+.fl-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding: 6px 9px; border-radius: 9px; background: var(--surface); }
+.fl-row span { font-size: 12px; font-weight: 600; }
+.fl-row small { font-size: 11px; color: var(--text-2); margin: 0 !important; }
+.fl-row.bad { background: color-mix(in srgb, #e5484d 7%, transparent); }
+.fl-row.bad small { color: #c2333a; }
+.fl-alt { margin-top: 9px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.fl-alt b { display: flex; align-items: center; gap: 5px; font-size: 11.5px; }
+.fl-alt svg { width: 13px; height: 13px; }
+.fl-alt.none { font-size: 11.5px; color: var(--text-2); }
+.fl-block { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; padding: 11px 13px; border-radius: 12px;
+  background: color-mix(in srgb, #e5484d 7%, transparent); border: 1px solid color-mix(in srgb, #e5484d 32%, transparent); }
+.fl-block svg { width: 15px; height: 15px; color: #c2333a; }
+.fl-block b { font-size: 12.5px; color: #c2333a; }
+.fl-block small { flex: 1 1 100%; font-size: 11px; color: var(--text-2); line-height: 1.5; }
+.fl-block .btn { margin-inline-start: auto; }
+/* נעילת המוצרים עד שהחובה נענתה */
+.svc-sel.fl-locked .svc-list { opacity: .45; pointer-events: none; filter: grayscale(.4); }
+.fl-warn { max-width: 520px; text-align: start; }
+.fl-warn-l { font-size: 12.5px; color: var(--text-2); line-height: 1.6; margin: 4px 0 10px; }
+.fl-warn-m { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 12px; padding: 10px 12px;
+  border-radius: 11px; background: color-mix(in srgb, #e5a13d 9%, transparent); }
+.fl-warn-m svg { width: 14px; height: 14px; color: #9c6a14; }
+.fl-warn-m small { flex: 1 1 100%; font-size: 11.5px; color: var(--text-2); }
+.cb-mobile .fl-modes { grid-template-columns: 1fr; }
+
+/* תיק מאוחד — פאנל צד לצד הליד */
+.ps-side { position: fixed; inset: 0; z-index: 220; pointer-events: none; }
+.ps-side-in { position: absolute; top: 0; bottom: 0; inset-inline-start: 0; width: min(460px, 92vw);
+  background: var(--surface); border-inline-end: 1px solid var(--line); box-shadow: 6px 0 28px rgba(0,0,0,.14);
+  display: flex; flex-direction: column; pointer-events: auto;
+  transform: translateX(-100%); transition: transform .22s cubic-bezier(.2,.9,.3,1); }
+.ps-side.open .ps-side-in { transform: none; }
+.ps-side-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 13px 15px;
+  border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.ps-side-h b { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.ps-side-h svg { width: 15px; height: 15px; color: var(--brand); }
+.ps-side-h .muted { font-size: 11.5px; }
+.ps-side-b { flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; padding: 14px 15px 20px; }
+.ps-side-groups { display: flex; flex-direction: column; gap: 9px; }
+.ps-decide { margin-top: 18px; padding-top: 15px; border-top: 1px solid var(--line); }
+.ps-dec-h { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 10px; }
+.ps-dec-h svg { width: 14px; height: 14px; color: var(--brand); }
+.ps-dec { font: inherit; text-align: start; width: 100%; padding: 13px; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); margin-bottom: 9px; }
+.ps-dec svg { width: 15px; height: 15px; }
+.ps-dec b { display: block; font-size: 13px; margin-top: 4px; }
+.ps-dec small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 3px; line-height: 1.55; }
+.ps-dec.merge { border-color: color-mix(in srgb, var(--brand) 35%, transparent); }
+.ps-dec.merge svg, .ps-dec.merge b { color: var(--brand); }
+.ps-dec:hover { background: var(--surface-2); }
+.cb-mobile .ps-side-in { width: 100%; }
+
+</style>
+  <style>
+/* ============================================================
+   הרחבות זרימת התיאום — flow · critfx · coordx
+   קובץ נפרד כדי שיהיה ניתן להסרה בלי לגעת בעיצוב הליבה.
+   ============================================================ */
+
+/* ---------- רצועת השלבים ---------- */
+.fl-strip { display: flex; align-items: stretch; gap: 4px; margin: 10px 0 12px; }
+.fl-st { flex: 1 1 0; min-width: 0; font: inherit; text-align: center; cursor: pointer;
+  padding: 8px 6px; border-radius: 11px; border: 1px solid var(--line); background: var(--surface); }
+.fl-st b { display: block; font-size: 12px; margin-top: 3px; }
+.fl-st small { display: block; font-size: 10.5px; color: var(--text-2); }
+.fl-si svg { width: 15px; height: 15px; }
+.fl-st.now { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 9%, transparent); }
+.fl-st.now b, .fl-st.now .fl-si svg { color: var(--brand); }
+.fl-st.done .fl-si svg { color: var(--ok, #16a34a); }
+.fl-st.todo { opacity: .72; }
+.fl-st:hover { background: var(--surface-2); }
+.fl-arr { display: flex; align-items: center; color: var(--text-2); }
+.fl-arr svg { width: 13px; height: 13px; }
+
+/* ---------- מצב ההתאמה בבירור הצורך ---------- */
+.fl-ready { display: flex; align-items: flex-start; gap: 9px; flex-wrap: wrap;
+  padding: 11px 12px; border-radius: 12px; margin-bottom: 12px;
+  border: 1px solid var(--line); background: var(--surface-2); }
+.fl-ready svg { width: 15px; height: 15px; flex: 0 0 auto; margin-top: 1px; }
+.fl-ready b { display: block; font-size: 12.5px; }
+.fl-ready small { display: block; font-size: 11.5px; color: var(--text-2); line-height: 1.55; margin-top: 2px; }
+.fl-ready > div { flex: 1 1 180px; min-width: 0; }
+.fl-ready.ok { border-color: color-mix(in srgb, var(--ok, #16a34a) 35%, transparent); }
+.fl-ready.ok > svg { color: var(--ok, #16a34a); }
+.fl-ready.bad { border-color: color-mix(in srgb, var(--danger, #dc2626) 35%, transparent);
+  background: color-mix(in srgb, var(--danger, #dc2626) 6%, transparent); }
+.fl-ready.bad > svg { color: var(--danger, #dc2626); }
+
+/* ---------- מה חוסם, לפי נתוני הסניף ---------- */
+.fl-critbad { margin-top: 10px; padding: 10px; border-radius: 11px;
+  border: 1px dashed color-mix(in srgb, var(--danger, #dc2626) 45%, transparent);
+  background: color-mix(in srgb, var(--danger, #dc2626) 5%, transparent); }
+.fl-critbad > b { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-bottom: 7px; }
+.fl-critbad svg { width: 13px; height: 13px; }
+
+/* ---------- חלופות מקבילות ---------- */
+.fl-altc { font: inherit; text-align: start; cursor: pointer; padding: 8px 10px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--surface); margin: 0 0 6px 6px; }
+.fl-altc b { display: block; font-size: 12.5px; }
+.fl-altc small { display: block; font-size: 11px; color: var(--text-2); margin-top: 2px; }
+.fl-altc:hover { border-color: var(--brand); background: var(--surface-2); }
+.fl-alt.none { display: flex; align-items: flex-start; gap: 7px; font-size: 11.5px; color: var(--text-2); line-height: 1.6; }
+.fl-alt.none svg { width: 13px; height: 13px; flex: 0 0 auto; margin-top: 2px; }
+
+/* ---------- סרגל חזרה במסך התיאום ---------- */
+.fl-cbar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  padding: 9px 12px; border-radius: 12px; margin-bottom: 10px;
+  border: 1px solid var(--line); background: var(--surface-2); }
+.fl-cbar > svg { width: 15px; height: 15px; color: var(--brand); }
+.fl-cbar b { font-size: 12.5px; margin-inline-end: auto; }
+
+/* ---------- אפשרויות נעולות בבירור הצורך ---------- */
+.cbx-critfx .needs-opt.blocked {
+  position: relative; cursor: not-allowed; opacity: .5;
+  color: var(--text-2); border-style: dashed;
+  background-image: repeating-linear-gradient(135deg,
+    color-mix(in srgb, var(--text-2) 13%, transparent) 0 5px, transparent 5px 10px);
+}
+.cbx-critfx .needs-opt.blocked::after {
+  content: ''; position: absolute; inset-inline: 9px; top: 50%; height: 1px;
+  background: currentColor; opacity: .55;
+}
+.cbx-critfx .needs-opt.blocked:hover { opacity: .68; }
+.cbx-critfx .needs-opt.blocked svg { width: 11px; height: 11px; opacity: .8; }
+
+.cfx-bar { display: flex; align-items: flex-start; gap: 9px; flex-wrap: wrap;
+  padding: 11px 12px; border-radius: 12px; margin: 4px 0 12px;
+  border: 1px solid var(--line); background: var(--surface-2); }
+.cfx-bar > svg { width: 15px; height: 15px; flex: 0 0 auto; margin-top: 1px; color: var(--text-2); }
+.cfx-bar > div { flex: 1 1 190px; min-width: 0; }
+.cfx-bar b { display: block; font-size: 12.5px; }
+.cfx-bar small { display: block; font-size: 11.5px; color: var(--text-2); line-height: 1.55; margin-top: 2px; }
+.cfx-rel { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 100%; }
+.cfx-relbtn { font: inherit; text-align: start; cursor: pointer; padding: 6px 9px; border-radius: 9px;
+  border: 1px solid var(--line); background: var(--surface); font-size: 11.5px; }
+.cfx-relbtn svg { width: 12px; height: 12px; }
+.cfx-relbtn small { display: block; font-size: 10.5px; color: var(--text-2); }
+.cfx-relbtn:hover { border-color: var(--brand); }
+
+/* ---------- חיווי הסינון בלוח התיאום ---------- */
+.cx-bar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  padding: 10px 12px; border-radius: 12px; margin-bottom: 10px;
+  border: 1px solid color-mix(in srgb, var(--brand) 32%, transparent);
+  background: color-mix(in srgb, var(--brand) 6%, transparent); }
+.cx-bar > svg { width: 15px; height: 15px; color: var(--brand); }
+.cx-bar b { font-size: 12.5px; }
+.cx-bar.none { border-color: var(--line); background: var(--surface-2); }
+.cx-bar.none > svg { color: var(--text-2); }
+.cx-bar small { font-size: 11.5px; color: var(--text-2); }
+.cx-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-inline-end: auto; }
+.cx-chip { font-size: 11px; padding: 2px 8px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); }
+.cx-skip { flex: 1 1 100%; display: flex; align-items: center; gap: 5px; }
+.cx-skip svg { width: 12px; height: 12px; }
+
+@media (max-width: 640px) {
+  .fl-strip { flex-wrap: wrap; }
+  .fl-st { flex: 1 1 30%; }
+  .fl-arr { display: none; }
+}
+
+.cfx-bar.drop { border-color: color-mix(in srgb, var(--danger, #dc2626) 38%, transparent);
+  background: color-mix(in srgb, var(--danger, #dc2626) 6%, transparent); }
+.cfx-bar.drop > svg { color: var(--danger, #dc2626); }
+.cfx-relbtn.bad { border-color: color-mix(in srgb, var(--danger, #dc2626) 35%, transparent); }
+
+/* ---------- חיווי הרשאת יומנים ---------- */
+.cr-note { display: flex; align-items: flex-start; gap: 7px; flex-wrap: wrap;
+  padding: 9px 11px; margin-top: 8px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--surface-2); }
+.cr-note svg { width: 14px; height: 14px; flex: 0 0 auto; margin-top: 1px; color: var(--brand); }
+.cr-note b { font-size: 12px; flex: 1 1 auto; }
+.cr-note small { flex: 1 1 100%; font-size: 11px; color: var(--text-2); line-height: 1.6; }
+
+/* ---------- מסמכים לחתימה ---------- */
+.dsg-bar { display: flex; align-items: flex-start; gap: 9px;
+  padding: 12px 13px; border-radius: 12px; margin-bottom: 12px;
+  border: 1px dashed color-mix(in srgb, var(--amber, #d97706) 45%, transparent);
+  background: color-mix(in srgb, var(--amber, #d97706) 7%, transparent); }
+.dsg-bar > svg { width: 15px; height: 15px; flex: 0 0 auto; margin-top: 1px; color: var(--amber, #d97706); }
+.dsg-bar b { display: block; font-size: 12.5px; }
+.dsg-bar small { display: block; font-size: 11.5px; color: var(--text-2); line-height: 1.65; margin-top: 3px; }
+.dsg-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; flex: 1 1 100%; }
+.dsg-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px;
+  padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+.dsg-chip svg { width: 11px; height: 11px; }
+.dsg-chip.sign { border-color: color-mix(in srgb, var(--ok, #16a34a) 40%, transparent); color: var(--ok, #16a34a); }
+.dsg-chip.read { color: var(--text-2); }
+.dsg-chip.todo { border-style: dashed; color: var(--amber, #d97706);
+  border-color: color-mix(in srgb, var(--amber, #d97706) 45%, transparent); }
 
 </style>
 </head>
@@ -9322,7 +9631,8 @@ function flowHTML(r) {
   const pinned = getStagePin();
   // מכווצים שלבים שהושלמו (יש תקציר ממילא); מציגים: שלבים לא-מולאו + הנוכחי + הבאים. נעץ = תמיד הכל.
   // חריג: "בחירת שירות / מוצר" תמיד גלוי כל עוד הוא במסלול — הפריטים הנבחרים חייבים להיות מול העיניים.
-  const ALWAYS_VISIBLE_STAGES = ['service', 'svc', 'services'];
+  // KEEP_STAGES_OPEN — רשימה שהרחבות יכולות להוסיף אליה (נשארת ריקה בלעדיהן)
+  const ALWAYS_VISIBLE_STAGES = ['service', 'svc', 'services'].concat(window.KEEP_STAGES_OPEN || []);
   const isDoneFilled = s => s.state === 'done' && !s.noContent && !ALWAYS_VISIBLE_STAGES.includes(s.key);
   const completed = stages.filter(isDoneFilled);
   const visible = stages.filter(s => !isDoneFilled(s));
@@ -10552,6 +10862,33 @@ else setTimeout(boot, 0);
 </script>
   <script>
 /* ============================================================
+   פתיחת פאנלים — תיקון מערכתי
+   ------------------------------------------------------------
+   ‎.cbc-wrap נטען עם opacity:0, והמחלקה ‎.open היא זו שמציגה אותו.
+   כל פאנל שנבנה בלי לזכור להוסיף ‎.open נפתח — אבל שקוף לגמרי,
+   ולכן "הכפתור לא עובד". במקום לזכור בכל מקום מחדש, כאן יש
+   מאזין אחד שמוסיף ‎.open לכל ‎.cbc-wrap שנכנס למסך.
+   ============================================================ */
+(function () {
+  /* לא נשענים על requestAnimationFrame בלבד: בלשונית שאינה גלויה הוא
+     לא נקרא כלל, והפאנל היה נשאר שקוף. setTimeout משמש רשת ביטחון. */
+  const open = el => {
+    if (!el || !el.classList || !el.classList.contains('cbc-wrap')) return;
+    if (el.classList.contains('open')) return;
+    const go = () => el.isConnected && el.classList.add('open');
+    requestAnimationFrame(go);
+    setTimeout(go, 0);
+  };
+  /* פאנלים שכבר קיימים (למשל אם הסקריפט נטען אחרי רינדור ראשון) */
+  document.addEventListener('DOMContentLoaded', () => document.querySelectorAll('.cbc-wrap').forEach(open));
+  new MutationObserver(muts => {
+    muts.forEach(m => m.addedNodes && m.addedNodes.forEach(n => { if (n.nodeType === 1) open(n); }));
+  }).observe(document.documentElement, { childList: true, subtree: true });
+})();
+
+</script>
+  <script>
+/* ============================================================
    CallBiz Manager – שכבת תהליכים (Flows)
    אשף תיאום · עורך פעולה הבאה · hover card · סיום AI · WhatsApp · הערות · תזכורת
    נטען אחרי app.js ודורס פונקציות תהליך במקום הצורך.
@@ -11463,9 +11800,12 @@ function showDayKebab(i, anchor) {
     <button data-dk="clearbrk">${ic('pause')} נקה הפסקות</button>
     <button data-dk="copy">${ic('copy')} העתק לימים…</button>`;
   document.body.appendChild(pop);
+  /* צמוד לכפתור שנלחץ. inset-inline-start מתהפך ב-RTL ולכן קפץ לצד השני
+     של המסך — כאן ממקמים לפי הקצה הימני של הכפתור, עם היפוך למעלה בקצה. */
   const rc = anchor.getBoundingClientRect();
-  pop.style.top = `${rc.bottom + 5}px`;
-  pop.style.insetInlineStart = `${Math.max(8, rc.left)}px`;
+  const ph = pop.offsetHeight || 120;
+  pop.style.top = `${rc.bottom + 5 + ph > window.innerHeight - 8 ? Math.max(8, rc.top - ph - 5) : rc.bottom + 5}px`;
+  pop.style.right = `${Math.max(8, window.innerWidth - rc.right)}px`;
   $('[data-dk="toggle"]', pop).addEventListener('click', () => { d.on = !d.on; closeDayKebab(); whRefresh(); });
   $('[data-dk="clearbrk"]', pop).addEventListener('click', () => {
     if (d.segments.some(s => s.type === 'break')) d.segments = [{ type: 'shift', start: d.segments[0].start, end: d.segments[d.segments.length - 1].end }];
@@ -12796,26 +13136,42 @@ function wfCardHTML(j) {
         <span class="muted" style="font-size:11px">${stages.length} שלבים</span></div>`;
   const active = stages.filter(s => !stageIsBlocked(j, s.key));
   const blocked = stages.filter(s => stageIsBlocked(j, s.key));
-  const stageRow = (s, i) => wfEdit
-    ? `<div class="wf-stage editable meta-${metaOf(s.key)} ${stageIsOffByDefault(j, s.key) ? 'off-default' : ''}">
-        <span class="wf-num">${i + 1}</span><span class="wf-st-title">${s.title}${stageIsOffByDefault(j, s.key) ? `<small class="wf-offtag">${ic('eye')} כבוי כברירת מחדל</small>` : ''}</span>
-        <span class="wf-st-act">
-          <button class="eye ${stageIsOffByDefault(j, s.key) ? 'on' : ''}" data-wfeye="${j}|${s.key}" title="${stageIsOffByDefault(j, s.key) ? 'כרגע כבוי כברירת מחדל — לחץ להפעלה' : 'כבה כברירת מחדל (יופעל פרטנית בכל ליד)'}">${ic('eye')}</button>
-          <button data-wfup="${j}|${i}" ${i <= 0 ? 'disabled' : ''} title="למעלה">${ic('chevron')}</button>
-          <button class="dn" data-wfdn="${j}|${i}" ${i >= stages.length - 1 ? 'disabled' : ''} title="למטה">${ic('chevron')}</button>
-          <button class="bin" data-wfbin="${j}|${s.key}" title="העבר לחסימה — לא יוצג בכלל עד שמנהל יסיר">${ic('pause')}</button>
-          <button class="rm" data-wfrm="${j}|${i}" title="הסר שלב לגמרי">${ic('close')}</button>
-        </span></div>`
-    : `<div class="wf-stage meta-${metaOf(s.key)} ${stageIsOffByDefault(j, s.key) ? 'off-default' : ''}"><span class="wf-num">${i + 1}</span>${s.title}${stageIsOffByDefault(j, s.key) ? `<small class="wf-offtag">${ic('eye')} כבוי כברירת מחדל</small>` : ''}<small class="wf-meta">${META_STAGES.find(m => m.key === metaOf(s.key)).title}</small></div>`;
+  /* שלב אינו נמחק — מי שלא רוצה אותו חוסם אותו, והוא יושב קבוע למטה */
+  const stageRow = (s, i) => {
+    const off = stageIsOffByDefault(j, s.key);
+    const idx = WORKFLOWS[j].indexOf(s);
+    if (!wfEdit) return `<div class="wf-stage meta-${metaOf(s.key)} ${off ? 'off-default' : ''}">
+      <span class="wf-num">${i + 1}</span><span class="wf-st-title">${s.title}</span>
+      ${off ? `<small class="wf-offtag">${ic('eye')} כבוי כברירת מחדל</small>` : ''}
+      <small class="wf-meta">${META_STAGES.find(m => m.key === metaOf(s.key)).title}</small></div>`;
+    return `<div class="wf-stage editable meta-${metaOf(s.key)} ${off ? 'off-default' : ''}">
+      <span class="wf-num">${i + 1}</span>
+      <span class="wf-st-title">${s.title}
+        ${off ? `<small class="wf-offtag">${ic('eye')} כבוי כברירת מחדל</small>` : ''}</span>
+      <span class="wf-st-act">
+        <span class="wf-move">
+          <button data-wfup="${j}|${idx}" ${i <= 0 ? 'disabled' : ''} aria-label="העלה" title="העלה שלב">${ic('chevron')}</button>
+          <button class="dn" data-wfdn="${j}|${idx}" ${i >= active.length - 1 ? 'disabled' : ''} aria-label="הורד" title="הורד שלב">${ic('chevron')}</button>
+        </span>
+        <button class="eye ${off ? 'on' : ''}" data-wfeye="${j}|${s.key}"
+          title="${off ? 'כבוי כברירת מחדל — לחץ להפעלה' : 'כבה כברירת מחדל (יופעל פרטנית בכל ליד)'}">${ic('eye')}</button>
+        <button class="block" data-wfbin="${j}|${s.key}" title="חסום — השלב ירד לתחתית ולא יוצג בתהליך">${ic('close')}</button>
+      </span></div>`;
+  };
   return `<section class="card wf-card">
     ${head}
     <div class="wf-stages">
       ${active.map((s, i) => stageRow(s, i)).join('')}
-      ${blocked.length ? `<div class="wf-blocked-sep">${ic('pause')} חסום — לא מוצג בתהליך (${blocked.length})</div>
-        ${blocked.map(s => `<div class="wf-stage blocked meta-${metaOf(s.key)}"><span class="wf-num">${ic('pause')}</span><span class="wf-st-title">${s.title}</span>
-          ${wfEdit ? `<span class="wf-st-act"><button class="unbin" data-wfunbin="${j}|${s.key}" title="הסר חסימה">${ic('check')}</button></span>` : ''}</div>`).join('')}` : ''}
       ${wfEdit ? `<div class="wf-addstage"><input data-wfaddinp="${j}" placeholder="שם שלב חדש…">
         <button class="btn xs primary" data-wfadd="${j}">${ic('plus')} הוסף</button></div>` : ''}
+      ${blocked.length ? `<div class="wf-blocked">
+        <div class="wf-blocked-sep">${ic('lock')} <b>חסומים</b>
+          <small>לא מוצגים בתהליך · נשארים כאן להחזרה בכל רגע</small>
+          <span class="wf-bcount">${blocked.length}</span></div>
+        ${blocked.map(s => `<div class="wf-stage blocked meta-${metaOf(s.key)}">
+          <span class="wf-num">${ic('lock')}</span><span class="wf-st-title">${s.title}</span>
+          ${wfEdit ? `<span class="wf-st-act"><button class="unbin" data-wfunbin="${j}|${s.key}" title="החזר לתהליך">${ic('check')} החזר</button></span>` : ''}
+        </div>`).join('')}</div>` : ''}
     </div>
   </section>`;
 }
@@ -12859,10 +13215,18 @@ function renderDynamicView() {
 function bindWfEdit() {
   const et = $('[data-wfedit]'); if (et) et.addEventListener('click', () => { wfEdit = !wfEdit; renderDynamicView(); });
   const pair = v => { const [j, i] = v.split('|'); return [j, +i]; };
-  $$('[data-wfup]').forEach(b => b.addEventListener('click', () => { const [j, i] = pair(b.dataset.wfup); const a = WORKFLOWS[j]; [a[i - 1], a[i]] = [a[i], a[i - 1]]; renderDynamicView(); }));
-  $$('[data-wfdn]').forEach(b => b.addEventListener('click', () => { const [j, i] = pair(b.dataset.wfdn); const a = WORKFLOWS[j]; [a[i + 1], a[i]] = [a[i], a[i + 1]]; renderDynamicView(); }));
-  $$('[data-wfrm]').forEach(b => b.addEventListener('click', () => { const [j, i] = pair(b.dataset.wfrm); if (WORKFLOWS[j].length <= 1) { toast('חייב להישאר שלב אחד'); return; } WORKFLOWS[j].splice(i, 1); renderDynamicView(); toast('השלב הוסר מכל המערכת'); }));
-  // עין — כבוי כברירת מחדל (יופעל פרטנית בכל ליד) · פח — חסום לגמרי עד שמנהל יסיר
+  /* הזזה מדלגת על שלבים חסומים — אחרת הלחיצה "לא עושה כלום" מבחינת המשתמש */
+  const wfMove = (j, i, dir) => {
+    const a = WORKFLOWS[j];
+    let t = i + dir;
+    while (a[t] && stageIsBlocked(j, a[t].key)) t += dir;
+    if (!a[t]) return;
+    [a[t], a[i]] = [a[i], a[t]];
+    renderDynamicView();
+  };
+  $$('[data-wfup]').forEach(b => b.addEventListener('click', () => { const [j, i] = pair(b.dataset.wfup); wfMove(j, i, -1); }));
+  $$('[data-wfdn]').forEach(b => b.addEventListener('click', () => { const [j, i] = pair(b.dataset.wfdn); wfMove(j, i, 1); }));
+  // שלב אינו נמחק לעולם — עין = כבוי כברירת מחדל (יופעל פרטנית בכל ליד) · X = חסום ויורד לתחתית
   $$('[data-wfeye]').forEach(b => b.addEventListener('click', () => {
     const p = b.dataset.wfeye.split('|'), off = !stageIsOffByDefault(p[0], p[1]);
     wfStageSet(p[0], p[1], { off }); renderDynamicView();
@@ -12871,7 +13235,7 @@ function bindWfEdit() {
   $$('[data-wfbin]').forEach(b => b.addEventListener('click', () => {
     const p = b.dataset.wfbin.split('|');
     wfStageSet(p[0], p[1], { blocked: true }); renderDynamicView();
-    toast('השלב הועבר לחסימה — לא יוצג בתהליך עד שמנהל יסיר את החסימה');
+    toast('השלב נחסם וירד לתחתית — אפשר להחזיר אותו בכל רגע');
   }));
   $$('[data-wfunbin]').forEach(b => b.addEventListener('click', () => {
     const p = b.dataset.wfunbin.split('|');
@@ -13561,7 +13925,11 @@ function rotChipHTML(seg, dayName, si) {
   </button>`;
 }
 let rotPopKey = null;
-function closeRotPicker() { const p = document.getElementById('rotPop'); if (p) p.remove(); rotPopKey = null; }
+function closeRotPicker() {
+  const p = document.getElementById('rotPop');
+  if (p) { if (p.__cleanup) p.__cleanup(); p.remove(); }
+  rotPopKey = null;
+}
 function openRotPicker(dayName, si, anchor, rerender) {
   closeRotPicker();
   const emp = (typeof whEmp === 'function') ? whEmp() : null; if (!emp) return;
@@ -13593,11 +13961,29 @@ function openRotPicker(dayName, si, anchor, rerender) {
     if (wt) wt.addEventListener('change', () => { const c = rotGet(dayName, si, emp); rotSet(dayName, si, { every: c.every, offset: c.offset, from: c.from, to: wt.value }, emp); render(); if (rerender) rerender(true); });
     const wc = $('#rotWinClr', pop); if (wc) wc.addEventListener('click', () => { const c = rotGet(dayName, si, emp); rotSet(dayName, si, { every: c.every, offset: c.offset, from: '', to: '' }, emp); render(); if (rerender) rerender(true); });
     $('#rotDone', pop).addEventListener('click', () => { closeRotPicker(); if (rerender) rerender(); });
+    if (pop.__place) pop.__place();   // התוכן משנה גובה — ממקמים מחדש
   };
   document.body.appendChild(pop); render();
-  const rc = anchor.getBoundingClientRect();
-  pop.style.top = Math.min(window.innerHeight - 20, rc.bottom + 6) + 'px';
-  pop.style.insetInlineStart = Math.max(8, rc.left) + 'px';
+  /* מיקום מול הכפתור שנלחץ. inset-inline-start מתהפך ב-RTL ולכן שלח את
+     הפופ-אפ לצד השני של המסך — כאן ממקמים ב-left/top מפורשים, עם צמידות
+     לקצה הימני של הכפתור (כיוון הקריאה) והיפוך למעלה כשאין מקום למטה. */
+  const place = () => {
+    const rc = anchor.getBoundingClientRect();
+    const pw = pop.offsetWidth || 300, ph = pop.offsetHeight || 320;
+    const rtl = getComputedStyle(document.documentElement).direction === 'rtl';
+    let left = rtl ? rc.right - pw : rc.left;
+    left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+    let top = rc.bottom + 6;
+    if (top + ph > window.innerHeight - 8) top = Math.max(8, rc.top - ph - 6);
+    pop.style.left = left + 'px';
+    pop.style.right = 'auto';
+    pop.style.insetInlineStart = 'auto';
+    pop.style.top = top + 'px';
+  };
+  pop.__place = place; place();
+  window.addEventListener('resize', place);
+  window.addEventListener('scroll', place, true);
+  pop.__cleanup = () => { window.removeEventListener('resize', place); window.removeEventListener('scroll', place, true); };
   setTimeout(() => document.addEventListener('mousedown', rotOutside), 0);
 }
 function rotOutside(e) { const p = document.getElementById('rotPop'); if (p && !p.contains(e.target) && !e.target.closest('[data-segrot]')) { closeRotPicker(); document.removeEventListener('mousedown', rotOutside); } }
@@ -26706,7 +27092,10 @@ function openExtPanel() {
 
   function bindList(RR) {
     $$('[data-psopen]').forEach(b => b.addEventListener('click', e => {
-      e.stopPropagation(); psOpen = b.dataset.psopen; RR(); }));
+      e.stopPropagation();
+      const dr = document.getElementById('drawer');
+      if (dr && dr.classList.contains('open')) { openSide(b.dataset.psopen, null); return; }
+      psOpen = b.dataset.psopen; RR(); }));
     const bk = $('#psBack'); if (bk) bk.addEventListener('click', () => { psOpen = null; RR(); });
     $$('[data-psrec]').forEach(b => b.addEventListener('click', () => {
       const r = (typeof RECORDS !== 'undefined') ? RECORDS.find(x => String(x.id) === b.dataset.psrec) : null;
@@ -26748,11 +27137,7 @@ function openExtPanel() {
     if (meta && meta.parentNode) meta.parentNode.insertBefore(el, meta);
     else { const body = document.getElementById('drawerBody'); if (body) body.insertBefore(el, body.firstChild); }
     requestAnimationFrame(() => el.classList.add('in'));
-    $$('[data-psopen]', el).forEach(b => b.addEventListener('click', () => {
-      psOpen = b.dataset.psopen;
-      if (typeof closeDrawer === 'function') closeDrawer();
-      navActive = 'clients'; renderClientsView();
-    }));
+    $$('[data-psopen]', el).forEach(b => b.addEventListener('click', () => openSide(b.dataset.psopen, rec)));
     $$('[data-psmerge]', el).forEach(b => b.addEventListener('click', () => {
       const [k, id] = b.dataset.psmerge.split('|'); openMerge(k, id);
     }));
@@ -26762,6 +27147,63 @@ function openExtPanel() {
       setTimeout(() => el.remove(), 200);
       toast('הבנתי — לא נציג את זה שוב עבור הפנייה הזו');
     }));
+  }
+
+  /* ---------------- פאנל צד ----------------
+     התיק המאוחד נפתח לצד הליד ולא במקומו. סגירה מחזירה לליד
+     בדיוק איפה שהיה — בלי לחפש אותו מחדש. */
+  function openSide(pKey, rec) {
+    const p = people().find(x => x.key === pKey); if (!p) return;
+    const prev = document.getElementById('psSide'); if (prev) prev.remove();
+    const w = document.createElement('div'); w.className = 'ps-side'; w.id = 'psSide';
+    const others = p.recs.filter(r => r !== rec && !r.mergedInto);
+    const groups = byTopic(others);
+    w.innerHTML = `<div class="ps-side-in">
+      <div class="ps-side-h">
+        <button class="btn sm" id="psSideX">${ic('chevronL')} חזרה לליד</button>
+        <b>${ic('history')} תיק מאוחד · ${esc(p.name)}</b>
+        <span class="muted">${esc(p.phone || '')}</span>
+      </div>
+      <div class="ps-side-b">
+        <div class="inv-kpis">
+          <div class="inv-kpi"><b>${p.recs.length}</b><small>סה״כ פניות</small></div>
+          <div class="inv-kpi"><b>${p.recs.filter(isOpen).length}</b><small>פתוחות</small></div>
+          <div class="inv-kpi"><b>${groups.length}</b><small>נושאים</small></div>
+        </div>
+        <div class="ps-sec-h">${ic('layers')} <b>הפניות הקודמות</b>
+          <small>לפי נושא — כדי לראות אם זו בעיה חוזרת</small></div>
+        <div class="ps-side-groups">${groups.map(g => `<div class="ps-group">
+          <div class="ps-g-h"><b>${esc(g.topic)}</b><span class="ps-count">${g.recs.length}</span>
+            ${g.recs.length > 1 ? '<span class="ps-repeat">נושא חוזר</span>' : ''}</div>
+          <div class="ps-g-list">${g.recs.map(r => `<button class="ps-rec ${isOpen(r) ? 'open' : ''}" data-psjump="${esc(String(r.id))}">
+            <b>${esc(r.subject || topicOf(r))}</b>
+            <small>${esc((r.status || {}).label || '')} · ${esc(r.assignee || 'לא משויך')}</small></button>`).join('')}</div>
+        </div>`).join('') || '<p class="fx-none">אין פניות קודמות</p>'}</div>
+
+        <div class="ps-decide">
+          <div class="ps-dec-h">${ic('bolt')} <b>מה עושים עם הפנייה הנוכחית?</b></div>
+          <button class="ps-dec merge" id="psDecMerge">
+            ${ic('sync')}<b>לאחד לפנייה אחת</b>
+            <small>כל המידע מתרכז בפנייה אחת. שום דבר לא נמחק — ערכים חלופיים נשמרים לצד הנבחר.</small></button>
+          <button class="ps-dec keep" id="psDecKeep">
+            ${ic('plus')}<b>להשאיר כפנייה חדשה</b>
+            <small>נושא אחר או מקרה נפרד. הקישור בין הפניות נשמר, אבל הן מנוהלות בנפרד.</small></button>
+        </div>
+      </div></div>`;
+    document.body.appendChild(w);
+    requestAnimationFrame(() => w.classList.add('open'));
+    const close = () => { w.classList.remove('open'); setTimeout(() => w.remove(), 200); };
+    $('#psSideX', w).addEventListener('click', close);
+    $$('[data-psjump]', w).forEach(b => b.addEventListener('click', () => {
+      const r2 = (typeof RECORDS !== 'undefined') ? RECORDS.find(x => String(x.id) === b.dataset.psjump) : null;
+      if (r2 && typeof openDrawer === 'function') { close(); openDrawer(r2); } }));
+    $('#psDecMerge', w).addEventListener('click', () => { close(); openMerge(pKey, rec ? rec.id : (p.recs[0] || {}).id); });
+    $('#psDecKeep', w).addEventListener('click', () => {
+      dismiss(pKey, 'הוחלט להשאיר כפנייה נפרדת');
+      close();
+      const el = document.querySelector('.ps-prior'); if (el) { el.classList.add('out'); setTimeout(() => el.remove(), 200); }
+      toast('נשמר כפנייה נפרדת — הקישור בין הפניות נשמר בתיק המאוחד');
+    });
   }
 
   /* ---------------- איחוד פניות ----------------
@@ -26930,7 +27372,7 @@ function openExtPanel() {
     },
   });
 
-  window.PERSON = { people, of: personOf, byTopic, topicOf, idOf, merge: openMerge, dismiss, done: () => PS_DONE };
+  window.PERSON = { people, of: personOf, byTopic, topicOf, idOf, merge: openMerge, side: openSide, dismiss, done: () => PS_DONE };
 })();
 
 </script>
@@ -29433,6 +29875,1007 @@ function openExtPanel() {
   });
 
   window.SCOPE = { of: scopeOf, visible: visibleTo, axes: AXES, cfg: () => CFG, map: () => SCOPE };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: סדר הבירור — מוצר וקריטריונים  ·  key = 'flow'
+   ------------------------------------------------------------
+   יש שני מסלולים שונים לגמרי, ועד היום המערכת התייחסה אליהם אותו דבר:
+
+     • הלקוח יודע מה הוא רוצה  →  מוצר ← קריטריונים ← תיאום
+       אחרי בחירת המוצר בודקים התאמה. אם אין התאמה:
+         – הבעיה בקריטריונים → חוסמים מעבר לתיאום עד עדכון,
+           ומסבירים בדיוק למה לפי נתוני הסניף.
+         – הבעיה במוצר → מחזירים לראות שהלקוח לא עומד בקריטריוני
+           המוצר, ומציגים אילו מוצרים *מקבילים* כן פתוחים לו.
+
+     • הלקוח לא יודע  →  קריטריונים ← מוצר ← תיאום
+       לא מציגים מוצר לפני שיודעים מה בכלל אפשר לספק.
+
+   בשני המסלולים אפשר לנוע קדימה ואחורה בין השלבים — גם ממסך
+   התיאום חזרה לשירותים או לקריטריונים.
+   ============================================================ */
+(function () {
+
+  const MODES = [
+    { key: 'known', label: 'הלקוח יודע מה הוא רוצה', icon: 'target',
+      desc: 'בוחרים מוצר, ואז בודקים התאמה' },
+    { key: 'unknown', label: 'הלקוח לא יודע', icon: 'search',
+      desc: 'מבררים קודם, ואז מציגים רק מה שמתאים' },
+  ];
+  const modeOf = r => r && r.flowMode ? r.flowMode : (r && (r.services || []).length ? 'known' : '');
+  function setMode(r, m) { r.flowMode = m; }
+
+  /* סדר השלבים לפי המסלול */
+  const S_CRIT = { key: 'crit', label: 'קריטריונים', icon: 'settings' };
+  const S_SVC = { key: 'svc', label: 'שירות / מוצר', icon: 'layers' };
+  const S_CAL = { key: 'cal', label: 'תיאום', icon: 'calendar' };
+  const stepsOf = r => modeOf(r) === 'unknown' ? [S_CRIT, S_SVC, S_CAL] : [S_SVC, S_CRIT, S_CAL];
+
+  /* ---------------- בדיקת ההתאמה ---------------- */
+  const reqMissing = r => (typeof needsMissingRequired === 'function') ? needsMissingRequired(r) : [];
+  function svcBlocked(r, key) {
+    if (typeof fitBlockReason === 'function') { const w = fitBlockReason(r, key); if (w) return w; }
+    if (window.TERR && CBX.isOn('terr')) {
+      const svc = (window.TERR.svc() || {})[key];
+      if (svc && svc.field) {
+        const z = window.TERR.zoneOf(r);
+        if (z && (svc.zones || []).length && svc.zones.indexOf(z) < 0)
+          return 'לא ניתן באזור ' + ((window.TERR.zones().find(x => x.key === z) || {}).label || '');
+      }
+    }
+    return null;
+  }
+  /* האם יש מטפל שיכול לבצע — וגם זמין לפי הקריטריונים */
+  function staffFor(r, key) {
+    const all = (typeof STAFF !== 'undefined') ? STAFF : [];
+    const able = all.filter(s => (s.skills || []).indexOf(key) >= 0);
+    if (!able.length) return { ok: false, why: 'אין מטפל שמוסמך לשירות הזה', who: [] };
+    const g = (r.needs || {}).gender;
+    let who = able;
+    if (g === 'm' || g === 'זכר' || g === 'גבר') who = able.filter(s => s.gender === 'm');
+    else if (g === 'f' || g === 'נקבה' || g === 'אישה') who = able.filter(s => s.gender === 'f');
+    if (!who.length) return { ok: false, why: 'אין מטפל בהעדפת המגדר שנבחרה', who: able };
+    return { ok: true, why: '', who };
+  }
+
+  /* ---------------- חלופה *מקבילה* בלבד ----------------
+     לא מציעים ניתוח למי שביקש זריקה. חלופה נחשבת מקבילה רק אם:
+       · הוגדרה במפורש בקטלוג (altKeys), או
+       · אותו סוג פריט (kind) — וגם חופפת בקריטריונים או בסדר גודל
+     כל חלופה מוצגת עם הסיבה שבגללה היא מקבילה. */
+  function relatedTo(base, t) {
+    if (!base || !t) return null;
+    if ((base.altKeys || []).indexOf(t.key) >= 0) return 'הוגדר בקטלוג כחלופה';
+    if ((base.kind || '') !== (t.kind || '')) return null;
+    const a = base.critKeys || [], b = t.critKeys || [];
+    const shared = a.filter(k => b.indexOf(k) >= 0);
+    if (shared.length) return 'אותו סוג · אותם קריטריוני התאמה';
+    const da = +base.dur || 0, db = +t.dur || 0;
+    if (da && db && Math.abs(da - db) <= Math.max(da, db) * 0.5) return 'אותו סוג · היקף דומה';
+    if (!a.length && !b.length) return 'אותו סוג פריט';
+    return null;
+  }
+  function alternatives(r, blockedKey) {
+    const cat = (typeof COORD_TREATMENTS !== 'undefined') ? COORD_TREATMENTS : [];
+    const base = cat.find(t => t.key === blockedKey);
+    return cat.map(t => {
+      if (t.key === blockedKey) return null;
+      const rel = relatedTo(base, t); if (!rel) return null;
+      if (svcBlocked(r, t.key) || !staffFor(r, t.key).ok) return null;
+      return { t, why: rel };
+    }).filter(Boolean).slice(0, 4);
+  }
+
+  /* ---------------- האם באמת יש מועדים ----------------
+     המטרה: לא להעביר למסך תיאום ריק. הבדיקה רצה מול היומן האמיתי
+     ומסווגת את החסם — מוצר או קריטריון. */
+  function readiness(r) {
+    const svcs = (r.services || []).filter(Boolean);
+    const miss = reqMissing(r);
+    /* חסם ברמת המוצר קודם — הוא מסביר את עצמו טוב יותר */
+    const bad = svcs.map(k => {
+      const st = staffFor(r, k);
+      return { k, why: svcBlocked(r, k) || (st.ok ? null : st.why) };
+    }).filter(x => x.why);
+    if (bad.length) return { ok: false, blame: 'product', bad, miss, slots: 0 };
+    if (miss.length) return { ok: false, blame: 'crit', bad: [], miss, slots: 0, reasons: [] };
+    if (!window.CRITFX || !svcs.length) return { ok: true, blame: '', bad: [], miss, slots: -1 };
+
+    const pool = window.CRITFX.candidates(r);
+    if (!pool) return { ok: true, blame: '', bad: [], miss, slots: -1 };
+    const needs = Object.assign({}, r.needs || {}); delete needs.note;
+    const n = window.CRITFX.countFor(r, pool, needs);
+    if (n) return { ok: true, blame: '', bad: [], miss, slots: n };
+
+    /* אין מועדים — מי אשם? קריטריון שאם משחררים אותו נפתחים מועדים */
+    const keys = Object.keys(needs).filter(k => needs[k] && k !== 'nearBranch');
+    const rel = keys.filter(k => { const alt = Object.assign({}, needs); delete alt[k]; return window.CRITFX.countFor(r, pool, alt); });
+    if (rel.length) return { ok: false, blame: 'crit', bad: [], miss, slots: 0, reasons: rel.map(k => critWhy(r, k, needs[k])) , relKeys: rel };
+    /* אף שחרור לא עוזר — הבעיה בשילוב המוצר עם הסניפים */
+    return { ok: false, blame: 'product', bad: svcs.map(k => ({ k, why: 'אין מועד פנוי לשירות הזה בסניפים שעומדים בקריטריונים' })), miss, slots: 0 };
+  }
+  /* ההסבר מבוסס על נתוני הסניף — לא ניסוח כללי */
+  function critWhy(r, key, val) {
+    const L = { branch: 'סניף מועדף', timeOfDay: 'העדפת זמן ביום', gender: 'העדפת מגדר מטפל/ת' };
+    const label = L[key] || ((typeof needsDefOf === 'function' && needsDefOf(key)) ? needsDefOf(key).label : key);
+    let det = '';
+    if (key === 'branch' && typeof branchBlockReason === 'function') {
+      const w = branchBlockReason(r, val); if (w) det = w;
+      else { const b = (typeof cBranch === 'function') && cBranch(val);
+        if (b) det = `בסניף ${b.short || b.label} אין מועד פנוי בשאר הקריטריונים שנבחרו`; }
+    } else if (key === 'timeOfDay') {
+      const T = { morning: 'בוקר', noon: 'צהריים', evening: 'אחה״צ' };
+      det = `אין מועד פנוי ב${T[val] || val} בסניפים ובמטפלים שמתאימים`;
+    } else if (key === 'gender') {
+      det = `אין ${val === 'm' ? 'מטפל גבר' : 'מטפלת'} עם מועד פנוי בשאר הקריטריונים`;
+    } else det = 'אין מועד פנוי עם הערך שנבחר';
+    return { key, label, det };
+  }
+
+  /* ---------------- רצועת השלבים ---------------- */
+  function stripHTML(r, cur) {
+    const st = stepsOf(r); if (!modeOf(r)) return '';
+    const done = { crit: !reqMissing(r).length && Object.keys(r.needs || {}).some(k => r.needs[k] && k !== 'note'),
+      svc: !!(r.services || []).length, cal: !!r.meeting };
+    return `<div class="fl-strip">${st.map((s, i) => {
+      const cls = s.key === cur ? 'now' : (done[s.key] ? 'done' : 'todo');
+      return `<button class="fl-st ${cls}" data-flgo="${s.key}"><span class="fl-si">${done[s.key] && s.key !== cur ? ic('check') : ic(s.icon)}</span>
+        <b>${s.label}</b><small>שלב ${i + 1}</small></button>`;
+    }).join('<span class="fl-arr">' + ic('chevronL') + '</span>')}</div>`;
+  }
+  function bindStrip(host, r, after) {
+    $$('[data-flgo]', host).forEach(b => b.addEventListener('click', () => {
+      const k = b.dataset.flgo;
+      if (k === 'crit') { const before = snapshot(r);
+        if (typeof closeModal === 'function' && document.querySelector('#modal .svc-sel')) { /* נשאר פתוח */ }
+        openNeedsClarify(r, () => { if (typeof after === 'function') after(); checkAfterCritChange(r, before); }); }
+      else if (k === 'svc') { if (typeof openServiceSelect === 'function') openServiceSelect(r); }
+      else if (k === 'cal') {
+        const rd = readiness(r);
+        if (!rd.ok) { toast(rd.blame === 'product' ? 'המוצר שנבחר אינו מתאים — יש לבחור חלופה' : 'צריך לעדכן קריטריונים — אין מועד מתאים'); return; }
+        if (typeof closeModal === 'function') closeModal();
+        if (typeof openProposedTimes === 'function') openProposedTimes(r);
+      }
+    }));
+  }
+
+  /* ---------------- החלק שמוזרק למסך בחירת השירות ---------------- */
+  function gateHTML(r) {
+    const mode = modeOf(r), miss = reqMissing(r);
+    const sel = (typeof svcSelState !== 'undefined' && svcSelState) ? svcSelState.sel : (r.services || []);
+    const rd = sel.length ? readiness(Object.assign({}, r, { services: sel })) : null;
+    return `<div class="fl-gate">
+      <div class="fl-mode-h">${ic('bolt')} <b>מה הלקוח יודע?</b>
+        <small>זה קובע את סדר הבירור — ולכן גם מה מוצג לו.</small></div>
+      <div class="fl-modes">${MODES.map(m => `<button class="fl-mode ${mode === m.key ? 'on' : ''}" data-flmode="${m.key}">
+        ${ic(m.icon)}<b>${m.label}</b><small>${m.desc}</small></button>`).join('')}</div>
+      ${stripHTML(r, 'svc')}
+
+      ${mode === 'unknown' && miss.length ? `<div class="fl-step now">
+        <span class="fl-n">1</span>
+        <div><b>קודם מבררים</b>
+          <small>עוד לא נענו: ${esc(miss.join(' · '))}. עד שלא נדע, כל מוצר שנציע עלול להיות לא רלוונטי.</small></div>
+        <button class="btn sm primary" data-flcrit="1">${ic('settings')} לשאלות</button>
+      </div>` : ''}
+
+      ${sel.length ? (function () {
+        const rows = sel.map(k => {
+          const t = (typeof cTreat === 'function') ? cTreat(k) : null;
+          const b = svcBlocked(r, k), st = staffFor(r, k);
+          return { k, label: t ? t.label : k, block: b, staff: st };
+        });
+        const bad = rows.filter(x => x.block || !x.staff.ok);
+        const prodBad = rd && !rd.ok && rd.blame === 'product';
+        const critBad = rd && !rd.ok && rd.blame === 'crit' && (rd.reasons || []).length;
+        return `<div class="fl-step ${bad.length || !rd || !rd.ok ? 'bad' : 'ok'}">
+          <span class="fl-n">${(bad.length || (rd && !rd.ok)) ? ic('alert') : ic('check')}</span>
+          <div><b>${bad.length ? 'הלקוח אינו עומד בקריטריונים של המוצר'
+            : (rd && !rd.ok ? (rd.blame === 'crit' ? 'המוצר מתאים — אבל אין מועד בקריטריונים שנבחרו' : 'אין מועד פנוי למוצר הזה')
+            : (rd && rd.slots > 0 ? 'המוצר מתאים ויש מועדים פנויים' : 'המוצר מתאים — אפשר להמשיך'))}</b>
+            <div class="fl-rows">${rows.map(x => `<div class="fl-row ${x.block || !x.staff.ok ? 'bad' : 'ok'}">
+              <span>${esc(x.label)}</span>
+              <small>${x.block ? esc(x.block) : (x.staff.ok
+                ? (x.staff.who.length === 1 ? 'מטפל אחד מתאים · ' + esc(x.staff.who[0].name)
+                   : x.staff.who.length + ' מטפלים מתאימים')
+                : esc(x.staff.why))}</small></div>`).join('')}</div>
+
+            ${critBad ? `<div class="fl-critbad">${ic('lock')}
+              <b>מה חוסם — לפי נתוני הסניף</b>
+              <div class="fl-rows">${rd.reasons.map(x => `<div class="fl-row bad">
+                <span>${esc(x.label)}</span><small>${esc(x.det)}</small></div>`).join('')}</div>
+              <button class="btn sm primary" data-flcrit="1">${ic('settings')} לעדכון הקריטריונים</button>
+            </div>` : ''}
+
+            ${(bad.length || prodBad) ? (function () {
+              const alt = alternatives(r, (bad[0] || rd.bad[0] || {}).k);
+              return alt.length ? `<div class="fl-alt"><b>${ic('layers')} מוצרים מקבילים שכן פתוחים ללקוח:</b>
+                ${alt.map(a => `<button class="fl-altc" data-flalt="${esc(a.t.key)}">
+                  <b>${esc(a.t.label)}</b><small>${esc(a.why)}</small></button>`).join('')}</div>`
+                : `<div class="fl-alt none">${ic('alert')} אין מוצר מקביל שעומד בקריטריונים.
+                   מוצרים מסוגים אחרים לא מוצעים כאן — הם לא בהכרח מענה לאותו צורך.</div>`; })() : ''}
+          </div>
+        </div>`; })() : ''}
+
+      ${miss.length ? `<div class="fl-block">${ic('lock')}
+        <b>לא ניתן להמשיך לתיאום</b>
+        <small>${miss.length === 1 ? 'קריטריון חובה שטרם נענה' : miss.length + ' קריטריוני חובה שטרם נענו'}:
+          ${esc(miss.join(' · '))}</small>
+        <button class="btn sm primary" data-flcrit="1">${ic('settings')} השלם עכשיו</button>
+      </div>` : ''}
+    </div>`;
+  }
+
+  /* ---------------- אזהרה על שינוי קריטריון ---------------- */
+  function snapshot(r) {
+    return JSON.stringify({ n: r.needs || {}, s: (r.services || []).slice().sort() });
+  }
+  function checkAfterCritChange(r, before) {
+    if (!r || !(r.services || []).length) return;
+    const broken = (r.services || []).map(k => ({ k, why: svcBlocked(r, k) || (staffFor(r, k).ok ? null : staffFor(r, k).why) }))
+      .filter(x => x.why);
+    if (!broken.length) return;
+    const meeting = r.meeting;
+    const old = document.getElementById('flWarn'); if (old) old.remove();
+    const w = document.createElement('div'); w.className = 'cbc-wrap'; w.id = 'flWarn';
+    const alt = alternatives(r, broken[0].k);
+    w.innerHTML = `<div class="cbc-box fl-warn">
+      <div class="cbc-head"><span class="cbc-ic">${ic('alert')}</span><b>הקריטריון השתנה — הבחירה כבר לא מתאימה</b></div>
+      <p class="fl-warn-l">אחרי העדכון, ${broken.length === 1 ? 'שירות אחד שנבחר' : broken.length + ' שירותים שנבחרו'}
+        כבר לא עומדים בקריטריונים:</p>
+      <div class="fl-rows">${broken.map(x => { const t = (typeof cTreat === 'function') ? cTreat(x.k) : null;
+        return `<div class="fl-row bad"><span>${esc(t ? t.label : x.k)}</span><small>${esc(x.why)}</small></div>`; }).join('')}</div>
+      ${alt.length ? `<div class="fl-alt"><b>${ic('layers')} מקבילים שכן פתוחים:</b>
+        ${alt.map(a => `<button class="fl-altc" data-flwalt="${esc(a.t.key)}"><b>${esc(a.t.label)}</b><small>${esc(a.why)}</small></button>`).join('')}</div>` : ''}
+      ${meeting ? `<div class="fl-warn-m">${ic('calendar')} <b>יש תור קבוע</b>
+        <small>${esc(meeting.date)} ${esc(meeting.time)} — המשך יבטל אותו.</small></div>` : ''}
+      <div class="cbc-actions">
+        <button class="btn" id="flBack">${ic('chevronR')} חזרה לעדכן את הקריטריון</button>
+        <button class="btn primary" id="flGo">${ic('check')} להמשיך${meeting ? ' ולבטל את התור' : ''}</button>
+      </div></div>`;
+    $('#flBack', w).addEventListener('click', () => {
+      /* מחזירים את המצב הקודם — הנציג יעדכן מחדש */
+      try { const prev = JSON.parse(before); r.needs = prev.n; } catch (e) {}
+      w.remove();
+      if (typeof openNeedsClarify === 'function') openNeedsClarify(r);
+      else if (typeof renderDrawerTab === 'function') renderDrawerTab(r);
+    });
+    $$('[data-flwalt]', w).forEach(b => b.addEventListener('click', () => {
+      const k = b.dataset.flwalt;
+      r.services = (r.services || []).filter(x => !broken.some(bb => bb.k === x));
+      if (r.services.indexOf(k) < 0) r.services.push(k);
+      w.remove(); toast('הוחלף למוצר מקביל שמתאים ללקוח');
+      if (typeof renderDrawerTab === 'function') renderDrawerTab(r);
+    }));
+    $('#flGo', w).addEventListener('click', () => {
+      if (meeting) { r.meeting = null; r.next = { type: 'followup', at: '' };
+        if (r.status) r.status = { label: 'התור בוטל — נדרש תיאום מחדש', color: 'orange' };
+        toast('התור בוטל · נדרש תיאום מחדש'); }
+      r.services = (r.services || []).filter(k => !broken.some(b => b.k === k));
+      w.remove();
+      if (typeof renderDrawerTab === 'function') renderDrawerTab(r);
+      if (typeof renderList === 'function') renderList();
+    });
+    document.body.appendChild(w);
+  }
+
+  /* ---------------- רישום ---------------- */
+  CBX.register({
+    key: 'flow', label: 'סדר הבירור — מוצר וקריטריונים', icon: 'target',
+    desc: 'שני מסלולים: לקוח שיודע עובר מוצר ← קריטריונים ← תיאום, ולקוח שלא יודע מברר קודם. מעבר לתיאום נחסם כשאין מועד אמיתי, עם הסבר מי חוסם — קריטריון או מוצר — והצעת מוצרים מקבילים בלבד.',
+    files: ['js/ext/flow-order.js'],
+    install() {
+      if (typeof renderServiceSelect === 'function') CBX.wrap('flow', 'renderServiceSelect', o => function () {
+        const r = o.apply(this, arguments);
+        try {
+          const rec = (typeof svcSelState !== 'undefined' && svcSelState) ? svcSelState.rec : null;
+          const body = document.querySelector('#modal .svc-sel');
+          if (!rec || !body || body.querySelector('.fl-gate')) return r;
+          const d = document.createElement('div'); d.innerHTML = gateHTML(rec);
+          body.insertBefore(d.firstElementChild, body.firstChild);
+
+          /* לקוח שלא יודע — המוצרים ננעלים עד שהחובה נענתה */
+          const mode = modeOf(rec), miss = reqMissing(rec);
+          if (mode === 'unknown' && miss.length) body.classList.add('fl-locked');
+          else body.classList.remove('fl-locked');
+
+          /* מעבר לתיאום נחסם כשאין מועד אמיתי */
+          const sel = svcSelState.sel;
+          const rd = sel.length ? readiness(Object.assign({}, rec, { services: sel })) : null;
+          const next = document.getElementById('svcNext');
+          if (next) {
+            if (miss.length) { next.disabled = true; next.title = 'חסר: ' + miss.join(' · '); }
+            else if (rd && !rd.ok) { next.disabled = true;
+              next.title = rd.blame === 'product' ? 'המוצר שנבחר אינו מתאים ללקוח' : 'אין מועד פנוי בקריטריונים שנבחרו'; }
+          }
+
+          const rr = () => renderServiceSelect();
+          bindStrip(body, rec, rr);
+          $$('[data-flmode]', body).forEach(b => b.addEventListener('click', () => { setMode(rec, b.dataset.flmode); rr(); }));
+          $$('[data-flcrit]', body).forEach(b => b.addEventListener('click', () => {
+            const before = snapshot(rec);
+            if (typeof openNeedsClarify === 'function') openNeedsClarify(rec, () => { rr(); checkAfterCritChange(rec, before); });
+            else toast('מסך הקריטריונים אינו זמין');
+          }));
+          $$('[data-flalt]', body).forEach(b => b.addEventListener('click', () => {
+            const k = b.dataset.flalt;
+            if (typeof svcSelState !== 'undefined' && svcSelState) {
+              svcSelState.sel = svcSelState.sel.filter(x => !svcBlocked(rec, x) || x === k);
+              if (svcSelState.sel.indexOf(k) < 0) svcSelState.sel.push(k);
+            }
+            rr(); toast('הוחלף למוצר מקביל שמתאים ללקוח');
+          }));
+        } catch (e) { console.error('[flow]', e); }
+        return r;
+      });
+
+      /* רצועת השלבים + מצב ההתאמה גם בתוך בירור הצורך */
+      if (typeof openNeedsClarify === 'function') CBX.wrap('flow', 'openNeedsClarify', o => function (rec, done) {
+        const before = rec ? snapshot(rec) : '';
+        const out = o.call(this, rec, function () {
+          if (typeof done === 'function') done();
+          if (rec) setTimeout(() => checkAfterCritChange(rec, before), 0);
+        });
+        try {
+          const body = document.querySelector('#modal .needs-body');
+          if (!body || !rec || body.querySelector('.fl-strip')) return out;
+          const rd = readiness(rec);
+          const d = document.createElement('div');
+          d.innerHTML = stripHTML(rec, 'crit') + ((rec.services || []).length ? `<div class="fl-ready ${rd.ok ? 'ok' : 'bad'}">
+            ${ic(rd.ok ? 'check' : 'alert')}
+            <div><b>${rd.ok ? (rd.slots > 0 ? 'יש מועדים שמתאימים לצירוף הזה' : 'אין חסימה — אפשר להמשיך לתיאום')
+              : (rd.blame === 'product' ? 'המוצר שנבחר אינו מתאים ללקוח' : 'אין מועד פנוי בצירוף הקריטריונים')}</b>
+            <small>${rd.ok ? 'המשך יפתח את מסך התיאום עם מועדים אמיתיים.'
+              : esc((rd.reasons || []).map(x => x.label + ' — ' + x.det).join(' · ') || (rd.bad || []).map(x => x.why).join(' · '))}</small></div>
+            ${!rd.ok && rd.blame === 'product' ? `<button class="btn sm" id="flToSvc">${ic('layers')} לבחירת מוצר מקביל</button>` : ''}</div>` : '');
+          while (d.firstChild) body.insertBefore(d.firstChild, body.firstChild);
+          bindStrip(body, rec, () => openNeedsClarify(rec, done));
+          const ts = document.getElementById('flToSvc');
+          if (ts) ts.addEventListener('click', () => { if (typeof openServiceSelect === 'function') openServiceSelect(rec); });
+        } catch (e) { console.error('[flow] needs', e); }
+        return out;
+      });
+
+      /* ממסך התיאום — חזרה לשירותים או לקריטריונים */
+      if (typeof renderCoordView === 'function') CBX.wrap('flow', 'renderCoordView', o => function () {
+        const out = o.apply(this, arguments);
+        try {
+          const st = (typeof coordState !== 'undefined') ? coordState : null;
+          const rec = st && st.caller; if (!rec) return out;
+          const host = (typeof coordViewHost === 'function') ? coordViewHost() : document.getElementById('viewHost');
+          if (!host || host.querySelector('.fl-cbar')) return out;
+          const d = document.createElement('div');
+          d.innerHTML = `<div class="fl-cbar">${ic('layers')}
+            <b>${(rec.services || []).length ? (rec.services || []).length + ' שירותים נבחרו' : 'לא נבחר שירות'}</b>
+            <button class="btn sm" id="flCSvc">${ic('layers')} עדכון שירותים</button>
+            <button class="btn sm" id="flCCrit">${ic('settings')} חזרה לקריטריונים</button></div>`;
+          host.insertBefore(d.firstElementChild, host.firstChild);
+          const a = document.getElementById('flCSvc');
+          if (a) a.addEventListener('click', () => { if (typeof openServiceSelect === 'function') openServiceSelect(rec); });
+          const b = document.getElementById('flCCrit');
+          if (b) b.addEventListener('click', () => {
+            const before = snapshot(rec);
+            openNeedsClarify(rec, () => { if (coordState) coordState.__critFor = null; renderCoordView(); checkAfterCritChange(rec, before); });
+          });
+        } catch (e) { console.error('[flow] coord', e); }
+        return out;
+      });
+    },
+  });
+
+  window.FLOW = { mode: modeOf, blocked: svcBlocked, staffFor, alternatives, related: relatedTo,
+    missing: reqMissing, check: checkAfterCritChange, readiness, steps: stepsOf };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: לוח תיאום חי — סנכרון וסינון  ·  key = 'coordx'
+   ------------------------------------------------------------
+   שלוש בעיות בלוח:
+     1) הלוח נפתח עם הסניפים שמסומנים ב-on, בעוד שאר המערכת
+        עובדת לפי active. סניף שסגור במערכת הופיע בלוח.
+     2) בחירת קריטריונים לא צמצמה את היומן — הנציג ראה משבצות
+        שלא באמת מתאימות ללקוח.
+     3) "ליד חדש" מתוך הלוח שמר את הליד הקודם כ-caller.
+   ============================================================ */
+(function () {
+
+  /* ---------------- הסניפים הפעילים באמת ---------------- */
+  const activeBranches = () => (typeof COORD_BRANCHES !== 'undefined')
+    ? COORD_BRANCHES.filter(b => b.active !== false && b.on !== false) : [];
+
+  /* ---------------- תרגום קריטריונים לסינון הלוח ---------------- */
+  function applyCriteria(r, st) {
+    if (!r || !st) return { changed: [], skipped: [] };
+    const n = r.needs || {}, changed = [], skipped = [];
+
+    /* סניף מועדף */
+    if (n.branch && n.branch !== '__near' && typeof COORD_BRANCHES !== 'undefined') {
+      const b = COORD_BRANCHES.find(x => x.key === n.branch);
+      if (b && b.active !== false) { st.branches = new Set([b.key]); changed.push('סניף: ' + (b.short || b.label)); }
+      else skipped.push('הסניף שנבחר אינו פעיל');
+    }
+    /* מגדר המטפל */
+    if (n.gender === 'm' || n.gender === 'f') {
+      st.gender = n.gender;
+      const docs = (typeof COORD_DOCTORS !== 'undefined') ? COORD_DOCTORS.filter(d => d.gender === n.gender) : [];
+      if (docs.length) { st.doctors = new Set(docs.filter(d => st.branches.has(d.branch)).map(d => d.key));
+        if (!st.doctors.size) st.doctors = new Set(docs.map(d => d.key));
+        changed.push('מטפל/ת: ' + (n.gender === 'm' ? 'גבר' : 'אישה')); }
+      else skipped.push('אין מטפל בהעדפת המגדר');
+    }
+    /* שעה מועדפת */
+    const T = { morning: [8, 12], noon: [12, 16], evening: [16, 18] };
+    if (n.timeOfDay && T[n.timeOfDay]) {
+      st.hourStart = T[n.timeOfDay][0]; st.hourEnd = T[n.timeOfDay][1];
+      changed.push('שעות: ' + ({ morning: 'בוקר', noon: 'צהריים', evening: 'אחה״צ' })[n.timeOfDay]);
+    }
+    /* השירותים שנבחרו — רק סניפים שמספקים אותם */
+    const svcs = (r.services || []).filter(Boolean);
+    if (svcs.length) {
+      st.treatments = new Set(svcs);
+      if (typeof COORD_BRANCHES !== 'undefined') {
+        const able = COORD_BRANCHES.filter(b => b.active !== false && b.on !== false
+          && svcs.every(k => (b.treatments || []).indexOf(k) >= 0));
+        if (able.length) {
+          const keep = able.filter(b => st.branches.has(b.key));
+          st.branches = new Set((keep.length ? keep : able).map(b => b.key));
+          changed.push('רק סניפים שמספקים את השירות');
+        } else skipped.push('אין סניף שמספק את כל השירותים שנבחרו');
+      }
+    }
+    /* אזור שטח — כשההרחבה פעילה */
+    if (window.TERR && CBX.isOn('terr')) {
+      const z = window.TERR.zoneOf(r);
+      if (z && typeof COORD_BRANCHES !== 'undefined') {
+        const inZone = COORD_BRANCHES.filter(b => b.active !== false && window.TERR.zoneOfCity(b.city) === z);
+        if (inZone.length) {
+          const keep = inZone.filter(b => st.branches.has(b.key));
+          if (keep.length) { st.branches = new Set(keep.map(b => b.key)); changed.push('אזור הלקוח'); }
+        }
+      }
+    }
+    return { changed, skipped };
+  }
+
+  /* ---------------- חיווי הסינון ---------------- */
+  function bannerHTML(r, res) {
+    if (!r) return '';
+    const n = r.needs || {};
+    const has = Object.keys(n).filter(k => n[k]).length;
+    if (!has && !(r.services || []).length) return `<div class="cx-bar none">${ic('alert')}
+      <b>לא הוזנו קריטריונים</b><small>היומן מציג הכול. בירור קריטריונים יצמצם למה שבאמת מתאים.</small>
+      <button class="btn sm" id="cxCrit">${ic('settings')} לקריטריונים</button></div>`;
+    return `<div class="cx-bar">${ic('target')}
+      <b>היומן מסונן לפי הקריטריונים של ${esc(r.name)}</b>
+      <span class="cx-chips">${res.changed.map(c => `<span class="cx-chip">${esc(c)}</span>`).join('')}</span>
+      ${res.skipped.length ? `<small class="cx-skip">${ic('alert')} ${esc(res.skipped.join(' · '))}</small>` : ''}
+      <button class="btn sm" id="cxCrit">${ic('settings')} עדכן</button>
+      <button class="btn sm ghost" id="cxAll">הצג הכול</button></div>`;
+  }
+
+  let lastRes = { changed: [], skipped: [] }, muted = false;
+
+  /* ---------------- רישום ---------------- */
+  CBX.register({
+    key: 'coordx', label: 'לוח תיאום — סנכרון וסינון', icon: 'clock',
+    desc: 'הלוח נפתח רק עם הסניפים הפעילים, מצטמצם אוטומטית לפי הקריטריונים של הליד הפתוח, ו"ליד חדש" מתוך הלוח באמת נפתח כחדש.',
+    files: ['js/ext/coord-sync.js'],
+    install() {
+      /* 1) סניפים פעילים בלבד */
+      if (typeof coordInit === 'function') CBX.wrap('coordx', 'coordInit', o => function () {
+        const r = o.apply(this, arguments);
+        try { if (typeof coordState !== 'undefined' && coordState)
+          coordState.branches = new Set(activeBranches().map(b => b.key)); } catch (e) {}
+        return r;
+      });
+      /* 2) סינון לפי הקריטריונים + חיווי */
+      if (typeof renderCoordView === 'function') CBX.wrap('coordx', 'renderCoordView', o => function () {
+        try {
+          const st = (typeof coordState !== 'undefined') ? coordState : null;
+          const r = st && st.caller;
+          if (st && r && !muted && st.__critFor !== r.id) {
+            st.branches = new Set(activeBranches().map(b => b.key));
+            lastRes = applyCriteria(r, st);
+            st.__critFor = r.id;
+            if (typeof window.__coordPool !== 'undefined') window.__coordPool = null;
+          }
+        } catch (e) { console.error('[coordx] filter', e); }
+        const out = o.apply(this, arguments);
+        try {
+          const st = coordState, r = st && st.caller;
+          const host = (typeof coordViewHost === 'function') ? coordViewHost() : document.getElementById('viewHost');
+          if (!host || host.querySelector('.cx-bar')) return out;
+          if (!r) return out;
+          const d = document.createElement('div'); d.innerHTML = bannerHTML(r, muted ? { changed: [], skipped: [] } : lastRes);
+          const el = d.firstElementChild; if (!el) return out;
+          host.insertBefore(el, host.firstChild);
+          const cc = document.getElementById('cxCrit');
+          if (cc) cc.addEventListener('click', () => {
+            if (typeof openNeedsClarify === 'function') openNeedsClarify(r, () => {
+              if (coordState) coordState.__critFor = null; muted = false; renderCoordView(); });
+          });
+          const ca = document.getElementById('cxAll');
+          if (ca) ca.addEventListener('click', () => {
+            muted = true; coordState.branches = new Set(activeBranches().map(b => b.key));
+            coordState.doctors = new Set((typeof COORD_DOCTORS !== 'undefined' ? COORD_DOCTORS : []).map(x => x.key));
+            coordState.hourStart = 8; coordState.hourEnd = 20; window.__coordPool = null;
+            renderCoordView(); toast('הסינון הוסר — מוצג היומן המלא');
+          });
+        } catch (e) { console.error('[coordx] banner', e); }
+        return out;
+      });
+      /* 3) "ליד חדש" מתוך הלוח — באמת חדש */
+      if (typeof coordSelect === 'function') CBX.wrap('coordx', 'coordSelect', o => function (id) {
+        const r = o.apply(this, arguments);
+        try { if (coordState && !coordState.caller) { coordState.__critFor = null; muted = false; } } catch (e) {}
+        return r;
+      });
+      /* איפוס הסינון כשמנקים את הליד */
+      CBX._remember('coordx', () => { try { if (typeof coordState !== 'undefined' && coordState) coordState.__critFor = null; } catch (e) {} });
+    },
+  });
+
+  window.COORDX = { apply: applyCriteria, active: activeBranches };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: קריטריונים — נעילת אפשרויות ללא זמינות  ·  key = 'critfx'
+   ------------------------------------------------------------
+   הבעיה: אפשר היה לבחור צירוף קריטריונים שאין לו אף מועד ביומן
+   (צפון + צהריים + מטפל גבר), ורק במסך התיאום התגלה שהוא ריק.
+   הפתרון: כל אפשרות נבדקת מול היומן האמיתי לפי שאר הקריטריונים
+   שכבר נבחרו. אפשרות בלי אף מועד ננעלת — מסומנת, מקווקוות, לא
+   לחיצה — ומוצג מה צריך לשחרר כדי לפתוח אותה.
+   ============================================================ */
+(function () {
+
+  const RANGE = { morning: [8, 12], noon: [12, 16], evening: [16, 18] };
+  const LBL = { branch: 'סניף / אזור מועדף', timeOfDay: 'העדפת זמן ביום', gender: 'העדפת מגדר מטפל/ת' };
+  const labelOf = k => LBL[k] || (typeof needsDefOf === 'function' && needsDefOf(k) ? needsDefOf(k).label : k);
+  const valLabel = (k, v) => {
+    if (!v) return 'ללא העדפה';
+    if (k === 'branch') { const b = (typeof cBranch === 'function') && cBranch(v); return b ? (b.short || b.label) : v; }
+    if (k === 'timeOfDay') return ({ morning: 'בוקר', noon: 'צהריים', evening: 'אחה״צ' })[v] || v;
+    if (k === 'gender') return v === 'm' ? 'גבר' : 'אישה';
+    return v;
+  };
+
+  /* ---------- מאגר המועדים הרלוונטיים לרשומה (שירותים + סניפים פעילים) ---------- */
+  function candidates(r) {
+    if (typeof coordPool !== 'function') return null;
+    const svcs = ((r && r.services) || []).filter(Boolean);
+    let pool;
+    try { pool = coordPool() || []; } catch (e) { return null; }
+    return pool.filter(s => {
+      if (s.booked || s.held) return false;
+      if (typeof coordIsPast === 'function' && coordIsPast(s)) return false;
+      if (typeof coordBranchOK === 'function' && !coordBranchOK(s)) return false;
+      const br = (typeof cBranch === 'function') && cBranch(s.branch);
+      if (!br || br.active === false || br.on === false) return false;
+      if (svcs.length) {
+        if (!svcs.every(k => (br.treatments || []).indexOf(k) >= 0)) return false;
+        const d = (typeof cDoc === 'function') && cDoc(s.doc);
+        if (!d || !svcs.every(k => (d.skills || []).indexOf(k) >= 0)) return false;
+      }
+      return true;
+    });
+  }
+
+  /* ---------- האם מועד עומד בקריטריונים שנבחרו ---------- */
+  function slotPasses(s, rt, memo) {
+    const n = rt.needs || {};
+    if (n.branch && n.branch !== '__near' && s.branch !== n.branch) return false;
+    const rg = n.timeOfDay && RANGE[n.timeOfDay];
+    if (rg && !(s.h >= rg[0] && s.h < rg[1])) return false;
+    if (n.gender) { const d = (typeof cDoc === 'function') && cDoc(s.doc); if (!d || d.gender !== n.gender) return false; }
+    if (typeof branchBlockReason === 'function') {
+      if (!(s.branch in memo)) memo[s.branch] = branchBlockReason(rt, s.branch);
+      if (memo[s.branch]) return false;
+    }
+    return true;
+  }
+
+  /* ---------- כמה מועדים נשארים לצירוף נתון ---------- */
+  function countFor(r, pool, needs) {
+    const rt = { name: r.name, services: r.services, city: r.city, needs: needs };
+    const memo = {};
+    let n = 0;
+    for (let i = 0; i < pool.length; i++) if (slotPasses(pool[i], rt, memo)) { n++; if (n > 3) break; }
+    return n;
+  }
+
+  /* ---------- אילו קריטריונים אחרים חוסמים ---------- */
+  function culprits(r, pool, needs) {
+    const set = Object.keys(needs).filter(k => needs[k] && k !== 'note' && k !== 'nearBranch');
+    const out = [];
+    set.forEach(k => {
+      const alt = Object.assign({}, needs); delete alt[k];
+      if (countFor(r, pool, alt)) out.push(k);
+    });
+    return out;
+  }
+
+  /* ---------- סימון האפשרויות ---------- */
+  function markQuestions(r, qs) {
+    const pool = candidates(r);
+    if (!pool || !pool.length) return { qs: qs, locked: 0, hints: [], dropped: [] };
+    let base = Object.assign({}, r.needs || {});
+    delete base.note;
+    const hints = [], dropped = []; let locked = 0;
+
+    /* בחירה קיימת שאינה אפשרית לא תנעל את כל שאר המסך.
+       מנטרלים אותה מהבסיס, מסמנים אותה, ומציעים להחליף אותה. */
+    qs.forEach(q => {
+      const v = base[q.key]; if (!v) return;
+      const o = (q.opts || []).find(x => x.v === v);
+      if (o && o.blocked) { dropped.push({ k: q.key, v: v, why: o.why || 'הבחירה הזו אינה אפשרית' }); delete base[q.key]; }
+    });
+    let guard = 0;
+    while (!countFor(r, pool, base) && guard++ < 6) {
+      const keys = Object.keys(base).filter(k => base[k] && k !== 'nearBranch' && k !== 'note');
+      if (!keys.length) break;
+      let best = null, bestN = 0;
+      keys.forEach(k => { const alt = Object.assign({}, base); delete alt[k];
+        const n = countFor(r, pool, alt); if (n > bestN) { bestN = n; best = k; } });
+      if (!best) best = keys[keys.length - 1];
+      dropped.push({ k: best, v: base[best], why: 'הצירוף עם הערך הזה לא מותיר אף מועד' });
+      delete base[best];
+    }
+
+    qs.forEach(q => {
+      if (!q.opts) return;
+      q.opts.forEach(o => {
+        if (o.blocked) { locked++; return; }        // כבר נחסם ע״י כלל קיים — לא נוגעים
+        if (!o.v || o.v === '__near') return;        // "אין העדפה" תמיד פתוח
+        if (typeof CRIT_OTHER !== 'undefined' && o.v === CRIT_OTHER) return;
+        const test = Object.assign({}, base); test[q.key] = o.v;
+        if (countFor(r, pool, test)) return;         // יש זמינות — פתוח
+        o.blocked = true; o.noAvail = true; locked++;
+        const cul = culprits(r, pool, test).filter(k => k !== q.key);
+        if (cul.length) {
+          const names = cul.map(k => `${labelOf(k)}: ${valLabel(k, base[k])}`);
+          o.why = 'אין מועד פנוי בצירוף הזה · ייפתח אם משנים ' + names.join(' או ');
+          cul.forEach(k => { if (hints.indexOf(k) < 0) hints.push(k); });
+        } else {
+          o.why = 'אין מועד פנוי ביומן לאפשרות הזו';
+        }
+      });
+      /* כל האפשרויות של השאלה ננעלו — משאירים אותה כאינדיקציה, לא כמלכודת */
+      const live = q.opts.filter(o => !o.blocked);
+      q.allBlocked = live.length <= 1;
+    });
+    return { qs: qs, locked: locked, hints: hints, base: base, dropped: dropped };
+  }
+
+  let lastMark = null;
+
+  function barHTML() {
+    if (!lastMark || (!lastMark.locked && !(lastMark.dropped || []).length)) return '';
+    const b = lastMark.base || {};
+    const drop = lastMark.dropped || [];
+    const dropBar = drop.length ? `<div class="cfx-bar drop">${ic('alert')}
+      <div><b>בחירה קיימת שאינה אפשרית — נוטרלה כדי לא לנעול את כל המסך</b>
+      <small>שאר האפשרויות מחושבות בלעדיה. בחר ערך אחר בשאלה הזו, או נקה אותה.</small>
+      <div class="cfx-rel">${drop.map(d => `<button class="cfx-relbtn bad" data-cfxdrop="${esc(d.k)}">
+        ${ic('close')} נקה ${esc(labelOf(d.k))} · ${esc(valLabel(d.k, d.v))}
+        <small>${esc(d.why)}</small></button>`).join('')}</div></div></div>` : '';
+    if (!lastMark.locked) return dropBar;
+    return dropBar + `<div class="cfx-bar">${ic('lock')}
+      <div><b>${lastMark.locked} אפשרויות ננעלו — אין להן מועד פנוי ביומן</b>
+      <small>הן מסומנות באפור עם קו. הצירוף הנוכחי יגיע למסך תיאום עם מועדים אמיתיים.</small></div>
+      ${lastMark.hints.length ? `<div class="cfx-rel">${lastMark.hints.map(k =>
+        `<button class="cfx-relbtn" data-cfxrel="${esc(k)}">${ic('sync')} שחרר ${esc(labelOf(k))}
+          <small>${esc(valLabel(k, b[k]))}</small></button>`).join('')}</div>` : ''}</div>`;
+  }
+
+  CBX.register({
+    key: 'critfx', label: 'קריטריונים — נעילת מה שאין', icon: 'lock',
+    desc: 'כל אפשרות בבירור הצורך נבדקת מול היומן. אפשרות שאין לה אף מועד פנוי בצירוף שנבחר ננעלת ומסומנת, עם כפתור לשחרור הקריטריון שחוסם אותה — כדי לא להגיע למסך תיאום ריק.',
+    files: ['js/ext/crit-feasible.js', 'css/ext/crit-feasible.css'],
+    install() {
+      document.body.classList.add('cbx-critfx');
+      CBX._remember('critfx', () => document.body.classList.remove('cbx-critfx'));
+
+      if (typeof needsQuestions === 'function') CBX.wrap('critfx', 'needsQuestions', o => function (r) {
+        const qs = o.apply(this, arguments);
+        try { lastMark = markQuestions(r, qs); } catch (e) { console.error('[critfx]', e); lastMark = null; }
+        return qs;
+      });
+
+      if (typeof openNeedsClarify === 'function') CBX.wrap('critfx', 'openNeedsClarify', o => function (r, after) {
+        const out = o.apply(this, arguments);
+        try {
+          const body = document.querySelector('#modal .needs-body');
+          const html = barHTML();
+          if (!body || !html) return out;
+          const d = document.createElement('div'); d.innerHTML = html;
+          const anchor = body.querySelector('.needs-q');
+          const bars = [];
+          while (d.firstElementChild) { const el = d.firstElementChild; bars.push(el);
+            anchor ? body.insertBefore(el, anchor) : body.appendChild(el); }
+          const clear = k => {
+            const nt = document.getElementById('needsNoteM'); if (nt) r.needs.note = nt.value;
+            delete r.needs[k];
+            toast('נוקה: ' + labelOf(k) + ' — האפשרויות נפתחו מחדש');
+            openNeedsClarify(r, after);
+          };
+          bars.forEach(el => {
+            el.querySelectorAll('[data-cfxrel]').forEach(b => b.addEventListener('click', () => clear(b.dataset.cfxrel)));
+            el.querySelectorAll('[data-cfxdrop]').forEach(b => b.addEventListener('click', () => clear(b.dataset.cfxdrop)));
+          });
+        } catch (e) { console.error('[critfx] bar', e); }
+        return out;
+      });
+    },
+  });
+
+  window.CRITFX = { candidates, countFor, mark: markQuestions, last: () => lastMark };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: יומנים לפי תפקיד  ·  key = 'calrole'
+   ------------------------------------------------------------
+   מה היה: מסך הפגישות הציג מתג עובד/מנהל/מנהל-על, אבל תצוגת
+   האירועים עצמה נשלטה בנפרד ע״י מתג "מנהל ראשי" — ולכן מנהל
+   ראה "תפוס" ביומני הצוות שלו, בניגוד למה שנכתב במסך.
+
+   מה עכשיו — פתוח, לא מוסתר:
+     • עובד     — היומן שלו.
+     • מנהל     — היומן שלו + יומני הצוות שלו, בפירוט מלא.
+     • מנהל-על  — יומני כל מנהלי הצוותים והצוותים שלהם, בפירוט מלא.
+
+   הצוות נגזר מהמערכת ולא מוגדר ידנית: אותה מחלקה, או סניף שהעובד
+   רשום בו כמנהל הסניף.
+   ============================================================ */
+(function () {
+
+  const staffByName = n => (typeof STAFF !== 'undefined') ? STAFF.find(s => s.name === n) : null;
+  const isSuperPerm = p => p === 'מנהל רשת' || p === 'אדמין';
+  const isMgrPerm = p => p === 'מנהל סניף' || isSuperPerm(p);
+
+  /* הסניפים שהעובד מנהל */
+  function branchesManagedBy(s) {
+    if (!s || typeof COORD_BRANCHES === 'undefined') return [];
+    return COORD_BRANCHES.filter(b => b.mgr === s.id).map(b => b.key);
+  }
+  /* הצוות של מנהל — אותה מחלקה או סניף שהוא מנהל */
+  function teamOf(name) {
+    const me = staffByName(name); if (!me) return [];
+    if (isSuperPerm(me.perm)) return (typeof STAFF !== 'undefined' ? STAFF : []).filter(s => s.name !== name).map(s => s.name);
+    const mine = branchesManagedBy(me);
+    return (typeof STAFF !== 'undefined' ? STAFF : []).filter(s => {
+      if (s.name === name) return false;
+      if (mine.length && (s.branches || [s.branch]).some(b => mine.indexOf(b) >= 0)) return true;
+      return s.dept === me.dept;
+    }).map(s => s.name);
+  }
+  /* מנהלי הצוותים — לתצוגת מנהל-על */
+  const teamManagers = () => (typeof STAFF !== 'undefined' ? STAFF : []).filter(s => isMgrPerm(s.perm)).map(s => s.name);
+
+  /* התפקיד האפקטיבי: המתג במסך הפגישות, ובתוך גבולות ההרשאה */
+  function effRole() {
+    const me = staffByName(typeof CURRENT_USER !== 'undefined' ? CURRENT_USER : '');
+    const perm = me ? me.perm : 'נציג';
+    let role = (typeof meetRole !== 'undefined') ? meetRole : 'emp';
+    if (role === 'super' && !isSuperPerm(perm)) role = isMgrPerm(perm) ? 'mgr' : 'emp';
+    if (role === 'mgr' && !isMgrPerm(perm)) role = 'emp';
+    return role;
+  }
+
+  /* מי גלוי לי בפירוט מלא */
+  function canSee(owner) {
+    if (!owner || owner === CURRENT_USER) return true;
+    if (typeof calManagerView !== 'undefined' && calManagerView) return true;   // מתג "מנהל ראשי" הקיים
+    const role = effRole();
+    if (role === 'super') return true;                       // כל מנהלי הצוותים והצוותים שלהם
+    if (role === 'mgr') return teamOf(CURRENT_USER).indexOf(owner) >= 0;
+    return false;
+  }
+
+  CBX.register({
+    key: 'calrole', label: 'יומנים לפי תפקיד', icon: 'clients',
+    desc: 'מנהל רואה את היומן שלו ואת יומני הצוות שלו בפירוט מלא, ומנהל-על רואה את כל מנהלי הצוותים והצוותים שלהם — פתוח, לא "תפוס". הצוות נגזר מהמחלקה ומניהול הסניף.',
+    files: ['js/ext/cal-roles.js'],
+    install() {
+      /* התצוגה עצמה — האירוע נפתח למי שמורשה */
+      if (typeof calEvHTML === 'function') CBX.wrap('calrole', 'calEvHTML', o => function (ev, weekMode, owner) {
+        if (owner && canSee(owner)) {
+          /* קריאה בלי owner מחזירה את הכרטיס המלא — ומחזירים את השיוך למקומו */
+          const full = o.call(this, ev, weekMode, null);
+          return full.replace('data-owner=""', 'data-owner="' + String(owner).replace(/"/g, '&quot;') + '"');
+        }
+        return o.apply(this, arguments);
+      });
+      /* מסך הפגישות — אותה החלטה בדיוק */
+      if (typeof meetCanSeeDetail === 'function') CBX.wrap('calrole', 'meetCanSeeDetail', () => function (owner) {
+        return canSee(owner);
+      });
+      /* חיווי גלוי: מי בדיוק פתוח לי */
+      if (typeof meetTeamHTML === 'function') CBX.wrap('calrole', 'meetTeamHTML', o => function () {
+        const html = o.apply(this, arguments);
+        const role = effRole();
+        const list = role === 'super' ? teamManagers() : (role === 'mgr' ? teamOf(CURRENT_USER) : []);
+        const note = role === 'super'
+          ? `<div class="cr-note">${ic('eye')} <b>מנהל-על — פתוח לחלוטין</b>
+             <small>כל מנהלי הצוותים והצוותים שלהם מוצגים בפירוט מלא:
+             ${list.map(esc).join(' · ') || 'אין מנהלי צוות מוגדרים'}</small></div>`
+          : role === 'mgr'
+          ? `<div class="cr-note">${ic('eye')} <b>מנהל — היומן שלך + הצוות שלך, בפירוט מלא</b>
+             <small>${list.length ? 'הצוות שלך: ' + list.map(esc).join(' · ') : 'לא שויכו לך עובדים'}
+             · הצוות נגזר מהמחלקה ומהסניפים שאתה מנהל.</small></div>`
+          : `<div class="cr-note">${ic('lock')} <b>עובד — היומן שלך בלבד</b>
+             <small>יומנים של אחרים מוצגים כ"תפוס" ללא פרטים.</small></div>`;
+        return html.replace(/<div class="mp-note">[\s\S]*?<\/div>/, note);
+      });
+    },
+  });
+
+  window.CALROLE = { canSee, teamOf, managers: teamManagers, role: effRole };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: שלבי הזרימה נשארים פתוחים  ·  key = 'flowhold'
+   ------------------------------------------------------------
+   כל עוד אנחנו משדרגים את הזרימה — בירור צורך · בחירת שירות/מוצר ·
+   תיאום פגישה · הצעת מחיר · הסכם לחתימה — השלבים האלה לא מתקפלים
+   לתוך "שלבים שהושלמו", גם כשהטיפול בהם הסתיים. הם נשארים מול
+   העיניים כדי שאפשר יהיה לחזור אליהם ולעדכן.
+
+   הסרה מחזירה את ההתנהגות הרגילה (השלבים מתכווצים כרגיל).
+   ============================================================ */
+(function () {
+
+  /* מפתחות השלבים בכל המסלולים — לפי WORKFLOWS */
+  const KEYS = [
+    'qualify', 'need', 'needs',            // בירור צורך
+    'service', 'svc', 'services',          // בחירת שירות / מוצר
+    'meeting', 'schedule', 'offer', 'confirm',  // תיאום פגישה
+    'proposal', 'quote',                   // הצעת מחיר
+    'contract', 'sign',                    // הסכם לחתימה
+  ];
+
+  CBX.register({
+    key: 'flowhold', label: 'שלבי הזרימה נשארים פתוחים', icon: 'flag',
+    desc: 'בירור צורך, בחירת שירות/מוצר, תיאום, הצעת מחיר והסכם לחתימה לא מתקפלים ל"שלבים שהושלמו" גם אחרי שהסתיימו — כדי שאפשר יהיה לחזור אליהם ולעדכן תוך כדי השדרוג של התהליך.',
+    files: ['js/ext/flow-hold.js'],
+    install() {
+      const prev = window.KEEP_STAGES_OPEN;
+      window.KEEP_STAGES_OPEN = KEYS.slice();
+      CBX._remember('flowhold', () => { window.KEEP_STAGES_OPEN = prev; });
+      /* רענון מיידי אם מגירת ליד פתוחה */
+      CBX._remember('flowhold', () => { try {
+        if (typeof selectedId !== 'undefined' && selectedId && typeof RECORDS !== 'undefined') {
+          const r = RECORDS.find(x => x.id === selectedId);
+          if (r && typeof renderDrawerTab === 'function') renderDrawerTab(r);
+        } } catch (e) {} });
+    },
+  });
+
+  window.FLOWHOLD = { keys: () => KEYS.slice() };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: מסמכים לחתימה  ·  key = 'docsign'
+   ------------------------------------------------------------
+   קהל שלישי במערכת החוזים, לצד הסכמי לקוחות והסכמי העסקה:
+   מסמכים שאינם הסכם — הצהרת בריאות, כתב הסכמה לטיפול, אישור
+   קבלת מידע, ויתור. חלקם דורשים חתימה דיגיטלית וחלקם רק אישור
+   קריאה, ולכן לכל מסמך יש מתג "דורש חתימה" נפרד.
+
+   שני דברים שטרם הוגדרו ומסומנים בגלוי בממשק:
+     · מאיפה נשאב המידע לכל מסמך (איזה שדות ומאיזו ישות)
+     · באיזה שלב בתהליך המסמך מופק אוטומטית
+   שניהם מוצגים כ"טרם הוגדר" ולא מנוחשים — כדי שלא ייווצר מצב
+   שמסמך מופק עם מקור מידע שגוי.
+   ============================================================ */
+(function () {
+
+  const AUD = { key: 'doc', label: 'מסמכים לחתימה', icon: 'note',
+    desc: 'הצהרות, אישורים וויתורים — עם חתימה דיגיטלית או בלי' };
+
+  const TYPES = ['הצהרת בריאות', 'כתב הסכמה לטיפול', 'אישור קבלת מידע',
+    'ויתור על סודיות', 'אישור הגעה', 'שאלון טרום-טיפול'];
+
+  const SEED = [
+    { id: 'd1', name: 'הצהרת בריאות', type: 'הצהרת בריאות', audience: 'doc',
+      legalApproved: true, requireSignature: true, requireId: false, stamp: null,
+      docSrc: null, docStage: null,
+      text: 'הצהרת בריאות\n\nאני, {שם_לקוח}, ת.ז {ת.ז}, מצהיר/ה בזאת כי:\n\n1. מצב בריאותי ידוע לי ואין מניעה רפואית לקבלת {שירות}.\n2. דיווחתי על כל תרופה קבועה, רגישות או אלרגיה הידועות לי.\n3. אעדכן את הצוות בכל שינוי במצבי הבריאותי לפני הטיפול.\n\nהצהרה זו ניתנת מרצוני החופשי ולאחר שהבנתי את תוכנה.' },
+    { id: 'd2', name: 'כתב הסכמה לטיפול', type: 'כתב הסכמה לטיפול', audience: 'doc',
+      legalApproved: true, requireSignature: true, requireId: true, stamp: null,
+      docSrc: null, docStage: null,
+      text: 'כתב הסכמה לטיפול\n\n{שם_לקוח}, ת.ז {ת.ז}\n\nהוסבר לי מהות הטיפול {שירות}, מהלכו, הסיכונים והחלופות.\nניתנה לי הזדמנות לשאול שאלות וקיבלתי מענה מלא.\n\nאני מסכים/ה לביצוע הטיפול במועד {מועד}.' },
+    { id: 'd3', name: 'אישור קבלת מידע והנחיות', type: 'אישור קבלת מידע', audience: 'doc',
+      legalApproved: true, requireSignature: false, requireId: false, stamp: null,
+      docSrc: null, docStage: null,
+      text: 'אישור קבלת מידע\n\n{שם_לקוח} — קיבלתי את ההנחיות לקראת {שירות} ולאחריו, וקראתי אותן.\n\nמסמך זה אינו דורש חתימה — די באישור קריאה.' },
+  ];
+
+  /* מה שטרם הוגדר — מוצג ולא מנוחש */
+  const undefinedBits = c => {
+    const out = [];
+    if (!c.docSrc) out.push('מאיפה נשאב המידע');
+    if (!c.docStage) out.push('באיזה שלב יופק');
+    return out;
+  };
+
+  function bannerHTML() {
+    const list = (typeof CONTRACT_TEMPLATES !== 'undefined' ? CONTRACT_TEMPLATES : []).filter(c => c.audience === 'doc');
+    const pend = list.filter(c => undefinedBits(c).length).length;
+    return `<div class="dsg-bar">${ic('alert')}
+      <div><b>שתי הגדרות עדיין פתוחות — ${pend} מתוך ${list.length} המסמכים</b>
+        <small><b>מאיפה נשאב המידע</b> — אילו שדות ומאיזו ישות (ליד · תיק מטופל · תיק עובד) ממלאים את המסמך.
+        <b>באיזה שלב יופק</b> — הנקודה בתהליך שבה הוא נשלח אוטומטית.
+        עד שיוגדרו, המסמכים נשלחים ידנית והשדות נשארים ריקים למילוי הלקוח.</small></div></div>`;
+  }
+
+  CBX.register({
+    key: 'docsign', label: 'מסמכים לחתימה', icon: 'note',
+    desc: 'קהל שלישי במערכת החוזים למסמכים שאינם הסכם — הצהרת בריאות, כתב הסכמה, אישור קבלת מידע. לכל מסמך מתג "דורש חתימה" נפרד. מקור המידע ושלב ההפקה מסומנים כטרם-הוגדרו.',
+    files: ['js/ext/doc-forms.js'],
+    install() {
+      if (typeof CT_AUDIENCES !== 'undefined' && !CT_AUDIENCES.some(a => a.key === 'doc'))
+        CBX.push('docsign', CT_AUDIENCES, AUD);
+      if (typeof CONTRACT_TYPES !== 'undefined')
+        CBX.push('docsign', CONTRACT_TYPES, TYPES.filter(t => CONTRACT_TYPES.indexOf(t) < 0));
+      if (typeof CONTRACT_TEMPLATES !== 'undefined')
+        CBX.push('docsign', CONTRACT_TEMPLATES, SEED.filter(s => !CONTRACT_TEMPLATES.some(c => c.id === s.id)));
+      /* חזרה ל"לקוחות" בהסרה — אחרת המסך נשאר על קהל שלא קיים */
+      CBX._remember('docsign', () => { if (typeof ctAud !== 'undefined' && ctAud === 'doc') { ctAud = 'client';
+        if (typeof navActive !== 'undefined' && navActive === 'contracts' && typeof renderContractsView === 'function') renderContractsView(); } });
+
+      if (typeof renderContractsView === 'function') CBX.wrap('docsign', 'renderContractsView', o => function () {
+        const out = o.apply(this, arguments);
+        try {
+          if (typeof ctAud === 'undefined' || ctAud !== 'doc') return out;
+          const host = document.getElementById('viewHost'); if (!host) return out;
+
+          /* כותרת המשנה מדברת על "תבניות חוזה" — כאן מדובר במסמכים */
+          const t = host.querySelector('.vhs-title');
+          if (t) t.innerHTML = `${ic('note')} מסמכים לחתימה
+            <span class="muted" style="font-size:12px">· הצהרות ואישורים · חתימה דיגיטלית לפי מסמך</span>`;
+          const add = document.getElementById('ctAdd');
+          if (add) add.innerHTML = `${ic('plus')} מסמך חדש`;
+
+          /* מה שטרם הוגדר — בגלוי, מעל הרשימה */
+          const grid = host.querySelector('.ct-grid');
+          if (grid && !host.querySelector('.dsg-bar')) {
+            const d = document.createElement('div'); d.innerHTML = bannerHTML();
+            grid.parentNode.insertBefore(d.firstElementChild, grid);
+          }
+          /* חיווי פר-מסמך: חתימה או אישור קריאה, ומה חסר */
+          host.querySelectorAll('.ct-card').forEach(card => {
+            const btn = card.querySelector('[data-ctedit]');
+            const id = btn ? btn.dataset.ctedit : null;
+            const c = id && typeof contractById === 'function' ? contractById(id) : null;
+            if (!c || card.querySelector('.dsg-chips')) return;
+            const miss = undefinedBits(c);
+            const flags = card.querySelector('.ct-flags');
+            const d = document.createElement('div'); d.className = 'dsg-chips';
+            d.innerHTML = `<span class="dsg-chip ${c.requireSignature ? 'sign' : 'read'}">
+                ${ic(c.requireSignature ? 'check' : 'eye')} ${c.requireSignature ? 'נדרשת חתימה דיגיטלית' : 'אישור קריאה בלבד — ללא חתימה'}</span>
+              ${miss.map(m => `<span class="dsg-chip todo">${ic('alert')} טרם הוגדר: ${esc(m)}</span>`).join('')}`;
+            (flags || card).appendChild(d);
+          });
+        } catch (e) { console.error('[docsign]', e); }
+        return out;
+      });
+    },
+  });
+
+  window.DOCSIGN = { audience: AUD, seed: SEED, pending: undefinedBits };
 })();
 
 </script>

@@ -172,7 +172,10 @@
 
   function bindList(RR) {
     $$('[data-psopen]').forEach(b => b.addEventListener('click', e => {
-      e.stopPropagation(); psOpen = b.dataset.psopen; RR(); }));
+      e.stopPropagation();
+      const dr = document.getElementById('drawer');
+      if (dr && dr.classList.contains('open')) { openSide(b.dataset.psopen, null); return; }
+      psOpen = b.dataset.psopen; RR(); }));
     const bk = $('#psBack'); if (bk) bk.addEventListener('click', () => { psOpen = null; RR(); });
     $$('[data-psrec]').forEach(b => b.addEventListener('click', () => {
       const r = (typeof RECORDS !== 'undefined') ? RECORDS.find(x => String(x.id) === b.dataset.psrec) : null;
@@ -214,11 +217,7 @@
     if (meta && meta.parentNode) meta.parentNode.insertBefore(el, meta);
     else { const body = document.getElementById('drawerBody'); if (body) body.insertBefore(el, body.firstChild); }
     requestAnimationFrame(() => el.classList.add('in'));
-    $$('[data-psopen]', el).forEach(b => b.addEventListener('click', () => {
-      psOpen = b.dataset.psopen;
-      if (typeof closeDrawer === 'function') closeDrawer();
-      navActive = 'clients'; renderClientsView();
-    }));
+    $$('[data-psopen]', el).forEach(b => b.addEventListener('click', () => openSide(b.dataset.psopen, rec)));
     $$('[data-psmerge]', el).forEach(b => b.addEventListener('click', () => {
       const [k, id] = b.dataset.psmerge.split('|'); openMerge(k, id);
     }));
@@ -228,6 +227,63 @@
       setTimeout(() => el.remove(), 200);
       toast('הבנתי — לא נציג את זה שוב עבור הפנייה הזו');
     }));
+  }
+
+  /* ---------------- פאנל צד ----------------
+     התיק המאוחד נפתח לצד הליד ולא במקומו. סגירה מחזירה לליד
+     בדיוק איפה שהיה — בלי לחפש אותו מחדש. */
+  function openSide(pKey, rec) {
+    const p = people().find(x => x.key === pKey); if (!p) return;
+    const prev = document.getElementById('psSide'); if (prev) prev.remove();
+    const w = document.createElement('div'); w.className = 'ps-side'; w.id = 'psSide';
+    const others = p.recs.filter(r => r !== rec && !r.mergedInto);
+    const groups = byTopic(others);
+    w.innerHTML = `<div class="ps-side-in">
+      <div class="ps-side-h">
+        <button class="btn sm" id="psSideX">${ic('chevronL')} חזרה לליד</button>
+        <b>${ic('history')} תיק מאוחד · ${esc(p.name)}</b>
+        <span class="muted">${esc(p.phone || '')}</span>
+      </div>
+      <div class="ps-side-b">
+        <div class="inv-kpis">
+          <div class="inv-kpi"><b>${p.recs.length}</b><small>סה״כ פניות</small></div>
+          <div class="inv-kpi"><b>${p.recs.filter(isOpen).length}</b><small>פתוחות</small></div>
+          <div class="inv-kpi"><b>${groups.length}</b><small>נושאים</small></div>
+        </div>
+        <div class="ps-sec-h">${ic('layers')} <b>הפניות הקודמות</b>
+          <small>לפי נושא — כדי לראות אם זו בעיה חוזרת</small></div>
+        <div class="ps-side-groups">${groups.map(g => `<div class="ps-group">
+          <div class="ps-g-h"><b>${esc(g.topic)}</b><span class="ps-count">${g.recs.length}</span>
+            ${g.recs.length > 1 ? '<span class="ps-repeat">נושא חוזר</span>' : ''}</div>
+          <div class="ps-g-list">${g.recs.map(r => `<button class="ps-rec ${isOpen(r) ? 'open' : ''}" data-psjump="${esc(String(r.id))}">
+            <b>${esc(r.subject || topicOf(r))}</b>
+            <small>${esc((r.status || {}).label || '')} · ${esc(r.assignee || 'לא משויך')}</small></button>`).join('')}</div>
+        </div>`).join('') || '<p class="fx-none">אין פניות קודמות</p>'}</div>
+
+        <div class="ps-decide">
+          <div class="ps-dec-h">${ic('bolt')} <b>מה עושים עם הפנייה הנוכחית?</b></div>
+          <button class="ps-dec merge" id="psDecMerge">
+            ${ic('sync')}<b>לאחד לפנייה אחת</b>
+            <small>כל המידע מתרכז בפנייה אחת. שום דבר לא נמחק — ערכים חלופיים נשמרים לצד הנבחר.</small></button>
+          <button class="ps-dec keep" id="psDecKeep">
+            ${ic('plus')}<b>להשאיר כפנייה חדשה</b>
+            <small>נושא אחר או מקרה נפרד. הקישור בין הפניות נשמר, אבל הן מנוהלות בנפרד.</small></button>
+        </div>
+      </div></div>`;
+    document.body.appendChild(w);
+    requestAnimationFrame(() => w.classList.add('open'));
+    const close = () => { w.classList.remove('open'); setTimeout(() => w.remove(), 200); };
+    $('#psSideX', w).addEventListener('click', close);
+    $$('[data-psjump]', w).forEach(b => b.addEventListener('click', () => {
+      const r2 = (typeof RECORDS !== 'undefined') ? RECORDS.find(x => String(x.id) === b.dataset.psjump) : null;
+      if (r2 && typeof openDrawer === 'function') { close(); openDrawer(r2); } }));
+    $('#psDecMerge', w).addEventListener('click', () => { close(); openMerge(pKey, rec ? rec.id : (p.recs[0] || {}).id); });
+    $('#psDecKeep', w).addEventListener('click', () => {
+      dismiss(pKey, 'הוחלט להשאיר כפנייה נפרדת');
+      close();
+      const el = document.querySelector('.ps-prior'); if (el) { el.classList.add('out'); setTimeout(() => el.remove(), 200); }
+      toast('נשמר כפנייה נפרדת — הקישור בין הפניות נשמר בתיק המאוחד');
+    });
   }
 
   /* ---------------- איחוד פניות ----------------
@@ -396,5 +452,5 @@
     },
   });
 
-  window.PERSON = { people, of: personOf, byTopic, topicOf, idOf, merge: openMerge, dismiss, done: () => PS_DONE };
+  window.PERSON = { people, of: personOf, byTopic, topicOf, idOf, merge: openMerge, side: openSide, dismiss, done: () => PS_DONE };
 })();

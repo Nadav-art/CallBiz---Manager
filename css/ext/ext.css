@@ -1124,3 +1124,82 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 .inv-switch .inv-back { margin-inline-start: auto; }
 .cb-mobile .inv-viewbar { flex-direction: column; align-items: stretch; }
 .cb-mobile .inv-vb-note { margin-inline-start: 0; }
+
+/* ---------------- סדר הבירור ---------------- */
+.fl-gate { margin-bottom: 14px; }
+.fl-mode-h { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12.5px; margin-bottom: 9px; }
+.fl-mode-h small { flex: 1 1 100%; font-size: 11px; color: var(--text-2); font-weight: 400; }
+.fl-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.fl-mode { font: inherit; text-align: start; padding: 11px 12px; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); }
+.fl-mode svg { width: 15px; height: 15px; color: var(--text-3); }
+.fl-mode b { display: block; font-size: 12.5px; margin-top: 4px; }
+.fl-mode small { display: block; font-size: 11px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
+.fl-mode.on { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 8%, transparent); }
+.fl-mode.on svg, .fl-mode.on b { color: var(--brand); }
+.fl-step { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border-radius: 12px;
+  border: 1px solid var(--line); margin-bottom: 10px; }
+.fl-step.now { border-color: color-mix(in srgb, var(--brand) 40%, transparent); background: color-mix(in srgb, var(--brand) 5%, transparent); }
+.fl-step.ok { border-color: color-mix(in srgb, #1f8a4c 35%, transparent); background: color-mix(in srgb, #1f8a4c 5%, transparent); }
+.fl-step.bad { border-color: color-mix(in srgb, #e5a13d 45%, transparent); background: color-mix(in srgb, #e5a13d 6%, transparent); }
+.fl-step > div { flex: 1 1 auto; min-width: 0; }
+.fl-step b { font-size: 12.5px; }
+.fl-step small { display: block; font-size: 11px; color: var(--text-2); margin-top: 3px; line-height: 1.55; }
+.fl-n { flex: 0 0 auto; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--surface-2); font-size: 11.5px; font-weight: 700; }
+.fl-step.now .fl-n { background: var(--brand); color: #fff; }
+.fl-step.ok .fl-n { background: color-mix(in srgb, #1f8a4c 15%, transparent); color: #1f8a4c; }
+.fl-step.bad .fl-n { background: color-mix(in srgb, #e5a13d 20%, transparent); color: #9c6a14; }
+.fl-n svg { width: 14px; height: 14px; }
+.fl-rows { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
+.fl-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding: 6px 9px; border-radius: 9px; background: var(--surface); }
+.fl-row span { font-size: 12px; font-weight: 600; }
+.fl-row small { font-size: 11px; color: var(--text-2); margin: 0 !important; }
+.fl-row.bad { background: color-mix(in srgb, #e5484d 7%, transparent); }
+.fl-row.bad small { color: #c2333a; }
+.fl-alt { margin-top: 9px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.fl-alt b { display: flex; align-items: center; gap: 5px; font-size: 11.5px; }
+.fl-alt svg { width: 13px; height: 13px; }
+.fl-alt.none { font-size: 11.5px; color: var(--text-2); }
+.fl-block { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; padding: 11px 13px; border-radius: 12px;
+  background: color-mix(in srgb, #e5484d 7%, transparent); border: 1px solid color-mix(in srgb, #e5484d 32%, transparent); }
+.fl-block svg { width: 15px; height: 15px; color: #c2333a; }
+.fl-block b { font-size: 12.5px; color: #c2333a; }
+.fl-block small { flex: 1 1 100%; font-size: 11px; color: var(--text-2); line-height: 1.5; }
+.fl-block .btn { margin-inline-start: auto; }
+/* נעילת המוצרים עד שהחובה נענתה */
+.svc-sel.fl-locked .svc-list { opacity: .45; pointer-events: none; filter: grayscale(.4); }
+.fl-warn { max-width: 520px; text-align: start; }
+.fl-warn-l { font-size: 12.5px; color: var(--text-2); line-height: 1.6; margin: 4px 0 10px; }
+.fl-warn-m { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 12px; padding: 10px 12px;
+  border-radius: 11px; background: color-mix(in srgb, #e5a13d 9%, transparent); }
+.fl-warn-m svg { width: 14px; height: 14px; color: #9c6a14; }
+.fl-warn-m small { flex: 1 1 100%; font-size: 11.5px; color: var(--text-2); }
+.cb-mobile .fl-modes { grid-template-columns: 1fr; }
+
+/* תיק מאוחד — פאנל צד לצד הליד */
+.ps-side { position: fixed; inset: 0; z-index: 220; pointer-events: none; }
+.ps-side-in { position: absolute; top: 0; bottom: 0; inset-inline-start: 0; width: min(460px, 92vw);
+  background: var(--surface); border-inline-end: 1px solid var(--line); box-shadow: 6px 0 28px rgba(0,0,0,.14);
+  display: flex; flex-direction: column; pointer-events: auto;
+  transform: translateX(-100%); transition: transform .22s cubic-bezier(.2,.9,.3,1); }
+.ps-side.open .ps-side-in { transform: none; }
+.ps-side-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 13px 15px;
+  border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.ps-side-h b { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+.ps-side-h svg { width: 15px; height: 15px; color: var(--brand); }
+.ps-side-h .muted { font-size: 11.5px; }
+.ps-side-b { flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; padding: 14px 15px 20px; }
+.ps-side-groups { display: flex; flex-direction: column; gap: 9px; }
+.ps-decide { margin-top: 18px; padding-top: 15px; border-top: 1px solid var(--line); }
+.ps-dec-h { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 10px; }
+.ps-dec-h svg { width: 14px; height: 14px; color: var(--brand); }
+.ps-dec { font: inherit; text-align: start; width: 100%; padding: 13px; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--surface); margin-bottom: 9px; }
+.ps-dec svg { width: 15px; height: 15px; }
+.ps-dec b { display: block; font-size: 13px; margin-top: 4px; }
+.ps-dec small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 3px; line-height: 1.55; }
+.ps-dec.merge { border-color: color-mix(in srgb, var(--brand) 35%, transparent); }
+.ps-dec.merge svg, .ps-dec.merge b { color: var(--brand); }
+.ps-dec:hover { background: var(--surface-2); }
+.cb-mobile .ps-side-in { width: 100%; }

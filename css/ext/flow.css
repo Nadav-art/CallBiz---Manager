@@ -1,0 +1,136 @@
+/* ============================================================
+   הרחבות זרימת התיאום — flow · critfx · coordx
+   קובץ נפרד כדי שיהיה ניתן להסרה בלי לגעת בעיצוב הליבה.
+   ============================================================ */
+
+/* ---------- רצועת השלבים ---------- */
+.fl-strip { display: flex; align-items: stretch; gap: 4px; margin: 10px 0 12px; }
+.fl-st { flex: 1 1 0; min-width: 0; font: inherit; text-align: center; cursor: pointer;
+  padding: 8px 6px; border-radius: 11px; border: 1px solid var(--line); background: var(--surface); }
+.fl-st b { display: block; font-size: 12px; margin-top: 3px; }
+.fl-st small { display: block; font-size: 10.5px; color: var(--text-2); }
+.fl-si svg { width: 15px; height: 15px; }
+.fl-st.now { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 9%, transparent); }
+.fl-st.now b, .fl-st.now .fl-si svg { color: var(--brand); }
+.fl-st.done .fl-si svg { color: var(--ok, #16a34a); }
+.fl-st.todo { opacity: .72; }
+.fl-st:hover { background: var(--surface-2); }
+.fl-arr { display: flex; align-items: center; color: var(--text-2); }
+.fl-arr svg { width: 13px; height: 13px; }
+
+/* ---------- מצב ההתאמה בבירור הצורך ---------- */
+.fl-ready { display: flex; align-items: flex-start; gap: 9px; flex-wrap: wrap;
+  padding: 11px 12px; border-radius: 12px; margin-bottom: 12px;
+  border: 1px solid var(--line); background: var(--surface-2); }
+.fl-ready svg { width: 15px; height: 15px; flex: 0 0 auto; margin-top: 1px; }
+.fl-ready b { display: block; font-size: 12.5px; }
+.fl-ready small { display: block; font-size: 11.5px; color: var(--text-2); line-height: 1.55; margin-top: 2px; }
+.fl-ready > div { flex: 1 1 180px; min-width: 0; }
+.fl-ready.ok { border-color: color-mix(in srgb, var(--ok, #16a34a) 35%, transparent); }
+.fl-ready.ok > svg { color: var(--ok, #16a34a); }
+.fl-ready.bad { border-color: color-mix(in srgb, var(--danger, #dc2626) 35%, transparent);
+  background: color-mix(in srgb, var(--danger, #dc2626) 6%, transparent); }
+.fl-ready.bad > svg { color: var(--danger, #dc2626); }
+
+/* ---------- מה חוסם, לפי נתוני הסניף ---------- */
+.fl-critbad { margin-top: 10px; padding: 10px; border-radius: 11px;
+  border: 1px dashed color-mix(in srgb, var(--danger, #dc2626) 45%, transparent);
+  background: color-mix(in srgb, var(--danger, #dc2626) 5%, transparent); }
+.fl-critbad > b { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-bottom: 7px; }
+.fl-critbad svg { width: 13px; height: 13px; }
+
+/* ---------- חלופות מקבילות ---------- */
+.fl-altc { font: inherit; text-align: start; cursor: pointer; padding: 8px 10px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--surface); margin: 0 0 6px 6px; }
+.fl-altc b { display: block; font-size: 12.5px; }
+.fl-altc small { display: block; font-size: 11px; color: var(--text-2); margin-top: 2px; }
+.fl-altc:hover { border-color: var(--brand); background: var(--surface-2); }
+.fl-alt.none { display: flex; align-items: flex-start; gap: 7px; font-size: 11.5px; color: var(--text-2); line-height: 1.6; }
+.fl-alt.none svg { width: 13px; height: 13px; flex: 0 0 auto; margin-top: 2px; }
+
+/* ---------- סרגל חזרה במסך התיאום ---------- */
+.fl-cbar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  padding: 9px 12px; border-radius: 12px; margin-bottom: 10px;
+  border: 1px solid var(--line); background: var(--surface-2); }
+.fl-cbar > svg { width: 15px; height: 15px; color: var(--brand); }
+.fl-cbar b { font-size: 12.5px; margin-inline-end: auto; }
+
+/* ---------- אפשרויות נעולות בבירור הצורך ---------- */
+.cbx-critfx .needs-opt.blocked {
+  position: relative; cursor: not-allowed; opacity: .5;
+  color: var(--text-2); border-style: dashed;
+  background-image: repeating-linear-gradient(135deg,
+    color-mix(in srgb, var(--text-2) 13%, transparent) 0 5px, transparent 5px 10px);
+}
+.cbx-critfx .needs-opt.blocked::after {
+  content: ''; position: absolute; inset-inline: 9px; top: 50%; height: 1px;
+  background: currentColor; opacity: .55;
+}
+.cbx-critfx .needs-opt.blocked:hover { opacity: .68; }
+.cbx-critfx .needs-opt.blocked svg { width: 11px; height: 11px; opacity: .8; }
+
+.cfx-bar { display: flex; align-items: flex-start; gap: 9px; flex-wrap: wrap;
+  padding: 11px 12px; border-radius: 12px; margin: 4px 0 12px;
+  border: 1px solid var(--line); background: var(--surface-2); }
+.cfx-bar > svg { width: 15px; height: 15px; flex: 0 0 auto; margin-top: 1px; color: var(--text-2); }
+.cfx-bar > div { flex: 1 1 190px; min-width: 0; }
+.cfx-bar b { display: block; font-size: 12.5px; }
+.cfx-bar small { display: block; font-size: 11.5px; color: var(--text-2); line-height: 1.55; margin-top: 2px; }
+.cfx-rel { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 100%; }
+.cfx-relbtn { font: inherit; text-align: start; cursor: pointer; padding: 6px 9px; border-radius: 9px;
+  border: 1px solid var(--line); background: var(--surface); font-size: 11.5px; }
+.cfx-relbtn svg { width: 12px; height: 12px; }
+.cfx-relbtn small { display: block; font-size: 10.5px; color: var(--text-2); }
+.cfx-relbtn:hover { border-color: var(--brand); }
+
+/* ---------- חיווי הסינון בלוח התיאום ---------- */
+.cx-bar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  padding: 10px 12px; border-radius: 12px; margin-bottom: 10px;
+  border: 1px solid color-mix(in srgb, var(--brand) 32%, transparent);
+  background: color-mix(in srgb, var(--brand) 6%, transparent); }
+.cx-bar > svg { width: 15px; height: 15px; color: var(--brand); }
+.cx-bar b { font-size: 12.5px; }
+.cx-bar.none { border-color: var(--line); background: var(--surface-2); }
+.cx-bar.none > svg { color: var(--text-2); }
+.cx-bar small { font-size: 11.5px; color: var(--text-2); }
+.cx-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-inline-end: auto; }
+.cx-chip { font-size: 11px; padding: 2px 8px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); }
+.cx-skip { flex: 1 1 100%; display: flex; align-items: center; gap: 5px; }
+.cx-skip svg { width: 12px; height: 12px; }
+
+@media (max-width: 640px) {
+  .fl-strip { flex-wrap: wrap; }
+  .fl-st { flex: 1 1 30%; }
+  .fl-arr { display: none; }
+}
+
+.cfx-bar.drop { border-color: color-mix(in srgb, var(--danger, #dc2626) 38%, transparent);
+  background: color-mix(in srgb, var(--danger, #dc2626) 6%, transparent); }
+.cfx-bar.drop > svg { color: var(--danger, #dc2626); }
+.cfx-relbtn.bad { border-color: color-mix(in srgb, var(--danger, #dc2626) 35%, transparent); }
+
+/* ---------- חיווי הרשאת יומנים ---------- */
+.cr-note { display: flex; align-items: flex-start; gap: 7px; flex-wrap: wrap;
+  padding: 9px 11px; margin-top: 8px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--surface-2); }
+.cr-note svg { width: 14px; height: 14px; flex: 0 0 auto; margin-top: 1px; color: var(--brand); }
+.cr-note b { font-size: 12px; flex: 1 1 auto; }
+.cr-note small { flex: 1 1 100%; font-size: 11px; color: var(--text-2); line-height: 1.6; }
+
+/* ---------- מסמכים לחתימה ---------- */
+.dsg-bar { display: flex; align-items: flex-start; gap: 9px;
+  padding: 12px 13px; border-radius: 12px; margin-bottom: 12px;
+  border: 1px dashed color-mix(in srgb, var(--amber, #d97706) 45%, transparent);
+  background: color-mix(in srgb, var(--amber, #d97706) 7%, transparent); }
+.dsg-bar > svg { width: 15px; height: 15px; flex: 0 0 auto; margin-top: 1px; color: var(--amber, #d97706); }
+.dsg-bar b { display: block; font-size: 12.5px; }
+.dsg-bar small { display: block; font-size: 11.5px; color: var(--text-2); line-height: 1.65; margin-top: 3px; }
+.dsg-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; flex: 1 1 100%; }
+.dsg-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px;
+  padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+.dsg-chip svg { width: 11px; height: 11px; }
+.dsg-chip.sign { border-color: color-mix(in srgb, var(--ok, #16a34a) 40%, transparent); color: var(--ok, #16a34a); }
+.dsg-chip.read { color: var(--text-2); }
+.dsg-chip.todo { border-style: dashed; color: var(--amber, #d97706);
+  border-color: color-mix(in srgb, var(--amber, #d97706) 45%, transparent); }

@@ -168,9 +168,12 @@ function showDayKebab(i, anchor) {
     <button data-dk="clearbrk">${ic('pause')} נקה הפסקות</button>
     <button data-dk="copy">${ic('copy')} העתק לימים…</button>`;
   document.body.appendChild(pop);
+  /* צמוד לכפתור שנלחץ. inset-inline-start מתהפך ב-RTL ולכן קפץ לצד השני
+     של המסך — כאן ממקמים לפי הקצה הימני של הכפתור, עם היפוך למעלה בקצה. */
   const rc = anchor.getBoundingClientRect();
-  pop.style.top = `${rc.bottom + 5}px`;
-  pop.style.insetInlineStart = `${Math.max(8, rc.left)}px`;
+  const ph = pop.offsetHeight || 120;
+  pop.style.top = `${rc.bottom + 5 + ph > window.innerHeight - 8 ? Math.max(8, rc.top - ph - 5) : rc.bottom + 5}px`;
+  pop.style.right = `${Math.max(8, window.innerWidth - rc.right)}px`;
   $('[data-dk="toggle"]', pop).addEventListener('click', () => { d.on = !d.on; closeDayKebab(); whRefresh(); });
   $('[data-dk="clearbrk"]', pop).addEventListener('click', () => {
     if (d.segments.some(s => s.type === 'break')) d.segments = [{ type: 'shift', start: d.segments[0].start, end: d.segments[d.segments.length - 1].end }];
@@ -1501,26 +1504,42 @@ function wfCardHTML(j) {
         <span class="muted" style="font-size:11px">${stages.length} שלבים</span></div>`;
   const active = stages.filter(s => !stageIsBlocked(j, s.key));
   const blocked = stages.filter(s => stageIsBlocked(j, s.key));
-  const stageRow = (s, i) => wfEdit
-    ? `<div class="wf-stage editable meta-${metaOf(s.key)} ${stageIsOffByDefault(j, s.key) ? 'off-default' : ''}">
-        <span class="wf-num">${i + 1}</span><span class="wf-st-title">${s.title}${stageIsOffByDefault(j, s.key) ? `<small class="wf-offtag">${ic('eye')} כבוי כברירת מחדל</small>` : ''}</span>
-        <span class="wf-st-act">
-          <button class="eye ${stageIsOffByDefault(j, s.key) ? 'on' : ''}" data-wfeye="${j}|${s.key}" title="${stageIsOffByDefault(j, s.key) ? 'כרגע כבוי כברירת מחדל — לחץ להפעלה' : 'כבה כברירת מחדל (יופעל פרטנית בכל ליד)'}">${ic('eye')}</button>
-          <button data-wfup="${j}|${i}" ${i <= 0 ? 'disabled' : ''} title="למעלה">${ic('chevron')}</button>
-          <button class="dn" data-wfdn="${j}|${i}" ${i >= stages.length - 1 ? 'disabled' : ''} title="למטה">${ic('chevron')}</button>
-          <button class="bin" data-wfbin="${j}|${s.key}" title="העבר לחסימה — לא יוצג בכלל עד שמנהל יסיר">${ic('pause')}</button>
-          <button class="rm" data-wfrm="${j}|${i}" title="הסר שלב לגמרי">${ic('close')}</button>
-        </span></div>`
-    : `<div class="wf-stage meta-${metaOf(s.key)} ${stageIsOffByDefault(j, s.key) ? 'off-default' : ''}"><span class="wf-num">${i + 1}</span>${s.title}${stageIsOffByDefault(j, s.key) ? `<small class="wf-offtag">${ic('eye')} כבוי כברירת מחדל</small>` : ''}<small class="wf-meta">${META_STAGES.find(m => m.key === metaOf(s.key)).title}</small></div>`;
+  /* שלב אינו נמחק — מי שלא רוצה אותו חוסם אותו, והוא יושב קבוע למטה */
+  const stageRow = (s, i) => {
+    const off = stageIsOffByDefault(j, s.key);
+    const idx = WORKFLOWS[j].indexOf(s);
+    if (!wfEdit) return `<div class="wf-stage meta-${metaOf(s.key)} ${off ? 'off-default' : ''}">
+      <span class="wf-num">${i + 1}</span><span class="wf-st-title">${s.title}</span>
+      ${off ? `<small class="wf-offtag">${ic('eye')} כבוי כברירת מחדל</small>` : ''}
+      <small class="wf-meta">${META_STAGES.find(m => m.key === metaOf(s.key)).title}</small></div>`;
+    return `<div class="wf-stage editable meta-${metaOf(s.key)} ${off ? 'off-default' : ''}">
+      <span class="wf-num">${i + 1}</span>
+      <span class="wf-st-title">${s.title}
+        ${off ? `<small class="wf-offtag">${ic('eye')} כבוי כברירת מחדל</small>` : ''}</span>
+      <span class="wf-st-act">
+        <span class="wf-move">
+          <button data-wfup="${j}|${idx}" ${i <= 0 ? 'disabled' : ''} aria-label="העלה" title="העלה שלב">${ic('chevron')}</button>
+          <button class="dn" data-wfdn="${j}|${idx}" ${i >= active.length - 1 ? 'disabled' : ''} aria-label="הורד" title="הורד שלב">${ic('chevron')}</button>
+        </span>
+        <button class="eye ${off ? 'on' : ''}" data-wfeye="${j}|${s.key}"
+          title="${off ? 'כבוי כברירת מחדל — לחץ להפעלה' : 'כבה כברירת מחדל (יופעל פרטנית בכל ליד)'}">${ic('eye')}</button>
+        <button class="block" data-wfbin="${j}|${s.key}" title="חסום — השלב ירד לתחתית ולא יוצג בתהליך">${ic('close')}</button>
+      </span></div>`;
+  };
   return `<section class="card wf-card">
     ${head}
     <div class="wf-stages">
       ${active.map((s, i) => stageRow(s, i)).join('')}
-      ${blocked.length ? `<div class="wf-blocked-sep">${ic('pause')} חסום — לא מוצג בתהליך (${blocked.length})</div>
-        ${blocked.map(s => `<div class="wf-stage blocked meta-${metaOf(s.key)}"><span class="wf-num">${ic('pause')}</span><span class="wf-st-title">${s.title}</span>
-          ${wfEdit ? `<span class="wf-st-act"><button class="unbin" data-wfunbin="${j}|${s.key}" title="הסר חסימה">${ic('check')}</button></span>` : ''}</div>`).join('')}` : ''}
       ${wfEdit ? `<div class="wf-addstage"><input data-wfaddinp="${j}" placeholder="שם שלב חדש…">
         <button class="btn xs primary" data-wfadd="${j}">${ic('plus')} הוסף</button></div>` : ''}
+      ${blocked.length ? `<div class="wf-blocked">
+        <div class="wf-blocked-sep">${ic('lock')} <b>חסומים</b>
+          <small>לא מוצגים בתהליך · נשארים כאן להחזרה בכל רגע</small>
+          <span class="wf-bcount">${blocked.length}</span></div>
+        ${blocked.map(s => `<div class="wf-stage blocked meta-${metaOf(s.key)}">
+          <span class="wf-num">${ic('lock')}</span><span class="wf-st-title">${s.title}</span>
+          ${wfEdit ? `<span class="wf-st-act"><button class="unbin" data-wfunbin="${j}|${s.key}" title="החזר לתהליך">${ic('check')} החזר</button></span>` : ''}
+        </div>`).join('')}</div>` : ''}
     </div>
   </section>`;
 }
@@ -1564,10 +1583,18 @@ function renderDynamicView() {
 function bindWfEdit() {
   const et = $('[data-wfedit]'); if (et) et.addEventListener('click', () => { wfEdit = !wfEdit; renderDynamicView(); });
   const pair = v => { const [j, i] = v.split('|'); return [j, +i]; };
-  $$('[data-wfup]').forEach(b => b.addEventListener('click', () => { const [j, i] = pair(b.dataset.wfup); const a = WORKFLOWS[j]; [a[i - 1], a[i]] = [a[i], a[i - 1]]; renderDynamicView(); }));
-  $$('[data-wfdn]').forEach(b => b.addEventListener('click', () => { const [j, i] = pair(b.dataset.wfdn); const a = WORKFLOWS[j]; [a[i + 1], a[i]] = [a[i], a[i + 1]]; renderDynamicView(); }));
-  $$('[data-wfrm]').forEach(b => b.addEventListener('click', () => { const [j, i] = pair(b.dataset.wfrm); if (WORKFLOWS[j].length <= 1) { toast('חייב להישאר שלב אחד'); return; } WORKFLOWS[j].splice(i, 1); renderDynamicView(); toast('השלב הוסר מכל המערכת'); }));
-  // עין — כבוי כברירת מחדל (יופעל פרטנית בכל ליד) · פח — חסום לגמרי עד שמנהל יסיר
+  /* הזזה מדלגת על שלבים חסומים — אחרת הלחיצה "לא עושה כלום" מבחינת המשתמש */
+  const wfMove = (j, i, dir) => {
+    const a = WORKFLOWS[j];
+    let t = i + dir;
+    while (a[t] && stageIsBlocked(j, a[t].key)) t += dir;
+    if (!a[t]) return;
+    [a[t], a[i]] = [a[i], a[t]];
+    renderDynamicView();
+  };
+  $$('[data-wfup]').forEach(b => b.addEventListener('click', () => { const [j, i] = pair(b.dataset.wfup); wfMove(j, i, -1); }));
+  $$('[data-wfdn]').forEach(b => b.addEventListener('click', () => { const [j, i] = pair(b.dataset.wfdn); wfMove(j, i, 1); }));
+  // שלב אינו נמחק לעולם — עין = כבוי כברירת מחדל (יופעל פרטנית בכל ליד) · X = חסום ויורד לתחתית
   $$('[data-wfeye]').forEach(b => b.addEventListener('click', () => {
     const p = b.dataset.wfeye.split('|'), off = !stageIsOffByDefault(p[0], p[1]);
     wfStageSet(p[0], p[1], { off }); renderDynamicView();
@@ -1576,7 +1603,7 @@ function bindWfEdit() {
   $$('[data-wfbin]').forEach(b => b.addEventListener('click', () => {
     const p = b.dataset.wfbin.split('|');
     wfStageSet(p[0], p[1], { blocked: true }); renderDynamicView();
-    toast('השלב הועבר לחסימה — לא יוצג בתהליך עד שמנהל יסיר את החסימה');
+    toast('השלב נחסם וירד לתחתית — אפשר להחזיר אותו בכל רגע');
   }));
   $$('[data-wfunbin]').forEach(b => b.addEventListener('click', () => {
     const p = b.dataset.wfunbin.split('|');
