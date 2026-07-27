@@ -31,7 +31,20 @@ const CBX = {
   def(key) { return CBX.mods.find(m => m.key === key) || null; },
 
   /* ---------------- התקנה / כיבוי ---------------- */
-  boot() { CBX.mods.forEach(m => { if (CBX.isOn(m.key)) CBX._install(m); }); CBX.save(); },
+  boot() {
+    /* מודולים שסומנו כבויים כברירת מחדל וכבר נשמרו כדולקים בעבר —
+       מכובים פעם אחת, כדי שהגדרת ברירת המחדל תיכנס לתוקף. */
+    try {
+      const fixed = JSON.parse(localStorage.getItem('cb_extFix') || '[]');
+      CBX.mods.forEach(m => {
+        if (m.defaultOn === false && fixed.indexOf(m.key) < 0) {
+          CBX.state[m.key] = false; fixed.push(m.key);
+        }
+      });
+      localStorage.setItem('cb_extFix', JSON.stringify(fixed));
+    } catch (e) {}
+    CBX.mods.forEach(m => { if (CBX.isOn(m.key)) CBX._install(m); }); CBX.save();
+  },
   _install(m) {
     if (m._installed) return;
     CBX._undo[m.key] = CBX._undo[m.key] || [];

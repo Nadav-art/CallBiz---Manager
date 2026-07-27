@@ -262,7 +262,7 @@
   }
 
   CBX.register({
-    key: 'omnisetup', label: 'מדריך הקמת ערוצים ותשתית', icon: 'docs',
+    key: 'omnisetup', defaultOn: false, label: 'מדריך הקמת ערוצים ותשתית', icon: 'docs',
     desc: 'מדריך מובנה שלב אחר שלב לכל ערוץ — מה להכין מראש, מה עושים אצל הספק ומה מזינים כאן, עם סימון התקדמות שנשמר. כולל חיבור תיבת דואר ב-IMAP/SMTP ורשימת התשתית שנדרשת בצד השרת.',
     files: ['js/ext/omni-setup.js', 'css/ext/omni-setup.css'],
     install() {

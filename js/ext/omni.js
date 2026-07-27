@@ -386,7 +386,7 @@
   }
 
   CBX.register({
-    key: 'omni', label: 'אומניצ׳אנל — ניהול ערוצים', icon: 'chat',
+    key: 'omni', defaultOn: false, label: 'אומניצ׳אנל — ניהול ערוצים', icon: 'chat',
     desc: 'מסך ניהול לכל ערוצי התקשורת: WhatsApp, Messenger, Instagram, Gmail, Outlook וצ׳אט באתר. חיבור וניתוק, רענון הרשאות, הגדרות ניתוב ושעות פעילות, ניהול חיבורים עם לוג ובדיקות Webhook/API, רב-דיירות והרשאות לפי תפקיד. ארכיטקטורת מחברים — ערוץ חדש נרשם בשורה אחת.',
     files: ['js/ext/omni.js', 'css/ext/omni.css'],
     install() {

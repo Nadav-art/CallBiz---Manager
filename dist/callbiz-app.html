@@ -24675,7 +24675,20 @@ const CBX = {
   def(key) { return CBX.mods.find(m => m.key === key) || null; },
 
   /* ---------------- התקנה / כיבוי ---------------- */
-  boot() { CBX.mods.forEach(m => { if (CBX.isOn(m.key)) CBX._install(m); }); CBX.save(); },
+  boot() {
+    /* מודולים שסומנו כבויים כברירת מחדל וכבר נשמרו כדולקים בעבר —
+       מכובים פעם אחת, כדי שהגדרת ברירת המחדל תיכנס לתוקף. */
+    try {
+      const fixed = JSON.parse(localStorage.getItem('cb_extFix') || '[]');
+      CBX.mods.forEach(m => {
+        if (m.defaultOn === false && fixed.indexOf(m.key) < 0) {
+          CBX.state[m.key] = false; fixed.push(m.key);
+        }
+      });
+      localStorage.setItem('cb_extFix', JSON.stringify(fixed));
+    } catch (e) {}
+    CBX.mods.forEach(m => { if (CBX.isOn(m.key)) CBX._install(m); }); CBX.save();
+  },
   _install(m) {
     if (m._installed) return;
     CBX._undo[m.key] = CBX._undo[m.key] || [];
@@ -32850,7 +32863,7 @@ function openExtPanel() {
   }
 
   CBX.register({
-    key: 'omni', label: 'אומניצ׳אנל — ניהול ערוצים', icon: 'chat',
+    key: 'omni', defaultOn: false, label: 'אומניצ׳אנל — ניהול ערוצים', icon: 'chat',
     desc: 'מסך ניהול לכל ערוצי התקשורת: WhatsApp, Messenger, Instagram, Gmail, Outlook וצ׳אט באתר. חיבור וניתוק, רענון הרשאות, הגדרות ניתוב ושעות פעילות, ניהול חיבורים עם לוג ובדיקות Webhook/API, רב-דיירות והרשאות לפי תפקיד. ארכיטקטורת מחברים — ערוץ חדש נרשם בשורה אחת.',
     files: ['js/ext/omni.js', 'css/ext/omni.css'],
     install() {
@@ -33202,7 +33215,7 @@ function openExtPanel() {
   }
 
   CBX.register({
-    key: 'omniui', label: 'מסך הערוצים — חוויית מוצר', icon: 'chat',
+    key: 'omniui', defaultOn: false, label: 'מסך הערוצים — חוויית מוצר', icon: 'chat',
     desc: '"ערוצים" בתפריט הראשי: כרטיס לכל ערוץ עם סטטוס בצבע ובטקסט, חיבור בחלון אחד (הסבר → אישור → בחירת נכס → הצלחה → הגדרות), פס התקדמות, כרטיס "נותר שלב אחד" וכפתורי פעולה מהירים. פרטים טכניים מוסתרים ושמורים למסך מנהל CallBiz.',
     files: ['js/ext/omni-ui.js', 'css/ext/omni-ui.css'],
     install() {
@@ -33500,7 +33513,7 @@ function openExtPanel() {
   }
 
   CBX.register({
-    key: 'omnisetup', label: 'מדריך הקמת ערוצים ותשתית', icon: 'docs',
+    key: 'omnisetup', defaultOn: false, label: 'מדריך הקמת ערוצים ותשתית', icon: 'docs',
     desc: 'מדריך מובנה שלב אחר שלב לכל ערוץ — מה להכין מראש, מה עושים אצל הספק ומה מזינים כאן, עם סימון התקדמות שנשמר. כולל חיבור תיבת דואר ב-IMAP/SMTP ורשימת התשתית שנדרשת בצד השרת.',
     files: ['js/ext/omni-setup.js', 'css/ext/omni-setup.css'],
     install() {
