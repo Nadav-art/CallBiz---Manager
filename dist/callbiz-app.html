@@ -7687,6 +7687,28 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 @keyframes fsTagOut { 0%,70% { opacity: 1; } 100% { opacity: 0; } }
 .fl-st { position: relative; }
 
+/* ---------- שלבי המהלך בתוך אותו חלון ---------- */
+.fs-step { display: flex; flex-direction: column; }
+.fs-days { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.fs-day { font: inherit; font-size: 12px; cursor: pointer; padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
+.fs-day.on { border-color: var(--brand); color: #fff; background: var(--brand); font-weight: 600; }
+.fs-slots { display: flex; flex-direction: column; gap: 6px; }
+.fs-slot { display: flex; align-items: center; gap: 11px; width: 100%; font: inherit; text-align: start;
+  cursor: pointer; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+.fs-slot:hover { border-color: var(--brand); background: var(--surface-2); }
+.fs-t { flex: 0 0 auto; font-size: 15px; font-weight: 700; color: var(--brand); font-variant-numeric: tabular-nums; }
+.fs-i { flex: 1 1 auto; min-width: 0; }
+.fs-i b { display: block; font-size: 12.5px; }
+.fs-i small { display: block; font-size: 11px; color: var(--text-2); margin-top: 1px; }
+.fs-go svg { width: 14px; height: 14px; color: var(--text-2); }
+.fs-empty2 { display: flex; align-items: center; gap: 7px; padding: 20px; border-radius: 12px;
+  font-size: 12.5px; color: var(--text-2); border: 1px dashed var(--line); background: var(--surface-2); }
+.fs-empty2 svg { width: 14px; height: 14px; }
+.fs-foot-n { margin-inline-start: auto; font-size: 11.5px; color: var(--text-2); }
+.fs-wide { width: 100%; justify-content: center; margin-top: 4px; }
+.fs-hold > div { flex: 1 1 auto; }
+
 </style>
   <style>
 /* ============================================================
@@ -31030,16 +31052,20 @@ function openExtPanel() {
           const sumOK = (typeof needsSummary === 'function' ? needsSummary(r) : []).length > 0;
           const svcOK = ((r.services || []).length > 0);
           const filled = sumOK && svcOK;
-          const state = filled ? 'done'
-            : both.every(x => x.state === 'done') ? 'done'
-            : both.some(x => x.state === 'overdue') ? 'overdue'
+          /* "הושלם" רק כשבאמת נבחר שירות *וגם* נענו קריטריונים.
+             מיקום בציר לבדו אינו מעיד על השלמה — אחרת השלב מוצג
+             ירוק בזמן ששתי השורות אומרות "טרם". */
+          let state = both.some(x => x.state === 'overdue') ? 'overdue'
             : both.some(x => x.state === 'active') ? 'active'
+            : both.every(x => x.state === 'done') ? 'done'
             : both.some(x => x.state === 'done') ? 'active' : 'todo';
+          if (filled) state = 'done';
+          else if (state === 'done') state = (sumOK || svcOK) ? 'active' : 'todo';
           const parts = both.map(x => x.result).filter(Boolean);
           const merged = Object.assign({}, ci < si ? c : s, {
             key: c.key, title: 'התאמת שירות / מוצר', state: state,
             result: parts.length ? parts.join(' · ') : null,
-            noContent: state === 'done' && !parts.length && !filled,
+            noContent: state === 'done' && !filled,
             idx: Math.min(c.idx, s.idx),
           });
           const out = list.filter((x, i) => i !== ci && i !== si);
@@ -31113,7 +31139,15 @@ function openExtPanel() {
     },
   });
 
-  window.FLOW = { mode: modeOf, blocked: svcBlocked, staffFor, alternatives, related: relatedTo,
+  /* הכותרת המשותפת — כדי ששלבים שנבנים במודולים אחרים יציגו בדיוק
+     את אותה רצועה ואותם כרטיסי מסלול, באותו חלון. */
+  function bindHeaderIn(host, r, cur) {
+    if (!host) return;
+    bindStrip(host, r, () => { if (window.FLOWSTEPS) FLOWSTEPS.open(r, cur); });
+    bindModes(host, r, cur, () => { if (window.FLOWSTEPS) FLOWSTEPS.open(r, cur); });
+  }
+  window.FLOW = { header: headerHTML, bindHeader: bindHeaderIn,
+    mode: modeOf, blocked: svcBlocked, staffFor, alternatives, related: relatedTo,
     missing: reqMissing, check: checkAfterCritChange, readiness, steps: stepsOf };
 })();
 
@@ -31239,18 +31273,118 @@ function openExtPanel() {
 
   let onlyFit = false;   // הצ׳יפ "רק תואמים"
 
-  /* ---------------- סיכום ---------------- */
+  /* ============================================================
+     כל השלבים חיים בתוך אותו פופ-אפ (#modal). אין חלון נוסף שקופץ
+     מעל — הכותרת, רצועת השלבים והכפתורים נשארים במקומם, ומתחלף רק
+     גוף המסך. כך המהלך מרגיש רציף.
+     ============================================================ */
+  const money = n => (n || 0).toLocaleString('he-IL') + ' ₪';
+
+  function shell(r, key, title, body, foot) {
+    const m = document.getElementById('modal'); if (!m) return;
+    m.classList.add('fl-modal');
+    m.style.maxWidth = '600px'; m.style.width = '100%'; m.style.height = 'min(78vh, 720px)';
+    m.innerHTML = `
+      <div class="modal-head"><div class="title"><span class="num">${ic('tasks')}</span> ${esc(title)} · ${esc(r.name)}</div>
+        <button class="close-btn" id="closeModal">${ic('close')}</button></div>
+      <div class="modal-body fs-step" data-fsstep="${esc(key)}">
+        ${(window.FLOW && FLOW.header) ? FLOW.header(r, key) : ''}
+        ${body}
+      </div>
+      <div class="modal-foot">${foot}</div>`;
+    const x = document.getElementById('closeModal');
+    if (x) x.addEventListener('click', () => { if (typeof closeModal === 'function') closeModal(); });
+    if (window.FLOW && FLOW.bindHeader) FLOW.bindHeader(document.querySelector('#modal .fs-step'), r, key);
+    const wrap = document.getElementById('modalWrap'); if (wrap) wrap.classList.add('open');
+  }
+  const prevStep = (r, key) => { const st = steps(r); return st[st.indexOf(key) - 1]; };
+  const nextStep = (r, key) => { const st = steps(r); return st[st.indexOf(key) + 1]; };
+  function backBtn(r, key) {
+    const pv = prevStep(r, key);
+    return pv ? `<button class="btn ghost" data-fsback>${ic('chevronR')} חזרה</button>` : '';
+  }
+
+  /* ---------------- תיאום — בתוך החלון ---------------- */
+  let calDay = 'all';
+  function slotsFor(r) {
+    if (typeof rankedSlots !== 'function' || typeof eligibleDocs !== 'function') return [];
+    const svcs = (r.services || []).filter(Boolean);
+    if (typeof proposeState !== 'undefined') proposeState = Object.assign({}, proposeState,
+      { rec: r, services: svcs, dayFilter: 'all', track: 'service', mode: 'consolidated' });
+    const elig = eligibleDocs(svcs);
+    const docs = (elig.length ? elig : (typeof COORD_DOCTORS !== 'undefined' ? COORD_DOCTORS : [])).map(d => d.key);
+    let list = rankedSlots(docs) || [];
+    if (calDay !== 'all') list = list.filter(s => s.date === calDay);
+    return list.slice(0, 40);
+  }
+  function openCal(r) {
+    const q = reqsOf(r);
+    const all = slotsFor(r);
+    const days = [];
+    (slotsFor(r) || []).forEach(s => { if (days.indexOf(s.date) < 0) days.push(s.date); });
+    const hold = q.on.billing && holdAllowed();
+    const body = `
+      ${q.on.billing ? `<div class="fs-hold ${hold ? '' : 'warn'}">${ic(hold ? 'lock' : 'alert')}
+        <div><b>${hold ? 'המועד ייכנס לשיריון זמני' : 'לא ניתן לשריין'}</b>
+          <small>${hold ? 'השירות דורש תשלום — המועד נשמר ל' + holdMins() + ' דקות עד להשלמת הסליקה'
+            : 'זמן השיריון בהגדרות הוא 0 — המועד ייקבע רק אחרי הסליקה'}</small></div></div>` : ''}
+      <div class="fs-days"><button class="fs-day ${calDay === 'all' ? 'on' : ''}" data-fsday="all">הכל</button>
+        ${days.slice(0, 6).map(d => `<button class="fs-day ${calDay === d ? 'on' : ''}" data-fsday="${esc(d)}">
+          ${typeof cDayLbl === 'function' ? esc(cDayLbl(d)) : esc(d)}</button>`).join('')}</div>
+      <div class="fs-slots">${all.length ? all.map(s => `<button class="fs-slot" data-fsslot="${esc(s.id)}">
+          <span class="fs-t">${typeof fmtH === 'function' ? fmtH(s.h) : ''}</span>
+          <span class="fs-i"><b>${typeof cDayLbl === 'function' ? esc(cDayLbl(s.date)) : esc(s.date)} · ${esc(s.docName || '')}</b>
+            <small>${esc((typeof cBranch === 'function' && cBranch(s.branch)) ? (cBranch(s.branch).short || cBranch(s.branch).label) : '')}
+              ${s.reason ? ' · ' + esc(s.reason) : ''}</small></span>
+          <span class="fs-go">${ic('chevronL')}</span></button>`).join('')
+        : `<div class="fs-empty2">${ic('alert')} אין מועדים פנויים בקריטריונים שנבחרו</div>`}</div>`;
+    shell(r, 'cal', 'תיאום מועד', body,
+      `${backBtn(r, 'cal')}<span class="fs-foot-n">${all.length} מועדים מתאימים</span>`);
+    const host = document.querySelector('#modal .fs-step');
+    host.querySelectorAll('[data-fsday]').forEach(b => b.addEventListener('click', () => { calDay = b.dataset.fsday; openCal(r); }));
+    host.querySelectorAll('[data-fsslot]').forEach(b => b.addEventListener('click', () => pickSlot(r, b.dataset.fsslot)));
+    bindBack(r, 'cal');
+  }
+  /* בחירת מועד — קביעה, או שיריון זמני כשנדרשת סליקה */
+  function pickSlot(r, id) {
+    const s = (typeof coordPool === 'function') ? coordPool().find(x => x.id === id) : null;
+    if (!s) return;
+    const q = reqsOf(r);
+    const staff = (typeof staffById === 'function' && staffById(s.doc)) ? staffById(s.doc).name : '';
+    if (q.on.billing) {
+      if (holdAllowed()) {
+        s.held = true; s.heldBy = r.id;
+        const tot = holdMins();
+        r.slotHold = { id: 'hold_' + s.id, slotId: s.id, recId: r.id, name: r.name, staffName: staff,
+          date: s.date, h: s.h, price: (typeof svcTotals === 'function') ? svcTotals(r.services || []).price : 0,
+          minsLeft: tot, totalMins: tot };
+        if (typeof SLOT_HOLDS !== 'undefined') SLOT_HOLDS.unshift(r.slotHold);
+        toast('המועד בשיריון זמני ל' + tot + ' דקות — עד להשלמת הסליקה');
+      } else {
+        r.pendingSlot = { id: s.id, date: s.date, h: s.h, staffName: staff };
+        toast('המועד יישמר רק לאחר הסליקה');
+      }
+    } else {
+      s.booked = true;
+      r.meeting = { date: (typeof ptFmtDate === 'function') ? ptFmtDate(s.date) : s.date,
+        time: (typeof fmtH === 'function') ? fmtH(s.h) : '', dur: (typeof svcDur === 'function') ? svcDur(r.services || []) : 60,
+        channel: staff, with: staff };
+      if (typeof autoFire === 'function') autoFire('a2', { rec: r });
+      toast('נקבעה פגישה · ' + ((typeof cDayLbl === 'function') ? cDayLbl(s.date) : s.date) + ' ' + ((typeof fmtH === 'function') ? fmtH(s.h) : ''));
+    }
+    if (typeof renderList === 'function') renderList();
+    openSummary(r);
+  }
+
+  /* ---------------- סיכום הצעה ---------------- */
   function openSummary(r) {
     const q = reqsOf(r);
     const price = (window.BOOKMODE && BOOKMODE.price) ? BOOKMODE.price(r) : { base: 0, disc: 0, final: 0 };
     const dur = q.list.reduce((s, t) => s + (+t.dur || 0), 0);
-    const old = document.getElementById('fsSum'); if (old) old.remove();
-    const w = document.createElement('div'); w.className = 'cbc-wrap'; w.id = 'fsSum';
-    const money = n => (n || 0).toLocaleString('he-IL') + ' ₪';
-    w.innerHTML = `<div class="cbc-box fs-sum" style="max-width:640px;text-align:start">
-      <div class="cbc-head"><span class="cbc-ic">${ic('check')}</span>
-        <div><b>סיכום הצעה</b><small class="fs-sub">${esc(r.name)}${r.org ? ' · ' + esc(r.org) : ''}</small></div></div>
-
+    const when = r.meeting ? (r.meeting.date + ' ' + r.meeting.time)
+      : r.slotHold ? ((typeof cDayLbl === 'function' ? cDayLbl(r.slotHold.date) : '') + ' ' + (typeof fmtH === 'function' ? fmtH(r.slotHold.h) : '') + ' · בשיריון')
+      : r.pendingSlot ? ((typeof cDayLbl === 'function' ? cDayLbl(r.pendingSlot.date) : '') + ' ' + (typeof fmtH === 'function' ? fmtH(r.pendingSlot.h) : '') + ' · ממתין לתשלום') : '';
+    const body = `
       <div class="fs-sec">${ic('layers')} <b>מה נבחר</b></div>
       <div class="fs-items">${q.list.map(t => `<div class="fs-item">
         <div class="fs-it-h"><b>${esc(t.label)}</b>
@@ -31258,14 +31392,13 @@ function openExtPanel() {
         ${t.pre ? `<div class="fs-note"><span>${ic('note')} הנחיות ללקוח</span><p>${esc(t.pre)}</p></div>` : ''}
         ${t.instr ? `<div class="fs-note in"><span>${ic('tasks')} הנחיות פנימיות</span><p>${esc(t.instr)}</p></div>` : ''}
       </div>`).join('') || '<p class="fs-none">לא נבחרו פריטים</p>'}</div>
-
       <div class="fs-grid">
         <div class="fs-box">
           <div class="fs-sec sm">${ic('check')} <b>סיכום</b></div>
           <div class="fs-kv"><span>פריטים</span><b>${q.list.length}</b></div>
           ${dur ? `<div class="fs-kv"><span>זמן כולל</span><b>${dur} דק׳</b></div>` : ''}
           <div class="fs-kv"><span>עלות</span><b>${price.base ? money(price.final) : 'ללא עלות'}</b></div>
-          ${r.meeting ? `<div class="fs-kv"><span>מועד</span><b>${esc(r.meeting.date)} ${esc(r.meeting.time)}</b></div>` : ''}
+          ${when ? `<div class="fs-kv"><span>מועד</span><b>${esc(when)}</b></div>` : ''}
           ${r.paid ? `<div class="fs-kv"><span>תשלום</span><b class="ok">שולם · ${esc(r.paid.ref || '')}</b></div>` : ''}
         </div>
         <div class="fs-box">
@@ -31273,20 +31406,16 @@ function openExtPanel() {
           ${REQS.map(x => `<div class="fs-kv"><span>${ic(x.icon)} ${esc(x.label)}</span>
             <b class="${q.on[x.key] ? 'need' : 'no'}">${q.on[x.key] ? 'נדרש' : 'לא נדרש'}</b></div>`).join('')}
         </div>
-      </div>
-
-      <div class="cbc-actions">
-        <button class="btn ghost" id="fsBack">${ic('layers')} חזרה לפריטים</button>
-        <button class="btn primary" id="fsDone">${q.on.billing && !r.paid
-          ? ic('check') + ' המשך לסליקה' : ic('check') + ' סיום'}</button>
-      </div></div>`;
-    document.body.appendChild(w);
-    w.querySelector('#fsBack').addEventListener('click', () => { w.remove(); if (typeof openServiceSelect === 'function') openServiceSelect(r); });
-    w.querySelector('#fsDone').addEventListener('click', () => {
-      w.remove();
-      /* אם נדרשת סליקה — היא השלב האחרון, וממנו מסיימים */
-      if (q.on.billing && !r.paid) return openPay(r);
+      </div>`;
+    const nx = nextStep(r, 'summary');
+    shell(r, 'summary', 'סיכום הצעה', body,
+      `${backBtn(r, 'summary')}<button class="btn primary" data-fsnext>${ic('check')} ${nx === 'pay' ? 'המשך לסליקה' : 'סיום'}</button>`);
+    bindBack(r, 'summary');
+    const b = document.querySelector('#modal [data-fsnext]');
+    if (b) b.addEventListener('click', () => {
+      if (nx === 'pay') return openPay(r);
       r.dealDone = true;
+      if (typeof closeModal === 'function') closeModal();
       toast('המהלך הושלם');
       if (typeof renderDrawerTab === 'function') renderDrawerTab(r);
       if (typeof renderList === 'function') renderList();
@@ -31299,54 +31428,56 @@ function openExtPanel() {
     const price = (window.BOOKMODE && BOOKMODE.price) ? BOOKMODE.price(r) : { final: 0 };
     const dep = q.list.reduce((s, t) => s + (+t.deposit || 0), 0);
     const due = dep || price.final;
-    const money = n => (n || 0).toLocaleString('he-IL') + ' ₪';
-    const old = document.getElementById('fsPay'); if (old) old.remove();
-    const w = document.createElement('div'); w.className = 'cbc-wrap'; w.id = 'fsPay';
-    w.innerHTML = `<div class="cbc-box fs-box2" style="max-width:520px;text-align:start">
-      <div class="cbc-head"><span class="cbc-ic">${ic('check')}</span><b>סליקה · ${esc(r.name)}</b></div>
-      ${r.slotHold ? `<div class="fs-hold">${ic('lock')} <b>המועד בשיריון זמני</b>
+    const body = `
+      ${r.slotHold ? `<div class="fs-hold">${ic('lock')} <div><b>המועד בשיריון זמני</b>
           <small>${typeof cDayLbl === 'function' ? cDayLbl(r.slotHold.date) : ''} ${typeof fmtH === 'function' ? fmtH(r.slotHold.h) : ''}
-          · הסליקה תהפוך אותו לתור קבוע</small></div>`
-        : (q.on.meeting ? `<div class="fs-hold warn">${ic('alert')} <b>אין שיריון פעיל</b>
-            <small>${holdAllowed() ? 'המועד לא נשמר' : 'זמן השיריון בהגדרות הוא 0 — לא ניתן לשריין בלי תשלום'}</small></div>` : '')}
+          · הסליקה תהפוך אותו לתור קבוע</small></div></div>`
+        : (q.on.meeting ? `<div class="fs-hold warn">${ic('alert')} <div><b>המועד טרם נשמר</b>
+            <small>${holdAllowed() ? 'אין שיריון פעיל' : 'זמן השיריון בהגדרות הוא 0'} — התור ייקבע עם אישור הסליקה</small></div></div>` : '')}
       <div class="fs-kv big"><span>לתשלום</span><b>${money(due)}</b></div>
       ${dep && price.final > dep ? `<div class="fs-kv"><span>יתרה</span><b>${money(price.final - dep)}</b></div>` : ''}
-      <p class="fs-hint">${ic('alert')} הסליקה מתבצעת כרגע בפלטפורמה חיצונית. אפשר לשלוח קישור,
+      <p class="fs-hint">${ic('alert')} הסליקה מתבצעת כרגע בפלטפורמה חיצונית. אפשר לשלוח קישור ללקוח,
         או לאשר כאן שהתשלום כבר בוצע — והמערכת תמשיך בהתאם.</p>
-      <div class="cbc-actions col">
-        <button class="btn" id="fsPayLink">${ic('sync')} שליחת קישור סליקה ללקוח</button>
-        <button class="btn primary" id="fsPayOK">${ic('check')} אשר שבוצעה סליקה</button>
-        <button class="btn ghost" id="fsPayX">חזרה</button>
-      </div></div>`;
-    document.body.appendChild(w);
-    const done = (ref, note) => {
-      r.paid = { at: (typeof docStamp === 'function') ? docStamp() : '', amount: due, ref, mode: 'external' };
-      if (r.slotHold) {   /* השיריון הופך לתור קבוע */
-        const s = (typeof coordPool === 'function') ? coordPool().find(x => x.id === r.slotHold.slotId) : null;
+      <button class="btn fs-wide" data-fslink>${ic('sync')} שליחת קישור סליקה ללקוח</button>`;
+    shell(r, 'pay', 'סליקה', body,
+      `${backBtn(r, 'pay')}<button class="btn primary" data-fsok>${ic('check')} אשר שבוצעה סליקה</button>`);
+    bindBack(r, 'pay');
+    const lk = document.querySelector('#modal [data-fslink]');
+    if (lk) lk.addEventListener('click', () => { r.payLinkSent = true; toast('קישור סליקה נשלח ללקוח'); });
+    const ok = document.querySelector('#modal [data-fsok]');
+    if (ok) ok.addEventListener('click', () => {
+      r.paid = { at: (typeof docStamp === 'function') ? docStamp() : '', amount: due,
+        ref: 'EXT-' + ((r.id || 0) * 7 + 1000), mode: 'external' };
+      const src = r.slotHold || r.pendingSlot;
+      if (src) {
+        const s = (typeof coordPool === 'function') ? coordPool().find(x => x.id === src.slotId || x.id === src.id) : null;
         if (s) { s.booked = true; s.held = false; }
-        r.meeting = { date: (typeof ptFmtDate === 'function') ? ptFmtDate(r.slotHold.date) : r.slotHold.date,
-          time: (typeof fmtH === 'function') ? fmtH(r.slotHold.h) : '', dur: 60,
-          channel: r.slotHold.staffName || '', with: r.slotHold.staffName || '' };
-        if (typeof SLOT_HOLDS !== 'undefined') SLOT_HOLDS = SLOT_HOLDS.filter(x => x.id !== r.slotHold.id);
-        r.slotHold = null;
+        r.meeting = { date: (typeof ptFmtDate === 'function') ? ptFmtDate(src.date) : src.date,
+          time: (typeof fmtH === 'function') ? fmtH(src.h) : '', dur: 60,
+          channel: src.staffName || '', with: src.staffName || '' };
+        if (r.slotHold && typeof SLOT_HOLDS !== 'undefined') SLOT_HOLDS = SLOT_HOLDS.filter(x => x.id !== r.slotHold.id);
+        r.slotHold = null; r.pendingSlot = null;
       }
-      w.remove(); toast(note);
+      r.dealDone = true;
+      if (typeof closeModal === 'function') closeModal();
+      toast('הסליקה אושרה · ' + money(due) + (r.meeting ? ' · התור נקבע' : ''));
       if (typeof renderDrawerTab === 'function') renderDrawerTab(r);
-      openSummary(r);
-    };
-    w.querySelector('#fsPayLink').addEventListener('click', () => {
-      r.payLinkSent = true; toast('קישור סליקה נשלח ללקוח · הפנייה תתעדכן עם החיווי');
-      w.remove(); openSummary(r);
+      if (typeof renderList === 'function') renderList();
     });
-    w.querySelector('#fsPayOK').addEventListener('click', () => done('EXT-' + ((r.id || 0) * 7 + 1000), 'הסליקה אושרה · ' + money(due)));
-    w.querySelector('#fsPayX').addEventListener('click', () => w.remove());
+  }
+
+  function bindBack(r, key) {
+    const b = document.querySelector('#modal [data-fsback]');
+    if (b) b.addEventListener('click', () => {
+      const pv = prevStep(r, key); if (pv) open(r, pv);
+    });
   }
 
   /* ---------------- ניווט ---------------- */
   function open(r, key) {
     if (key === 'crit' && typeof openNeedsClarify === 'function') return openNeedsClarify(r);
     if (key === 'svc' && typeof openServiceSelect === 'function') return openServiceSelect(r);
-    if (key === 'cal' && typeof openProposedTimes === 'function') return openProposedTimes(r);
+    if (key === 'cal') return openCal(r);
     if (key === 'pay') return openPay(r);
     if (key === 'summary') return openSummary(r);
   }
@@ -31418,31 +31549,24 @@ function openExtPanel() {
             if (nk && LBL[nk]) nextBtn.innerHTML = `בחירה והמשך ${LBL[nk]} ${ic('chevronL')}`;
             if (!nextBtn.__fs) {
               nextBtn.__fs = true;
-              nextBtn.addEventListener('click', () => {
+              nextBtn.addEventListener('click', (e) => {
+                /* מקבעים את המסלול לפני שמירת השירותים — אחרת modeOf
+                   היה מתהפך ל"יודע" ברגע שיש שירותים, והשלב הבא היה
+                   קופץ חזרה לקריטריונים. */
+                if (window.FLOW && FLOW.mode && !r.flowMode) r.flowMode = FLOW.mode(r);
                 r.services = (st.sel || []).slice();
                 /* השלב הבא נגזר מחדש *אחרי* השמירה — כך שכל שלב ביניים
                    שיתווסף בעתיד ייכנס לרצף מאליו, בלי לגעת כאן. */
                 const seq = steps(r);
                 const nx2 = seq[seq.indexOf('svc') + 1];
-                if (!nx2 || nx2 === 'cal') return;           /* הליבה פותחת את מסך התיאום */
-                setTimeout(() => { if (typeof closeModal === 'function') closeModal(); open(r, nx2); }, 30);
+                if (!nx2) return;
+                /* הכול נשאר באותו חלון — רק מחליפים את גוף המסך */
+                e.preventDefault(); e.stopImmediatePropagation();
+                open(r, nx2);
               }, true);
             }
           }
         } catch (e) { console.error('[flowsteps] svc', e); }
-        return out;
-      });
-
-      /* --- אחרי התיאום: סיכום, או סליקה אם נדרשת --- */
-      if (typeof closeProposedTimes === 'function') CBX.wrap('flowsteps', 'closeProposedTimes', o => function () {
-        const r = (typeof proposeState !== 'undefined') ? proposeState.rec : null;
-        const out = o.apply(this, arguments);
-        try {
-          if (!r || (!r.meeting && !r.slotHold)) return out;
-          if (document.getElementById('fsSum') || document.getElementById('fsPay')) return out;
-          const q = reqsOf(r);
-          setTimeout(() => openSummary(r), 220);
-        } catch (e) {}
         return out;
       });
 

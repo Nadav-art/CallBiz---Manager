@@ -518,16 +518,20 @@
           const sumOK = (typeof needsSummary === 'function' ? needsSummary(r) : []).length > 0;
           const svcOK = ((r.services || []).length > 0);
           const filled = sumOK && svcOK;
-          const state = filled ? 'done'
-            : both.every(x => x.state === 'done') ? 'done'
-            : both.some(x => x.state === 'overdue') ? 'overdue'
+          /* "הושלם" רק כשבאמת נבחר שירות *וגם* נענו קריטריונים.
+             מיקום בציר לבדו אינו מעיד על השלמה — אחרת השלב מוצג
+             ירוק בזמן ששתי השורות אומרות "טרם". */
+          let state = both.some(x => x.state === 'overdue') ? 'overdue'
             : both.some(x => x.state === 'active') ? 'active'
+            : both.every(x => x.state === 'done') ? 'done'
             : both.some(x => x.state === 'done') ? 'active' : 'todo';
+          if (filled) state = 'done';
+          else if (state === 'done') state = (sumOK || svcOK) ? 'active' : 'todo';
           const parts = both.map(x => x.result).filter(Boolean);
           const merged = Object.assign({}, ci < si ? c : s, {
             key: c.key, title: 'התאמת שירות / מוצר', state: state,
             result: parts.length ? parts.join(' · ') : null,
-            noContent: state === 'done' && !parts.length && !filled,
+            noContent: state === 'done' && !filled,
             idx: Math.min(c.idx, s.idx),
           });
           const out = list.filter((x, i) => i !== ci && i !== si);
@@ -601,6 +605,14 @@
     },
   });
 
-  window.FLOW = { mode: modeOf, blocked: svcBlocked, staffFor, alternatives, related: relatedTo,
+  /* הכותרת המשותפת — כדי ששלבים שנבנים במודולים אחרים יציגו בדיוק
+     את אותה רצועה ואותם כרטיסי מסלול, באותו חלון. */
+  function bindHeaderIn(host, r, cur) {
+    if (!host) return;
+    bindStrip(host, r, () => { if (window.FLOWSTEPS) FLOWSTEPS.open(r, cur); });
+    bindModes(host, r, cur, () => { if (window.FLOWSTEPS) FLOWSTEPS.open(r, cur); });
+  }
+  window.FLOW = { header: headerHTML, bindHeader: bindHeaderIn,
+    mode: modeOf, blocked: svcBlocked, staffFor, alternatives, related: relatedTo,
     missing: reqMissing, check: checkAfterCritChange, readiness, steps: stepsOf };
 })();

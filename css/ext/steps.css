@@ -101,3 +101,25 @@
   color: #fff; background: var(--brand); animation: fsTagOut 2.4s forwards; }
 @keyframes fsTagOut { 0%,70% { opacity: 1; } 100% { opacity: 0; } }
 .fl-st { position: relative; }
+
+/* ---------- שלבי המהלך בתוך אותו חלון ---------- */
+.fs-step { display: flex; flex-direction: column; }
+.fs-days { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.fs-day { font: inherit; font-size: 12px; cursor: pointer; padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
+.fs-day.on { border-color: var(--brand); color: #fff; background: var(--brand); font-weight: 600; }
+.fs-slots { display: flex; flex-direction: column; gap: 6px; }
+.fs-slot { display: flex; align-items: center; gap: 11px; width: 100%; font: inherit; text-align: start;
+  cursor: pointer; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+.fs-slot:hover { border-color: var(--brand); background: var(--surface-2); }
+.fs-t { flex: 0 0 auto; font-size: 15px; font-weight: 700; color: var(--brand); font-variant-numeric: tabular-nums; }
+.fs-i { flex: 1 1 auto; min-width: 0; }
+.fs-i b { display: block; font-size: 12.5px; }
+.fs-i small { display: block; font-size: 11px; color: var(--text-2); margin-top: 1px; }
+.fs-go svg { width: 14px; height: 14px; color: var(--text-2); }
+.fs-empty2 { display: flex; align-items: center; gap: 7px; padding: 20px; border-radius: 12px;
+  font-size: 12.5px; color: var(--text-2); border: 1px dashed var(--line); background: var(--surface-2); }
+.fs-empty2 svg { width: 14px; height: 14px; }
+.fs-foot-n { margin-inline-start: auto; font-size: 11.5px; color: var(--text-2); }
+.fs-wide { width: 100%; justify-content: center; margin-top: 4px; }
+.fs-hold > div { flex: 1 1 auto; }
