@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CallBiz Desktop — שולחן עבודה לנציג</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CallBiz Desktop — עיצוב שולחן עבודה כהה
+   ============================================================ */
+:root {
+  --bg: #0B1220; --bg2: #111A2B; --panel: #16213A; --panel2: #1C2A47;
+  --line: #23324F; --line2: #2C3F63;
+  --tx: #E8EDF7; --tx2: #93A2BF; --tx3: #64748B;
+  --brand: #2F7BFF; --brand2: #1E5FD9;
+  --ok: #22C55E; --warn: #F59E0B; --bad: #EF4444;
+  --r: 14px; --r2: 10px;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--tx);
+  font-family: Heebo, system-ui, -apple-system, sans-serif; font-size: 14px; overflow: hidden; }
+.i { width: 18px; height: 18px; flex: 0 0 auto; }
+button { font: inherit; color: inherit; cursor: pointer; }
+input { font: inherit; }
+
+.app { display: grid; grid-template-columns: 232px 1fr; height: 100vh; }
+
+/* ---------------- רצועה ---------------- */
+.rail { background: var(--bg2); border-inline-end: 1px solid var(--line);
+  display: flex; flex-direction: column; padding: 16px 12px; gap: 16px; }
+.me { display: flex; align-items: center; gap: 10px; padding: 4px 6px; }
+.ava { position: relative; width: 40px; height: 40px; border-radius: 12px; flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;
+  background: linear-gradient(135deg, var(--brand), #7C3AED); color: #fff; }
+.ava .dot { position: absolute; inset-inline-end: -2px; bottom: -2px; width: 12px; height: 12px;
+  border-radius: 50%; border: 2px solid var(--bg2); background: var(--tx3); }
+.ava .dot.ok { background: var(--ok); }
+.me-t b { display: block; font-size: 14px; }
+.me-t small { display: block; font-size: 11px; color: var(--tx2); margin-top: 1px; }
+
+.nav { display: flex; flex-direction: column; gap: 3px; flex: 1 1 auto; }
+.nv { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--r2);
+  border: 0; background: transparent; color: var(--tx2); text-align: start; position: relative; }
+.nv:hover { background: var(--panel); color: var(--tx); }
+.nv.on { background: var(--brand); color: #fff; }
+.nv .bdg { margin-inline-start: auto; font-size: 11px; font-style: normal; font-weight: 700;
+  min-width: 20px; text-align: center; padding: 1px 6px; border-radius: 999px;
+  background: var(--brand); color: #fff; }
+.nv.on .bdg { background: rgba(255,255,255,.25); }
+
+.rail-foot .src { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--tx2);
+  padding: 9px 10px; border-radius: var(--r2); background: var(--panel); }
+.rail-foot .src.demo { color: var(--warn); }
+.rail-foot .src .i { width: 13px; height: 13px; }
+
+/* ---------------- במה ---------------- */
+.stage { overflow: auto; padding: 18px; }
+
+/* ---------------- טלפון ---------------- */
+.ph { display: grid; grid-template-columns: 1fr 300px; gap: 14px; align-items: start; }
+.ph-main { display: flex; flex-direction: column; gap: 14px; }
+.live, .idle, .qual, .pad, .info, .pane, .card, .web { background: var(--panel);
+  border: 1px solid var(--line); border-radius: var(--r); }
+.live { padding: 16px; }
+.live-h { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--tx2); }
+.rec-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--tx3); }
+.rec-dot.on { background: var(--ok); box-shadow: 0 0 0 4px rgba(34,197,94,.15); animation: p 1.6s infinite; }
+@keyframes p { 50% { box-shadow: 0 0 0 8px rgba(34,197,94,0); } }
+.live-h .rec { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 5px;
+  color: var(--bad); font-size: 11px; }
+.live-h .rec .i { width: 11px; height: 11px; }
+.live-who { display: flex; align-items: center; gap: 14px; margin: 14px 0 18px; }
+.live-ava { width: 62px; height: 62px; border-radius: 18px; flex: 0 0 auto; display: flex;
+  align-items: center; justify-content: center; font-size: 24px; font-weight: 700;
+  background: linear-gradient(135deg, #334155, #1E293B); }
+.live-who b { display: block; font-size: 20px; }
+.live-who .num { display: block; font-size: 13px; color: var(--tx2); margin-top: 2px; direction: ltr; text-align: start; }
+.live-who .tags { display: flex; gap: 5px; margin-top: 6px; }
+.live-who .tags i { font-style: normal; font-size: 10.5px; padding: 2px 8px; border-radius: 999px;
+  background: var(--panel2); color: var(--tx2); }
+.live-time { margin-inline-start: auto; font-size: 26px; font-weight: 300; font-variant-numeric: tabular-nums; }
+.live-acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.act { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 11px 8px;
+  min-width: 74px; border-radius: var(--r2); border: 1px solid var(--line);
+  background: var(--panel2); color: var(--tx2); font-size: 11px; }
+.act:hover { border-color: var(--line2); color: var(--tx); }
+.act.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+.act.big { min-width: 92px; }
+.act.ok { background: var(--ok); border-color: var(--ok); color: #fff; }
+.act.bad { background: var(--bad); border-color: var(--bad); color: #fff; }
+.pop { margin-top: 14px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 10px; border-radius: var(--r2); border: 1px dashed var(--line2);
+  background: transparent; color: var(--brand); font-size: 12.5px; }
+
+.idle { padding: 40px 20px; text-align: center; }
+.idle-ic { width: 62px; height: 62px; margin: 0 auto 14px; border-radius: 20px; display: flex;
+  align-items: center; justify-content: center; background: var(--panel2); color: var(--tx2); }
+.idle-ic .i { width: 26px; height: 26px; }
+.idle b { display: block; font-size: 16px; }
+.idle small { display: block; color: var(--tx2); margin: 5px 0 16px; }
+
+/* ---------------- איכות ---------------- */
+.qual { padding: 14px 16px; }
+.q-h { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.q-h .i { color: var(--brand); }
+.q-t { margin-inline-start: auto; font-size: 11px; padding: 3px 10px; border-radius: 999px;
+  background: var(--panel2); color: var(--tx2); }
+.q-t.ok { color: var(--ok); background: rgba(34,197,94,.12); }
+.q-t.warn { color: var(--warn); background: rgba(245,158,11,.12); }
+.q-t.bad { color: var(--bad); background: rgba(239,68,68,.12); }
+.q-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
+.q-b { padding: 10px; border-radius: var(--r2); background: var(--panel2); text-align: center; }
+.q-b span { display: block; font-size: 10.5px; color: var(--tx2); }
+.q-b b { display: block; font-size: 19px; font-weight: 600; margin-top: 3px; font-variant-numeric: tabular-nums; }
+.q-b.ok b { color: var(--ok); } .q-b.warn b { color: var(--warn); } .q-b.bad b { color: var(--bad); }
+.q-foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid var(--line); }
+.sw { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--tx2); }
+.q-tr { display: flex; gap: 5px; margin-inline-start: auto; flex-wrap: wrap; }
+.trb { font-size: 11px; padding: 6px 11px; border-radius: 999px; border: 1px solid var(--line);
+  background: transparent; color: var(--tx2); }
+.trb.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+/* ---------------- חייגן ---------------- */
+.ph-side { display: flex; flex-direction: column; gap: 14px; }
+.pad { padding: 14px; }
+.pad-h { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--tx2); margin-bottom: 10px; }
+.pad-in { width: 100%; padding: 12px; border-radius: var(--r2); border: 1px solid var(--line);
+  background: var(--bg); color: var(--tx); font-size: 18px; text-align: center; direction: ltr;
+  font-variant-numeric: tabular-nums; }
+.pad-in:focus { outline: none; border-color: var(--brand); }
+.pad-k { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 11px 0; }
+.k { padding: 13px 0; border-radius: var(--r2); border: 1px solid var(--line);
+  background: var(--panel2); font-size: 17px; font-weight: 500; }
+.k:hover { border-color: var(--brand); }
+.pad-call { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px; border-radius: var(--r2); border: 0; background: var(--ok); color: #fff; font-weight: 600; }
+
+.info { padding: 14px; }
+.info-h { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--tx2); margin-bottom: 9px; }
+.rec-row { display: flex; align-items: center; gap: 9px; width: 100%; padding: 8px 9px; margin-bottom: 4px;
+  border-radius: var(--r2); border: 0; background: transparent; text-align: start; }
+.rec-row:hover { background: var(--panel2); }
+.rr-d { display: flex; color: var(--tx3); } .rr-d.in { color: var(--ok); }
+.rr-d .i { width: 14px; height: 14px; }
+.rr-t b { display: block; font-size: 12.5px; direction: ltr; text-align: start; }
+.rr-t small { display: block; font-size: 10.5px; color: var(--tx2); }
+.rr-q { margin-inline-start: auto; font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--panel2); }
+.rr-q.ok { color: var(--ok); } .rr-q.warn { color: var(--warn); } .rr-q.bad { color: var(--bad); }
+.empty { color: var(--tx3); font-size: 12px; text-align: center; padding: 14px; margin: 0; }
+.empty.sm { padding: 8px; }
+
+/* ---------------- לוחות כלליים ---------------- */
+.pane { padding: 18px; }
+.pane-h { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+.pane-h b { font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.pane-h .btn { margin-inline-start: auto; }
+.pane-l { color: var(--tx2); font-size: 12.5px; line-height: 1.7; margin: 0 0 14px; }
+.pane-l.sm { font-size: 11.5px; margin-bottom: 10px; }
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 15px; border-radius: var(--r2);
+  border: 1px solid var(--line); background: var(--panel2); color: var(--tx); font-size: 12.5px; }
+.btn:hover { border-color: var(--brand); }
+.btn.ghost { background: transparent; }
+.btn.xs { padding: 6px 11px; font-size: 11.5px; }
+
+/* אבחון */
+.dl { display: flex; flex-direction: column; gap: 8px; }
+.d-row { display: flex; align-items: center; gap: 11px; padding: 12px 14px; border-radius: var(--r2);
+  background: var(--panel2); border: 1px solid transparent; flex-wrap: wrap; }
+.d-row.ok { border-color: rgba(34,197,94,.3); }
+.d-row.warn { border-color: rgba(245,158,11,.35); }
+.d-row.bad { border-color: rgba(239,68,68,.4); }
+.d-ic { display: flex; }
+.d-row.ok .d-ic { color: var(--ok); } .d-row.warn .d-ic { color: var(--warn); } .d-row.bad .d-ic { color: var(--bad); }
+.d-t b { display: block; font-size: 13px; }
+.d-t small { display: block; font-size: 11.5px; color: var(--tx2); margin-top: 2px; }
+.d-fix { flex: 1 1 100%; display: flex; align-items: center; gap: 7px; font-size: 11.5px;
+  color: var(--warn); padding: 8px 10px; border-radius: 8px; background: rgba(245,158,11,.08); }
+.d-fix .i { width: 12px; height: 12px; }
+.spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line2);
+  border-top-color: var(--brand); display: inline-block; animation: sp .7s linear infinite; }
+@keyframes sp { to { transform: rotate(360deg); } }
+
+/* ביצועים */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 9px; margin-bottom: 14px; }
+.kpi { padding: 13px; border-radius: var(--r2); background: var(--panel2); }
+.kpi span { display: block; font-size: 11px; color: var(--tx2); }
+.kpi b { display: block; font-size: 21px; font-weight: 600; margin-top: 4px; }
+.kpi.ok b { color: var(--ok); } .kpi.warn b { color: var(--warn); } .kpi.bad b { color: var(--bad); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.card { padding: 14px 16px; margin-bottom: 12px; }
+.card > b { display: flex; align-items: center; gap: 8px; font-size: 13.5px; margin-bottom: 11px; }
+.card > b .i { color: var(--brand); }
+.bar { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; font-size: 12px; }
+.bar span { flex: 0 0 62px; color: var(--tx2); }
+.bar i { flex: 1 1 auto; height: 8px; border-radius: 999px; background: var(--brand); min-width: 2px; display: block; }
+.bar em { font-style: normal; color: var(--tx2); font-size: 11.5px; }
+.li { display: flex; align-items: center; gap: 9px; padding: 7px 0; font-size: 12.5px; border-bottom: 1px solid var(--line); }
+.li:last-child { border-bottom: 0; }
+.li span { color: var(--tx2); } .li b { margin-inline-start: auto; }
+.li b.ok { color: var(--ok); } .li b.bad { color: var(--bad); }
+.perms { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; }
+.pm { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 4px 10px;
+  border-radius: 999px; background: var(--panel2); color: var(--tx3); }
+.pm.on { color: var(--ok); }
+.pm .i { width: 11px; height: 11px; }
+.todo { margin: 0; padding-inline-start: 18px; color: var(--tx2); font-size: 12px; line-height: 1.9; }
+
+/* לוח ווב */
+.web { display: flex; flex-direction: column; height: calc(100vh - 36px); overflow: hidden; }
+.web-h { display: flex; align-items: center; gap: 9px; padding: 11px 14px; border-bottom: 1px solid var(--line); }
+.web-h b { font-size: 13px; }
+.web-u { font-size: 11px; color: var(--tx3); direction: ltr; }
+.web-h .btn { margin-inline-start: auto; }
+.web-f { flex: 1 1 auto; width: 100%; border: 0; background: #fff; }
+
+/* ---------------- התראות ---------------- */
+.alerts { position: fixed; inset-inline-start: 18px; bottom: 18px; z-index: 60;
+  display: flex; flex-direction: column-reverse; gap: 8px; width: min(380px, calc(100vw - 36px)); }
+.al { display: flex; align-items: flex-start; gap: 10px; padding: 12px 13px; border-radius: var(--r2);
+  background: var(--panel); border: 1px solid var(--line2); box-shadow: 0 10px 30px rgba(0,0,0,.4);
+  animation: alIn .18s ease; }
+@keyframes alIn { from { opacity: 0; transform: translateY(8px); } }
+.al.out { opacity: 0; transform: translateY(8px); transition: .18s; }
+.al-i { display: flex; color: var(--brand); }
+.al.warn { border-color: rgba(245,158,11,.45); } .al.warn .al-i { color: var(--warn); }
+.al.bad { border-color: rgba(239,68,68,.5); } .al.bad .al-i { color: var(--bad); }
+.al b { display: block; font-size: 12.5px; }
+.al small { display: block; font-size: 11px; color: var(--tx2); margin-top: 3px; line-height: 1.5; }
+.al small.fix { color: var(--warn); }
+.al > div { flex: 1 1 auto; min-width: 0; }
+.al-b { flex: 0 0 auto; align-self: center; font-size: 11px; padding: 6px 11px; border-radius: 8px;
+  border: 1px solid var(--brand); background: transparent; color: var(--brand); }
+.al-x { flex: 0 0 auto; border: 0; background: transparent; color: var(--tx3); padding: 0; }
+.al-x .i { width: 13px; height: 13px; }
+
+/* ---------------- חלונות ---------------- */
+.modal-host { display: none; }
+.modal-host.on { display: block; }
+.mw { position: fixed; inset: 0; z-index: 80; background: rgba(4,8,16,.6);
+  display: flex; align-items: center; justify-content: center; padding: 20px; }
+.mb { width: min(420px, 100%); background: var(--panel); border: 1px solid var(--line2);
+  border-radius: var(--r); overflow: hidden; }
+.mh { display: flex; align-items: center; padding: 13px 15px; border-bottom: 1px solid var(--line); }
+.mh b { font-size: 14px; } .mx { margin-inline-start: auto; border: 0; background: transparent; color: var(--tx3); }
+.mc { padding: 15px; }
+.m-l { color: var(--tx2); font-size: 12.5px; margin: 0 0 11px; }
+.m-list { display: flex; flex-direction: column; gap: 6px; }
+.m-i { padding: 12px; border-radius: var(--r2); border: 1px solid var(--line);
+  background: var(--panel2); text-align: start; font-size: 13px; }
+.m-i:hover { border-color: var(--brand); }
+
+@media (max-width: 1000px) {
+  .app { grid-template-columns: 74px 1fr; }
+  .me-t, .nv span, .rail-foot .src span { display: none; }
+  .nv { justify-content: center; } .ph { grid-template-columns: 1fr; } .two { grid-template-columns: 1fr; }
+}
+
+
+/* ---------------- באנר עדכון ---------------- */
+.upd { position: fixed; inset-inline-end: 18px; top: 18px; z-index: 90;
+  display: flex; align-items: center; gap: 11px; padding: 12px 14px;
+  width: min(420px, calc(100vw - 36px));
+  background: var(--panel); border: 1px solid var(--brand); border-radius: var(--r);
+  box-shadow: 0 12px 34px rgba(0,0,0,.45); animation: updIn .22s ease; }
+@keyframes updIn { from { opacity: 0; transform: translateY(-10px); } }
+.upd.crit { border-color: var(--warn); }
+.upd-i { display: flex; color: var(--brand); }
+.upd.crit .upd-i { color: var(--warn); }
+.upd-t { flex: 1 1 auto; min-width: 0; }
+.upd-t b { display: block; font-size: 13px; }
+.upd-t small { display: block; font-size: 11px; color: var(--tx2); margin-top: 2px; }
+.upd-go { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto;
+  padding: 8px 14px; border-radius: 9px; border: 0; background: var(--brand); color: #fff; font-size: 12px; font-weight: 600; }
+.upd-go .i, .upd-go .spin { width: 13px; height: 13px; }
+.upd-later { flex: 0 0 auto; padding: 8px 10px; border-radius: 9px; border: 1px solid var(--line2);
+  background: transparent; color: var(--tx2); font-size: 11.5px; }
+.upd-more { flex: 0 0 auto; border: 0; background: transparent; color: var(--tx3); padding: 0; }
+.upd-more .i { width: 14px; height: 14px; }
+.upd-list { margin: 0 0 12px; padding-inline-start: 18px; color: var(--tx2); font-size: 12.5px; line-height: 1.9; }
+.m-l.sm { font-size: 11.5px; color: var(--tx3); }
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     CallBiz Desktop — אפליקציית שולחן עבודה עצמאית.
+     הזהות וההרשאות מגיעות מה-CRM (js/crm-bridge.js) ולא נשמרות כאן.
+     ============================================================ -->
+<div id="app" class="app">
+
+  <!-- רצועת הניווט -->
+  <aside class="rail" id="rail"></aside>
+
+  <!-- אזור העבודה -->
+  <main class="stage" id="stage"></main>
+
+  <!-- התראות בזמן אמת -->
+  <div class="alerts" id="alerts"></div>
+</div>
+
+<!-- שכבת חלונות -->
+<div class="modal-host" id="modalHost"></div>
+
+<script>window.APP_VERSION = "1.0.0"; window.CB_EMBED_PANES = false; window.CB_VERSION_INLINE = {"version": "1.0.0", "date": "2026-07-27", "summary": "גרסה ראשונה — שולחן עבודה לנציג", "critical": false, "notes": ["מנוע טלפוניה עם בחירת מסלול אוטומטית לפי איכות", "מדידת MOS, ריצוד, איבוד חבילות והשהיה בזמן אמת", "אבחון תקלות עם סיבה בשפה פשוטה והצעת תיקון", "ניתוח ביצועים לפי שיחות שנרשמו בפועל", "אירוח המנג׳ר ופורטל הנציגים כלוחות בתוך המעטפת"]};</script>
+<script>
+/* ============================================================
+   CallBiz Desktop — אייקונים
+   ערכה מצומצמת ועצמאית, כדי שהפרויקט לא יהיה תלוי במנג׳ר.
+   ============================================================ */
+const ICONS = {
+  phone:    '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.4 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.4 1.8.6 2.8.7a2 2 0 0 1 1.8 2.1z"/>',
+  phoneIn:  '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.4 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.4 1.8.6 2.8.7a2 2 0 0 1 1.8 2.1z"/><path d="M16 8l6-6M22 8V2h-6"/>',
+  hangup:   '<path d="M10.7 13.3a16 16 0 0 0 0 0M2 8.8C6 5.4 10.3 4 12 4s6 1.4 10 4.8c1 .9 1.2 2.4.4 3.4l-1.2 1.5a2 2 0 0 1-2.5.5l-2.1-1.2a2 2 0 0 1-1-1.7v-1.5A10.6 10.6 0 0 0 12 9c-1.3 0-2.6.3-3.6.8v1.5a2 2 0 0 1-1 1.7l-2.1 1.2a2 2 0 0 1-2.5-.5L1.6 12.2A2.4 2.4 0 0 1 2 8.8z"/>',
+  mic:      '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4M8 22h8"/>',
+  micOff:   '<path d="M1 1l22 22M9 9v2a3 3 0 0 0 4.2 2.8M15 9.3V5a3 3 0 0 0-5.9-.7M5 10v1a7 7 0 0 0 10.7 6M19 11v-1M12 18v4M8 22h8"/>',
+  pause:    '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>',
+  transfer: '<path d="M4 7h13M13 3l4 4-4 4M20 17H7M11 13l-4 4 4 4"/>',
+  users:    '<path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+  grid:     '<circle cx="5" cy="5" r="1.6"/><circle cx="12" cy="5" r="1.6"/><circle cx="19" cy="5" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/><circle cx="5" cy="19" r="1.6"/><circle cx="12" cy="19" r="1.6"/><circle cx="19" cy="19" r="1.6"/>',
+  wa:       '<path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.3A10 10 0 1 0 12 2z"/><path d="M8.5 8.5c0-.5.4-.9.9-.9h.7c.3 0 .6.2.7.5l.5 1.4c.1.3 0 .6-.2.8l-.5.5c.6 1.2 1.6 2.2 2.8 2.8l.5-.5c.2-.2.5-.3.8-.2l1.4.5c.3.1.5.4.5.7v.7c0 .5-.4.9-.9.9A8.4 8.4 0 0 1 8.5 8.5z"/>',
+  mail:     '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m3 6 9 7 9-7"/>',
+  cal:      '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  ai:       '<rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4M8 12h.01M16 12h.01M9 16h6"/>',
+  gear:     '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>',
+  wifi:     '<path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M2 9a15 15 0 0 1 20 0"/><circle cx="12" cy="19.5" r="1"/>',
+  pulse:    '<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+  alert:    '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+  check:    '<path d="M20 6 9 17l-5-5"/>',
+  x:        '<path d="M18 6 6 18M6 6l12 12"/>',
+  chart:    '<path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="4" width="3" height="14"/>',
+  tools:    '<path d="M14.7 6.3a4 4 0 0 1 5 5L21 13l-3 3-8-8 3-3z"/><path d="m3 21 6-6"/>',
+  crm:      '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
+  rec:      '<circle cx="12" cy="12" r="7"/>',
+  play:     '<path d="m6 3 14 9-14 9z"/>',
+  refresh:  '<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/>',
+  logout:   '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+  clock:    '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  user:     '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+};
+function ic(k, cls) {
+  const p = ICONS[k]; if (!p) return '';
+  return `<svg class="i ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+}
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
+
+</script>
+<script>
+/* ============================================================
+   CallBiz Desktop · גשר ה-CRM  —  חוזה האינטגרציה היחיד
+   ------------------------------------------------------------
+   הדסקטופ עומד בפני עצמו, אבל הזהות וההרשאות אינן שלו: הן מגיעות
+   מה-CRM. כל מה שהאפליקציה מציגה ומרשה נגזר מהאובייקט שמוחזר כאן.
+
+   שלושה מצבי עבודה, לפי הסדר:
+     1. משובץ (iframe/webview) — תקשורת postMessage עם המנג׳ר
+     2. מקומי — שרת CRM אמיתי דרך fetch (TODO(server))
+     3. עצמאי — פרופיל הדגמה, מסומן בבירור בממשק
+
+   החוזה כלפי חוץ:
+     CRM.session()                → { employee, active, activities, role, perms }
+     CRM.lookup(phone)            → { id, name, org, tags, lastCall, url } | null
+     CRM.logCall(call)            → רישום שיחה בכרטיס הלקוח
+     CRM.screenPop(rec)           → פתיחת הכרטיס במסך המשובץ
+     CRM.on(event, fn)            → 'session', 'lookup', 'ready'
+   ============================================================ */
+(function () {
+
+  const LISTENERS = {};
+  const emit = (ev, data) => (LISTENERS[ev] || []).forEach(f => { try { f(data); } catch (e) { console.error(e); } });
+  const on = (ev, fn) => { (LISTENERS[ev] = LISTENERS[ev] || []).push(fn); };
+
+  /* ---------------- מצב החיבור ---------------- */
+  const MODE = { EMBED: 'embedded', SERVER: 'server', DEMO: 'demo' };
+  let mode = MODE.DEMO, session = null, ready = false;
+
+  /* פרופיל הדגמה — רק כשאין CRM. מסומן בממשק כדי שלא יבלבל. */
+  const DEMO_SESSION = {
+    employee: { id: 'yk', name: 'יוסי כהן', role: 'נציג שירות', avatar: 'י', ext: '201' },
+    active: true,
+    activities: ['שיחות נכנסות', 'פולו-אפ'],
+    role: 'agent',
+    perms: { call: true, transfer: true, conference: true, record: true,
+      viewCrm: true, editCrm: false, diagnostics: true, analytics: true, admin: false },
+    tenant: 'callbiz-demo',
+    source: 'demo',
+  };
+
+  /* ---------------- זיהוי הסביבה ---------------- */
+  function detect() {
+    if (window.parent && window.parent !== window) { mode = MODE.EMBED; return; }
+    if (window.CB_CRM_ENDPOINT) { mode = MODE.SERVER; return; }
+    mode = MODE.DEMO;
+  }
+
+  /* ---------------- הודעות מהמנג׳ר ---------------- */
+  const PENDING = {};
+  let seq = 1;
+  function send(type, payload) {
+    if (mode !== MODE.EMBED) return Promise.resolve(null);
+    return new Promise(resolve => {
+      const id = 'q' + (seq++);
+      PENDING[id] = resolve;
+      window.parent.postMessage({ ns: 'callbiz', dir: 'desk→crm', id, type, payload }, '*');
+      setTimeout(() => { if (PENDING[id]) { delete PENDING[id]; resolve(null); } }, 2500);
+    });
+  }
+  window.addEventListener('message', e => {
+    const m = e.data;
+    if (!m || m.ns !== 'callbiz' || m.dir !== 'crm→desk') return;
+    if (m.id && PENDING[m.id]) { PENDING[m.id](m.payload); delete PENDING[m.id]; return; }
+    /* אירועים יזומים מהמנג׳ר */
+    if (m.type === 'session') { session = m.payload; emit('session', session); }
+    if (m.type === 'dial' && m.payload && m.payload.phone) emit('dial', m.payload);
+  });
+
+  /* ---------------- API ---------------- */
+  async function connect() {
+    detect();
+    if (mode === MODE.EMBED) {
+      const s = await send('session');
+      if (s) { session = Object.assign({ source: 'crm' }, s); }
+    } else if (mode === MODE.SERVER) {
+      /* TODO(server): GET {CB_CRM_ENDPOINT}/session עם קוקי/טוקן של המשתמש */
+      try {
+        const r = await fetch(window.CB_CRM_ENDPOINT + '/session', { credentials: 'include' });
+        if (r.ok) session = Object.assign({ source: 'server' }, await r.json());
+      } catch (e) { /* נופלים להדגמה */ }
+    }
+    if (!session) { session = JSON.parse(JSON.stringify(DEMO_SESSION)); mode = MODE.DEMO; }
+    ready = true;
+    emit('session', session); emit('ready', session);
+    return session;
+  }
+
+  async function lookup(phone) {
+    const digits = String(phone || '').replace(/\D/g, '').slice(-9);
+    if (!digits) return null;
+    if (mode === MODE.EMBED) {
+      const r = await send('lookup', { phone: digits });
+      if (r) return r;
+    }
+    /* הדגמה — כמה לקוחות מוכרים כדי שה-screen-pop יהיה אמיתי */
+    const DEMO = [
+      { id: 1, name: 'שרה לוי', org: 'לוי ובניו', phone: '521234567', tags: ['לקוח קיים', 'VIP'], lastCall: 'לפני 3 ימים' },
+      { id: 2, name: 'דנה לוי', org: 'Tech Solutions', phone: '537654321', tags: ['ליד חם'], lastCall: 'אתמול' },
+      { id: 3, name: 'אבי רוזן', org: 'Zohar Group', phone: '541112222', tags: ['שירות'], lastCall: 'לפני שבוע' },
+    ];
+    return DEMO.find(x => x.phone.slice(-9) === digits) || null;
+  }
+
+  function logCall(call) {
+    const rec = {
+      phone: call.phone, dir: call.dir, startedAt: call.startedAt, seconds: call.seconds,
+      outcome: call.outcome, quality: call.quality, transport: call.transport,
+      recorded: !!call.recorded, notes: call.notes || '', agent: (session && session.employee) ? session.employee.id : null,
+    };
+    if (mode === MODE.EMBED) send('logCall', rec);
+    /* TODO(server): POST /calls */
+    const all = JSON.parse(localStorage.getItem('cbd_calls') || '[]');
+    all.unshift(Object.assign({ id: 'c' + Date.now() }, rec));
+    localStorage.setItem('cbd_calls', JSON.stringify(all.slice(0, 200)));
+    emit('logged', rec);
+    return rec;
+  }
+  function screenPop(rec) { if (mode === MODE.EMBED) send('screenPop', rec); emit('screenPop', rec); }
+
+  const can = k => !!(session && session.perms && session.perms[k]);
+  const isActive = () => !!(session && session.active);
+
+  window.CRM = { connect, lookup, logCall, screenPop, on, can, isActive,
+    session: () => session, mode: () => mode, ready: () => ready, MODE,
+    calls: () => JSON.parse(localStorage.getItem('cbd_calls') || '[]') };
+})();
+
+</script>
+<script>
+/* ============================================================
+   CallBiz Desktop · מנוע הטלפוניה
+   ------------------------------------------------------------
+   הליבה של המוצר. שלושה דברים:
+
+   1. בורר מסלול לפי איכות — מודד את הרשת בפועל ובוחר את סוג
+      החיבור: WebRTC ישיר, WebRTC דרך TURN, או גשר PSTN/סלולרי.
+      כשהאיכות יורדת באמצע שיחה — מציע מעבר, ומבצע אותו בלי לנתק.
+
+   2. מדידה אמיתית — ‎RTCPeerConnection.getStats מספק jitter,
+      packet loss ו-RTT אמיתיים. מהם מחושב ציון MOS מקורב לפי
+      נוסחת ה-E-model המפושטת. אלה לא מספרים מומצאים.
+
+   3. מחזור חיי שיחה — חיוג, מענה, השתקה, המתנה, העברה, ועידה,
+      הקלטה וניתוק, עם אירועים שאפשר להאזין להם מבחוץ.
+
+   מה שמדומה ומסומן ככזה: איתות SIP, תורים וגשר PSTN — כולם
+   מחייבים שרת. המתאם מוכן, נקודות החיבור מסומנות ב-TODO(server).
+   ============================================================ */
+(function () {
+
+  /* ---------------- מסלולי חיבור ---------------- */
+  const TRANSPORTS = [
+    { key: 'webrtc',     label: 'WebRTC ישיר',     tier: 1, need: { mos: 4.0, loss: 1.5, rtt: 120 },
+      why: 'האיכות הגבוהה ביותר · קול רחב-פס' },
+    { key: 'webrtc-turn', label: 'WebRTC דרך TURN', tier: 2, need: { mos: 3.5, loss: 4, rtt: 250 },
+      why: 'עוקף חסימות רשת · איכות טובה' },
+    { key: 'pstn',       label: 'גשר טלפוני (PSTN)', tier: 3, need: { mos: 0, loss: 100, rtt: 9999 },
+      why: 'יציב תמיד — עובד גם ברשת גרועה' },
+  ];
+  const transportOf = k => TRANSPORTS.find(t => t.key === k) || TRANSPORTS[0];
+
+  /* ---------------- מצב ---------------- */
+  const S = {
+    call: null,            // השיחה הפעילה
+    stream: null,          // המיקרופון
+    pcA: null, pcB: null,  // זוג חיבורים מקומי — לדגימת איכות אמיתית
+    stats: { mos: 0, jitter: 0, loss: 0, rtt: 0, bitrate: 0, samples: 0 },
+    transport: 'webrtc',
+    auto: true,            // בחירת מסלול אוטומטית לפי איכות
+    timer: null, statTimer: null,
+    history: [],
+  };
+  const LISTENERS = {};
+  const on = (ev, fn) => { (LISTENERS[ev] = LISTENERS[ev] || []).push(fn); };
+  const emit = (ev, d) => (LISTENERS[ev] || []).forEach(f => { try { f(d); } catch (e) { console.error(e); } });
+
+  /* ============================================================
+     מדידת איכות אמיתית
+     ============================================================ */
+  /* MOS מקורב מ-E-model: מתחילים מ-93.2 ומורידים לפי השהיה ואיבוד */
+  function mosFrom(rttMs, jitterMs, lossPct) {
+    const ld = rttMs + 2 * jitterMs + 10;                 // השהיה אפקטיבית
+    let R = 93.2 - (ld < 160 ? ld / 40 : (ld - 120) / 10);
+    R -= 2.5 * (lossPct * 2.5);                            // רגישות לאיבוד חבילות
+    R = Math.max(0, Math.min(100, R));
+    const mos = R < 6.5 ? 1 : R > 100 ? 4.5
+      : 1 + 0.035 * R + R * (R - 60) * (100 - R) * 7e-6;
+    return Math.round(Math.max(1, Math.min(5, mos)) * 100) / 100;
+  }
+
+  async function openMic() {
+    if (S.stream) return S.stream;
+    S.stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, video: false });
+    return S.stream;
+  }
+
+  /* זוג RTCPeerConnection מקומי — מריץ מדיה אמיתית ומדווח סטטיסטיקה
+     אמיתית. בהשקה, ה-pcA יתחבר ל-SFU/גשר במקום ל-pcB. */
+  async function startMedia() {
+    const stream = await openMic();
+    const cfg = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    S.pcA = new RTCPeerConnection(cfg);
+    S.pcB = new RTCPeerConnection(cfg);
+    stream.getTracks().forEach(t => S.pcA.addTrack(t, stream));
+    S.pcA.onicecandidate = e => e.candidate && S.pcB.addIceCandidate(e.candidate).catch(() => {});
+    S.pcB.onicecandidate = e => e.candidate && S.pcA.addIceCandidate(e.candidate).catch(() => {});
+    const offer = await S.pcA.createOffer();
+    await S.pcA.setLocalDescription(offer);
+    await S.pcB.setRemoteDescription(offer);
+    const ans = await S.pcB.createAnswer();
+    await S.pcB.setLocalDescription(ans);
+    await S.pcA.setRemoteDescription(ans);
+  }
+  function stopMedia() {
+    [S.pcA, S.pcB].forEach(pc => { try { pc && pc.close(); } catch (e) {} });
+    S.pcA = S.pcB = null;
+    if (S.stream) { S.stream.getTracks().forEach(t => t.stop()); S.stream = null; }
+  }
+
+  async function sample() {
+    if (!S.pcA) return;
+    let jitter = 0, loss = 0, rtt = 0, bitrate = 0;
+    try {
+      const rep = await S.pcA.getStats();
+      let sent = 0, lost = 0, prevBytes = S._prevBytes || 0, bytes = 0;
+      rep.forEach(r => {
+        if (r.type === 'remote-inbound-rtp' && r.kind === 'audio') {
+          jitter = (r.jitter || 0) * 1000;
+          if (r.roundTripTime != null) rtt = r.roundTripTime * 1000;
+          lost = r.packetsLost || 0;
+        }
+        if (r.type === 'outbound-rtp' && r.kind === 'audio') { sent = r.packetsSent || 0; bytes = r.bytesSent || 0; }
+        if (r.type === 'candidate-pair' && r.state === 'succeeded' && r.currentRoundTripTime != null)
+          rtt = rtt || r.currentRoundTripTime * 1000;
+      });
+      loss = sent ? (lost / sent) * 100 : 0;
+      bitrate = prevBytes ? Math.max(0, (bytes - prevBytes) * 8 / 1000) : 0;
+      S._prevBytes = bytes;
+    } catch (e) { /* דפדפן שאינו תומך — נשארים על אפסים */ }
+
+    /* השהיית רשת אמיתית מעבר ל-loopback: מדידת RTT ל-STUN אינה
+       זמינה בדפדפן, ולכן מוסיפים את זמן התגובה של הרשת בפועל. */
+    const net = (navigator.connection && navigator.connection.rtt) || 0;
+    rtt = Math.round(Math.max(rtt, net));
+    jitter = Math.round(jitter * 10) / 10;
+    loss = Math.round(loss * 100) / 100;
+
+    S.stats = { mos: mosFrom(rtt, jitter, loss), jitter, loss, rtt, bitrate: Math.round(bitrate), samples: S.stats.samples + 1 };
+    if (S.call) { S.call.samples.push({ t: Date.now(), ...S.stats }); if (S.call.samples.length > 300) S.call.samples.shift(); }
+    emit('stats', S.stats);
+    if (S.auto) autoSwitch();
+  }
+
+  /* ---------------- בחירת מסלול ---------------- */
+  function bestTransport(st) {
+    for (const t of TRANSPORTS) {
+      if (st.mos >= t.need.mos && st.loss <= t.need.loss && st.rtt <= t.need.rtt) return t;
+    }
+    return TRANSPORTS[TRANSPORTS.length - 1];
+  }
+  let switchGuard = 0;
+  function autoSwitch() {
+    if (!S.call || S.stats.samples < 3) return;
+    const want = bestTransport(S.stats);
+    if (want.key === S.transport) return;
+    const now = Date.now();
+    if (now - switchGuard < 12000) return;      /* לא מקפצים בין מסלולים */
+    switchGuard = now;
+    const from = S.transport;
+    S.transport = want.key;
+    emit('transport', { from, to: want.key, auto: true, stats: Object.assign({}, S.stats) });
+    if (S.call) S.call.switches.push({ at: now, from, to: want.key });
+  }
+  function setTransport(key, manual) {
+    const from = S.transport; S.transport = key;
+    if (manual) S.auto = false;
+    emit('transport', { from, to: key, auto: !manual, stats: Object.assign({}, S.stats) });
+  }
+
+  /* ============================================================
+     מחזור חיי שיחה
+     ============================================================ */
+  async function dial(phone, opts) {
+    if (S.call) return null;
+    opts = opts || {};
+    const call = {
+      id: 'call_' + Date.now(), phone: String(phone || '').trim(), dir: opts.dir || 'out',
+      state: opts.dir === 'in' ? 'ringing' : 'dialing', startedAt: new Date().toISOString(),
+      answeredAt: null, seconds: 0, muted: false, held: false, recorded: false,
+      contact: null, samples: [], switches: [], notes: '', outcome: null,
+      dtmf: '', recordingUrl: null, transferTo: null, consult: null, ext: opts.ext || null,
+    };
+    S.call = call;
+    emit('call', call);
+    /* זיהוי הלקוח — מפעיל screen-pop */
+    if (window.CRM) CRM.lookup(call.phone).then(c => { if (S.call === call) { call.contact = c; emit('contact', c); } });
+
+    try { await startMedia(); } catch (e) { emit('error', { kind: 'mic', msg: 'אין גישה למיקרופון' }); }
+    S.statTimer = setInterval(sample, 1000);
+
+    /* TODO(server): כאן נשלח INVITE אמיתי דרך ה-SIP/WebRTC gateway.
+       בהדגמה השיחה נענית לבד אחרי רגע. */
+    if (opts.dir !== 'in') setTimeout(() => { if (S.call === call && call.state === 'dialing') answer(); }, 1400);
+    return call;
+  }
+  function answer() {
+    const c = S.call; if (!c) return;
+    c.state = 'active'; c.answeredAt = new Date().toISOString();
+    S.timer = setInterval(() => { c.seconds++; emit('tick', c.seconds); }, 1000);
+    emit('call', c);
+  }
+  function hangup(outcome) {
+    const c = S.call; if (!c) return null;
+    clearInterval(S.timer); clearInterval(S.statTimer);
+    S.timer = S.statTimer = null;
+    c.state = 'ended'; c.endedAt = new Date().toISOString();
+    c.outcome = outcome || (c.answeredAt ? 'נענתה' : 'לא נענתה');
+    c.quality = avgMos(c);
+    c.transport = S.transport;
+    stopMedia();
+    S.history.unshift(c);
+    /* TODO(server): GET /pbx/recording/{callId} → { url }.
+       בהדגמה מיוצר מזהה כדי שהזרימה תהיה מלאה מקצה לקצה. */
+    if (c.recorded) {
+      const rid = 'rec_' + c.id.replace('call_', '');
+      setTimeout(() => attachRecording(c.id, 'pbx://recordings/' + rid), 600);
+      c.recordingId = rid;
+    }
+    if (window.CRM) CRM.logCall(c);
+    S.call = null;
+    emit('call', null); emit('ended', c);
+    return c;
+  }
+  const avgMos = c => {
+    if (!c.samples.length) return 0;
+    return Math.round(c.samples.reduce((s, x) => s + x.mos, 0) / c.samples.length * 100) / 100;
+  };
+  function mute(on) {
+    const c = S.call; if (!c) return;
+    /* המצב נשמר גם כשאין מיקרופון (הרשאה נדחתה) — אחרת הכפתור משקר */
+    c.muted = on == null ? !c.muted : !!on;
+    if (S.stream) S.stream.getAudioTracks().forEach(t => { t.enabled = !c.muted && !c.held; });
+    emit('call', c);
+  }
+  function hold(on) {
+    const c = S.call; if (!c) return;
+    c.held = on == null ? !c.held : !!on;
+    if (S.stream) S.stream.getAudioTracks().forEach(t => { t.enabled = !c.held && !c.muted; });
+    emit('call', c);
+  }
+  /* ההקלטה מתבצעת במרכזייה ולא כאן. אנחנו רק מסמנים שהיא פועלת,
+     ובסיום מקבלים ממנה קישור. שום מדיה לא נשמרת אצלנו. */
+  function record(on) {
+    const c = S.call; if (!c) return;
+    if (window.CRM && !CRM.can('record')) { emit('error', { kind: 'perm', msg: 'אין הרשאת הקלטה' }); return; }
+    c.recorded = on == null ? !c.recorded : !!on;
+    /* TODO(server): POST /pbx/recording {callId, on} */
+    emit('call', c);
+  }
+  /* המרכזייה מחזירה קישור בסיום — נשמר כמזהה, לא כקובץ */
+  function attachRecording(callId, url) {
+    const c = S.history.find(x => x.id === callId) || (S.call && S.call.id === callId ? S.call : null);
+    if (c) { c.recordingUrl = url; emit('recording', { callId, url }); }
+    if (window.CRM && CRM.attachRecording) CRM.attachRecording(callId, url);
+    return c;
+  }
+  /* ---------------- הקשה בזמן שיחה (DTMF) ----------------
+     שימושי לניווט בתפריט קולי של הצד השני ולבחירת שלוחה. */
+  function dtmf(key) {
+    const c = S.call; if (!c) return;
+    c.dtmf += key;
+    /* צליל קצר כדי שהנציג ישמע שההקשה נקלטה */
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = 700 + '123A456B789C*0#D'.indexOf(key) * 40;
+      g.gain.value = 0.05; o.connect(g); g.connect(ctx.destination); o.start();
+      setTimeout(() => { o.stop(); ctx.close(); }, 90);
+    } catch (e) {}
+    /* TODO(server): RTCDTMFSender.insertDTMF(key) על הערוץ החי */
+    if (S.pcA && S.pcA.getSenders) {
+      const sd = S.pcA.getSenders().find(x => x.dtmf);
+      if (sd && sd.dtmf) { try { sd.dtmf.insertDTMF(key, 100, 70); } catch (e) {} }
+    }
+    emit('dtmf', { key, all: c.dtmf });
+    emit('call', c);
+  }
+
+  /* ---------------- שיחה מקדימה (Consult) ----------------
+     מתקשרים ליעד לפני ההעברה, מדברים איתו, ורק אז מחברים. */
+  function consult(target) {
+    const c = S.call; if (!c) return null;
+    hold(true);
+    c.consult = { target, startedAt: Date.now(), state: 'ringing' };
+    emit('consult', c.consult);
+    emit('call', c);
+    /* TODO(server): שיחה שנייה אמיתית מול השלוחה */
+    setTimeout(() => { if (S.call === c && c.consult) { c.consult.state = 'active'; emit('consult', c.consult); emit('call', c); } }, 1200);
+    return c.consult;
+  }
+  function consultCancel() {
+    const c = S.call; if (!c || !c.consult) return;
+    c.consult = null; hold(false); emit('consult', null); emit('call', c);
+  }
+  function consultComplete() {   /* חיבור שני הצדדים והשתחררות */
+    const c = S.call; if (!c || !c.consult) return;
+    const to = c.consult.target;
+    c.consult = null;
+    transfer(to, 'attended');
+  }
+
+  function transfer(to, kind) {   /* TODO(server): REFER (blind) / REPLACES (attended) */
+    const c = S.call; if (!c) return;
+    c.transferTo = to;
+    emit('transfer', { to, kind: kind || 'blind' });
+    hangup((kind === 'attended' ? 'חוברה ל' : 'הועברה ל') + to);
+  }
+  function conference(who) { emit('conference', { who }); }   /* TODO(server) */
+
+  /* ---------------- אירוע שיחה נכנסת (הדגמה / דחיפה מהשרת) ---------------- */
+  function incoming(phone) { return dial(phone, { dir: 'in' }); }
+
+  window.TEL = {
+    dial, answer, hangup, mute, hold, record, transfer, conference, incoming,
+    dtmf, consult, consultCancel, consultComplete, attachRecording,
+    on, stats: () => S.stats, call: () => S.call, history: () => S.history,
+    transport: () => S.transport, transports: () => TRANSPORTS, transportOf,
+    setTransport, auto: v => { if (v != null) S.auto = !!v; return S.auto; },
+    best: () => bestTransport(S.stats), mosFrom, sample,
+  };
+})();
+
+</script>
+<script>
+/* ============================================================
+   CallBiz Desktop · אבחון ופתרון תקלות
+   ------------------------------------------------------------
+   שתי שכבות:
+
+   1. בדיקה לפני שיחה — מיקרופון, התקנים, יציאה לרשת, זמינות
+      STUN/TURN ורוחב פס. כל בדיקה מחזירה מצב, סיבה בשפה פשוטה,
+      והצעת תיקון שאפשר להפעיל בלחיצה.
+
+   2. ניטור חי בזמן שיחה — כשמדד יורד מתחת לסף, נפתחת התראה עם
+      הסיבה הסבירה והפעולה המומלצת, ולא רק מספר אדום.
+
+   העיקרון: הנציג לא צריך להבין רשתות. הוא צריך לדעת מה קרה ומה
+   לעשות עכשיו.
+   ============================================================ */
+(function () {
+
+  const CHECKS = [
+    {
+      key: 'mic', label: 'מיקרופון',
+      async run() {
+        if (!navigator.mediaDevices) return bad('הדפדפן אינו תומך בגישה למיקרופון', 'יש לעבור לדפדפן עדכני');
+        try {
+          const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const t = s.getAudioTracks()[0];
+          const name = t ? t.label : '';
+          s.getTracks().forEach(x => x.stop());
+          return ok('פעיל' + (name ? ' · ' + name : ''));
+        } catch (e) {
+          if (e && e.name === 'NotAllowedError') return bad('ההרשאה נדחתה', 'לחצו על סמל המנעול בשורת הכתובת ואפשרו מיקרופון', 'perm');
+          if (e && e.name === 'NotFoundError') return bad('לא נמצא מיקרופון', 'חברו אוזניות או מיקרופון והריצו שוב', 'device');
+          return bad('לא ניתן לפתוח את המיקרופון', 'סגרו יישום אחר שמשתמש במיקרופון');
+        }
+      },
+    },
+    {
+      key: 'devices', label: 'התקני שמע',
+      async run() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return warn('לא ניתן לרשום התקנים', '');
+        const d = await navigator.mediaDevices.enumerateDevices();
+        const ins = d.filter(x => x.kind === 'audioinput'), outs = d.filter(x => x.kind === 'audiooutput');
+        if (!ins.length) return bad('אין התקן קלט', 'חברו מיקרופון', 'device');
+        return ok(ins.length + ' קלט · ' + (outs.length || 1) + ' פלט');
+      },
+    },
+    {
+      key: 'net', label: 'חיבור לרשת',
+      async run() {
+        if (!navigator.onLine) return bad('אין חיבור לאינטרנט', 'בדקו את הרשת או עברו לרשת אחרת', 'net');
+        const c = navigator.connection;
+        if (c && c.effectiveType && /2g/.test(c.effectiveType))
+          return bad('הרשת איטית מאוד (' + c.effectiveType + ')', 'עברו ל-Wi-Fi או לחיבור קווי', 'net');
+        const rtt = c ? c.rtt : null, down = c ? c.downlink : null;
+        if (rtt != null && rtt > 300) return warn('השהיית רשת גבוהה · ' + rtt + 'ms', 'החיבור יעבוד, אך ייתכן הד או קטיעות');
+        return ok((c && c.effectiveType ? c.effectiveType.toUpperCase() : 'מחובר')
+          + (down ? ' · ' + down + 'Mb/s' : '') + (rtt ? ' · ' + rtt + 'ms' : ''));
+      },
+    },
+    {
+      key: 'stun', label: 'מעבר חומת אש (STUN)',
+      async run() {
+        try {
+          const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+          pc.createDataChannel('probe');
+          await pc.setLocalDescription(await pc.createOffer());
+          const got = await new Promise(res => {
+            let done = false;
+            pc.onicecandidate = e => {
+              if (!e.candidate) { if (!done) { done = true; res(false); } return; }
+              if (/typ srflx|typ relay/.test(e.candidate.candidate) && !done) { done = true; res(true); }
+            };
+            setTimeout(() => { if (!done) { done = true; res(false); } }, 3000);
+          });
+          pc.close();
+          return got ? ok('נמצא מסלול חוצה-רשת')
+            : warn('לא נמצא מסלול ישיר', 'השיחות ינותבו דרך שרת TURN — איכות טובה, תעבורה גבוהה יותר');
+        } catch (e) { return warn('בדיקה נכשלה', 'ניתן להמשיך — המערכת תבחר מסלול חלופי'); }
+      },
+    },
+    {
+      key: 'quality', label: 'איכות משוערת',
+      async run() {
+        const c = navigator.connection;
+        const rtt = (c && c.rtt) || 40, mos = window.TEL ? TEL.mosFrom(rtt, 5, 0.3) : 4.2;
+        if (mos >= 4) return ok('MOS ' + mos + ' · איכות מצוינת');
+        if (mos >= 3.4) return warn('MOS ' + mos + ' · איכות סבירה', 'מומלץ לעבור לחיבור קווי');
+        return bad('MOS ' + mos + ' · איכות נמוכה', 'המערכת תעבור לגשר טלפוני כדי לשמור על השיחה', 'net');
+      },
+    },
+  ];
+
+  const ok = (d) => ({ state: 'ok', detail: d });
+  const warn = (d, fix) => ({ state: 'warn', detail: d, fix });
+  const bad = (d, fix, kind) => ({ state: 'bad', detail: d, fix, kind });
+
+  async function runAll(onEach) {
+    const out = [];
+    for (const c of CHECKS) {
+      if (onEach) onEach({ key: c.key, label: c.label, state: 'run' });
+      let r;
+      try { r = await c.run(); } catch (e) { r = bad('שגיאה בבדיקה', ''); }
+      const row = Object.assign({ key: c.key, label: c.label }, r);
+      out.push(row);
+      if (onEach) onEach(row);
+    }
+    return out;
+  }
+
+  /* ---------------- ניטור חי ---------------- */
+  const THRESH = { mos: 3.4, loss: 3, jitter: 30, rtt: 250 };
+  const REASONS = [
+    { test: s => s.loss > THRESH.loss, t: 'איבוד חבילות',
+      why: 'חלק מהקול לא מגיע — בדרך כלל רשת עמוסה או Wi-Fi חלש',
+      fix: 'התקרבו לנתב, או עברו לחיבור קווי' },
+    { test: s => s.jitter > THRESH.jitter, t: 'קול מקוטע',
+      why: 'החבילות מגיעות בקצב לא אחיד', fix: 'סגרו הורדות או שיחות וידאו ברקע' },
+    { test: s => s.rtt > THRESH.rtt, t: 'השהיה גבוהה',
+      why: 'הקול מגיע באיחור וקשה לנהל שיחה', fix: 'החליפו רשת, או המשיכו בגשר טלפוני' },
+    { test: s => s.mos < THRESH.mos, t: 'איכות ירודה',
+      why: 'שילוב של השהיה ואיבוד חבילות', fix: 'המערכת יכולה לעבור לגשר טלפוני מיד' },
+  ];
+  let lastAlert = 0;
+  function watch(stats) {
+    const hit = REASONS.find(r => r.test(stats));
+    if (!hit) return null;
+    const now = Date.now();
+    if (now - lastAlert < 15000) return null;
+    lastAlert = now;
+    return Object.assign({ at: now, stats: Object.assign({}, stats) }, hit);
+  }
+
+  window.DIAG = { CHECKS, runAll, watch, THRESH };
+})();
+
+</script>
+<script>
+/* ============================================================
+   CallBiz Desktop · ניתוח ביצועים
+   ------------------------------------------------------------
+   נשען על השיחות שנרשמו בפועל (CRM.calls) ועל דגימות האיכות
+   שנאספו במהלכן — לא על נתוני דמו. כשאין עדיין היסטוריה, המסך
+   אומר את זה במפורש במקום להציג מספרים מומצאים.
+   ============================================================ */
+(function () {
+
+  const calls = () => (window.CRM ? CRM.calls() : []);
+
+  function summary(range) {
+    const list = calls();
+    const answered = list.filter(c => c.outcome === 'נענתה' || (c.seconds || 0) > 0);
+    const secs = list.reduce((s, c) => s + (c.seconds || 0), 0);
+    const q = list.filter(c => c.quality > 0);
+    const byT = {};
+    list.forEach(c => { const k = c.transport || 'webrtc'; byT[k] = (byT[k] || 0) + 1; });
+    return {
+      total: list.length,
+      answered: answered.length,
+      answerRate: list.length ? Math.round(answered.length / list.length * 100) : 0,
+      talkSec: secs,
+      avgSec: answered.length ? Math.round(secs / answered.length) : 0,
+      avgMos: q.length ? Math.round(q.reduce((s, c) => s + c.quality, 0) / q.length * 100) / 100 : 0,
+      byTransport: byT,
+      out: list.filter(c => c.dir === 'out').length,
+      in: list.filter(c => c.dir === 'in').length,
+      recorded: list.filter(c => c.recorded).length,
+    };
+  }
+
+  /* התפלגות איכות — כמה שיחות בכל טווח MOS */
+  function quality() {
+    const b = [{ k: 'מצוינת', min: 4.2, n: 0 }, { k: 'טובה', min: 3.6, n: 0 },
+      { k: 'סבירה', min: 3.0, n: 0 }, { k: 'ירודה', min: 0, n: 0 }];
+    calls().filter(c => c.quality > 0).forEach(c => {
+      const hit = b.find(x => c.quality >= x.min); if (hit) hit.n++;
+    });
+    return b;
+  }
+
+  /* סיבות הכשל המובילות */
+  function issues() {
+    const m = {};
+    calls().forEach(c => {
+      if (c.outcome && c.outcome !== 'נענתה') m[c.outcome] = (m[c.outcome] || 0) + 1;
+      if (c.quality && c.quality < 3.4) m['איכות ירודה'] = (m['איכות ירודה'] || 0) + 1;
+    });
+    return Object.keys(m).map(k => ({ k, n: m[k] })).sort((a, b) => b.n - a.n).slice(0, 5);
+  }
+
+  const fmtSec = s => {
+    s = Math.max(0, Math.round(s || 0));
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+    return (h ? h + ':' : '') + String(m).padStart(h ? 2 : 1, '0') + ':' + String(x).padStart(2, '0');
+  };
+
+  window.STATS = { summary, quality, issues, fmtSec, calls };
+})();
+
+</script>
+<script>
+/* ============================================================
+   CallBiz Desktop · ממשק
+   ------------------------------------------------------------
+   מעטפת אחת עם רצועת ניווט, במה מתחלפת, והתראות בזמן אמת.
+   המסכים החיצוניים (המנג׳ר, פורטל הנציגים) נטענים כלוחות בתוך
+   המעטפת ולא נפתחים בדפדפן נפרד.
+   ============================================================ */
+(function () {
+
+  const VIEWS = [
+    { key: 'phone', label: 'טלפון',  icon: 'phone' },
+    { key: 'diag',  label: 'אבחון',  icon: 'tools' },
+    { key: 'stats', label: 'ביצועים', icon: 'chart' },
+    { key: 'crm',   label: 'CRM',    icon: 'crm', web: true },
+    { key: 'wa',    label: 'וואטסאפ', icon: 'wa', web: true },
+    { key: 'mail',  label: 'מייל',   icon: 'mail', web: true },
+    { key: 'cal',   label: 'יומן',   icon: 'cal', web: true },
+    { key: 'set',   label: 'הגדרות', icon: 'gear' },
+  ];
+  const UI = { view: 'phone', dial: '', badges: { wa: 3, mail: 1, cal: 2 }, checks: [], checking: false };
+
+  /* ============================================================
+     רצועת הניווט
+     ============================================================ */
+  function rail() {
+    const s = CRM.session() || {}, e = s.employee || {};
+    const dot = CRM.isActive() ? 'ok' : 'off';
+    $('#rail').innerHTML = `
+      <div class="me">
+        <span class="ava">${esc((e.name || '?')[0])}<i class="dot ${dot}"></i></span>
+        <div class="me-t"><b>${esc(e.name || 'לא מזוהה')}</b>
+          <small>${CRM.isActive() ? 'זמין' : 'לא פעיל'}${e.ext ? ' · שלוחה ' + esc(e.ext) : ''}</small></div>
+      </div>
+      <nav class="nav">${VIEWS.map(v => `<button class="nv ${UI.view === v.key ? 'on' : ''}" data-v="${v.key}">
+        ${ic(v.icon)}<span>${esc(v.label)}</span>
+        ${UI.badges[v.key] ? `<i class="bdg">${UI.badges[v.key]}</i>` : ''}</button>`).join('')}</nav>
+      <div class="rail-foot">
+        <div class="src ${CRM.mode()}">${ic(CRM.mode() === 'demo' ? 'alert' : 'check')}
+          <span>${CRM.mode() === 'embedded' ? 'מחובר ל-CRM' : CRM.mode() === 'server' ? 'מחובר לשרת' : 'מצב הדגמה · ללא CRM'}</span></div>
+      </div>`;
+    $$('#rail [data-v]').forEach(b => b.addEventListener('click', () => go(b.dataset.v)));
+  }
+  function go(v) { UI.view = v; rail(); stage(); }
+
+  /* ============================================================
+     הבמה
+     ============================================================ */
+  function stage() {
+    const host = $('#stage');
+    const v = VIEWS.find(x => x.key === UI.view) || VIEWS[0];
+    if (v.web) return webPane(v);
+    if (v.key === 'phone') return phone();
+    if (v.key === 'diag') return diag();
+    if (v.key === 'stats') return stats();
+    if (v.key === 'set') return settings();
+    host.innerHTML = '';
+  }
+
+  /* ---------------- טלפון ---------------- */
+  function phone() {
+    const c = TEL.call(), st = TEL.stats(), t = TEL.transportOf(TEL.transport());
+    const contact = c && c.contact;
+    $('#stage').innerHTML = `
+      <div class="ph">
+        <section class="ph-main">
+          ${c ? `
+            <div class="live">
+              <div class="live-h"><i class="rec-dot ${c.state === 'active' ? 'on' : ''}"></i>
+                ${c.state === 'ringing' ? 'שיחה נכנסת' : c.state === 'dialing' ? 'מחייג…' : 'שיחה פעילה'}
+                ${c.recorded ? `<span class="rec">${ic('rec')} מוקלט</span>` : ''}</div>
+              <div class="live-who">
+                <span class="live-ava">${esc(((contact && contact.name) || c.phone || '?')[0])}</span>
+                <div><b>${esc((contact && contact.name) || 'מספר לא מזוהה')}</b>
+                  <span class="num">${esc(c.phone)}</span>
+                  ${contact ? `<span class="tags">${(contact.tags || []).map(x => `<i>${esc(x)}</i>`).join('')}</span>` : ''}
+                </div>
+                <div class="live-time">${STATS.fmtSec(c.seconds)}</div>
+              </div>
+              <div class="live-acts">
+                ${c.state === 'ringing' ? `<button class="act big ok" data-a="answer">${ic('phoneIn')}<span>ענה</span></button>` : ''}
+                <button class="act ${c.muted ? 'on' : ''}" data-a="mute">${ic(c.muted ? 'micOff' : 'mic')}<span>${c.muted ? 'בטל השתקה' : 'השתק'}</span></button>
+                <button class="act ${c.held ? 'on' : ''}" data-a="hold">${ic('pause')}<span>${c.held ? 'חזרה' : 'המתנה'}</span></button>
+                <button class="act" data-a="transfer">${ic('transfer')}<span>העבר</span></button>
+                <button class="act" data-a="conf">${ic('users')}<span>ועידה</span></button>
+                <button class="act ${c.recorded ? 'on' : ''}" data-a="rec">${ic('rec')}<span>הקלטה</span></button>
+                <button class="act big bad" data-a="hangup">${ic('hangup')}<span>נתק</span></button>
+              </div>
+              ${contact ? `<button class="pop" data-a="pop">${ic('crm')} פתח את הכרטיס ב-CRM</button>` : ''}
+            </div>`
+          : `<div class="idle">
+              <div class="idle-ic">${ic('phone')}</div>
+              <b>אין שיחה פעילה</b>
+              <small>חייגו מספר, או המתינו לשיחה נכנסת</small>
+              <button class="btn ghost" data-a="sim">${ic('phoneIn')} הדמיית שיחה נכנסת</button>
+            </div>`}
+
+          <div class="qual">
+            <div class="q-h">${ic('pulse')} <b>איכות החיבור</b>
+              <span class="q-t ${t.tier === 1 ? 'ok' : t.tier === 2 ? 'warn' : 'bad'}">${esc(t.label)}</span></div>
+            <div class="q-grid">
+              ${qBox('MOS', st.mos || '—', st.mos >= 4 ? 'ok' : st.mos >= 3.4 ? 'warn' : st.mos ? 'bad' : '')}
+              ${qBox('איבוד', (st.loss || 0) + '%', st.loss <= 1.5 ? 'ok' : st.loss <= 3 ? 'warn' : 'bad')}
+              ${qBox('ריצוד', (st.jitter || 0) + 'ms', st.jitter <= 15 ? 'ok' : st.jitter <= 30 ? 'warn' : 'bad')}
+              ${qBox('השהיה', (st.rtt || 0) + 'ms', st.rtt <= 120 ? 'ok' : st.rtt <= 250 ? 'warn' : 'bad')}
+            </div>
+            <div class="q-foot">
+              <label class="sw"><input type="checkbox" id="autoT" ${TEL.auto() ? 'checked' : ''}>
+                <span>בחירת מסלול אוטומטית לפי איכות</span></label>
+              <div class="q-tr">${TEL.transports().map(x => `<button class="trb ${TEL.transport() === x.key ? 'on' : ''}"
+                data-t="${x.key}" title="${esc(x.why)}">${esc(x.label)}</button>`).join('')}</div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="ph-side">
+          <div class="pad">
+            <div class="pad-h">${ic('grid')} חייג מספר</div>
+            <input class="pad-in" id="padIn" value="${esc(UI.dial)}" placeholder="הקלידו מספר" inputmode="tel">
+            <div class="pad-k">${['1','2','3','4','5','6','7','8','9','*','0','#'].map(k =>
+              `<button class="k" data-k="${k}">${k}</button>`).join('')}</div>
+            <button class="pad-call" data-a="call">${ic('phone')} חייג</button>
+          </div>
+          <div class="info">
+            <div class="info-h">${ic('clock')} שיחות אחרונות</div>
+            ${(CRM.calls() || []).slice(0, 6).map(x => `<button class="rec-row" data-redial="${esc(x.phone)}">
+              <span class="rr-d ${x.dir === 'in' ? 'in' : 'out'}">${ic(x.dir === 'in' ? 'phoneIn' : 'phone')}</span>
+              <span class="rr-t"><b>${esc(x.phone)}</b><small>${esc(x.outcome || '')} · ${STATS.fmtSec(x.seconds)}</small></span>
+              ${x.quality ? `<span class="rr-q ${x.quality >= 4 ? 'ok' : x.quality >= 3.4 ? 'warn' : 'bad'}">${x.quality}</span>` : ''}
+            </button>`).join('') || '<p class="empty">אין עדיין שיחות</p>'}
+          </div>
+        </aside>
+      </div>`;
+    bindPhone();
+  }
+  const qBox = (l, v, s) => `<div class="q-b ${s || ''}"><span>${l}</span><b>${v}</b></div>`;
+
+  function bindPhone() {
+    const act = a => ({
+      answer: () => TEL.answer(),
+      mute: () => TEL.mute(), hold: () => TEL.hold(), rec: () => TEL.record(),
+      hangup: () => TEL.hangup(),
+      transfer: () => askTransfer(),
+      conf: () => toast('ועידה — מחייב שרת שיחות. המתאם מוכן.'),
+      pop: () => { const c = TEL.call(); if (c && c.contact) { CRM.screenPop(c.contact); go('crm'); } },
+      sim: () => TEL.incoming(['052-1234567', '053-7654321', '054-1112222'][Math.floor(Math.random() * 3)]),
+      call: () => { const v = ($('#padIn') || {}).value; if (v) TEL.dial(v); },
+    }[a]);
+    $$('#stage [data-a]').forEach(b => b.addEventListener('click', () => { const f = act(b.dataset.a); if (f) f(); }));
+    $$('#stage [data-k]').forEach(b => b.addEventListener('click', () => {
+      const inp = $('#padIn'); inp.value += b.dataset.k; UI.dial = inp.value;
+      if (TEL.call()) return; }));
+    const inp = $('#padIn');
+    if (inp) { inp.addEventListener('input', () => { UI.dial = inp.value; });
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter' && inp.value) TEL.dial(inp.value); }); }
+    $$('#stage [data-t]').forEach(b => b.addEventListener('click', () => { TEL.setTransport(b.dataset.t, true); phone(); }));
+    const au = $('#autoT'); if (au) au.addEventListener('change', () => { TEL.auto(au.checked); phone(); });
+    $$('#stage [data-redial]').forEach(b => b.addEventListener('click', () => TEL.dial(b.dataset.redial)));
+  }
+  function askTransfer() {
+    modal('העברת שיחה', `<p class="m-l">למי להעביר?</p>
+      <div class="m-list">${['מיכל רוזן · 202', 'אבי זוהר · 203', 'תור המכירות'].map(x =>
+        `<button class="m-i" data-tr="${esc(x)}">${esc(x)}</button>`).join('')}</div>`,
+      w => $$('[data-tr]', w).forEach(b => b.addEventListener('click', () => { TEL.transfer(b.dataset.tr); close(); })));
+  }
+
+  /* ---------------- אבחון ---------------- */
+  function diag() {
+    $('#stage').innerHTML = `
+      <div class="pane">
+        <div class="pane-h"><b>${ic('tools')} אבחון ופתרון תקלות</b>
+          <button class="btn" id="runD">${ic('refresh')} הרץ בדיקה</button></div>
+        <p class="pane-l">הבדיקה בודקת את מה שבאמת משפיע על שיחה: מיקרופון, התקנים, רשת, מעבר חומת אש ואיכות משוערת.</p>
+        <div class="dl" id="dl">${UI.checks.length ? UI.checks.map(row).join('')
+          : '<p class="empty">טרם הורצה בדיקה</p>'}</div>
+      </div>`;
+    $('#runD').addEventListener('click', run);
+    if (!UI.checks.length && !UI.checking) run();
+    async function run() {
+      UI.checking = true; UI.checks = [];
+      $('#dl').innerHTML = DIAG.CHECKS.map(c => row({ key: c.key, label: c.label, state: 'run' })).join('');
+      await DIAG.runAll(r => {
+        const i = UI.checks.findIndex(x => x.key === r.key);
+        i >= 0 ? UI.checks[i] = r : UI.checks.push(r);
+        const el = $('#dl [data-c="' + r.key + '"]');
+        if (el) el.outerHTML = row(r);
+      });
+      UI.checking = false;
+    }
+    function row(r) {
+      const s = r.state;
+      return `<div class="d-row ${s}" data-c="${r.key}">
+        <span class="d-ic">${s === 'run' ? '<i class="spin"></i>' : ic(s === 'ok' ? 'check' : s === 'warn' ? 'alert' : 'x')}</span>
+        <div class="d-t"><b>${esc(r.label)}</b><small>${esc(r.detail || 'בודק…')}</small></div>
+        ${r.fix ? `<div class="d-fix">${ic('alert')} ${esc(r.fix)}</div>` : ''}
+      </div>`;
+    }
+  }
+
+  /* ---------------- ביצועים ---------------- */
+  function stats() {
+    const s = STATS.summary(), q = STATS.quality(), iss = STATS.issues();
+    const tot = q.reduce((a, b) => a + b.n, 0);
+    $('#stage').innerHTML = `
+      <div class="pane">
+        <div class="pane-h"><b>${ic('chart')} ניתוח ביצועים</b></div>
+        ${!s.total ? '<p class="empty">אין עדיין שיחות שנרשמו — הנתונים ייבנו מהשיחות בפועל</p>' : `
+        <div class="kpis">
+          ${kpi('שיחות', s.total)} ${kpi('נענו', s.answerRate + '%')}
+          ${kpi('זמן דיבור', STATS.fmtSec(s.talkSec))} ${kpi('ממוצע לשיחה', STATS.fmtSec(s.avgSec))}
+          ${kpi('MOS ממוצע', s.avgMos || '—', s.avgMos >= 4 ? 'ok' : s.avgMos >= 3.4 ? 'warn' : 'bad')}
+          ${kpi('הוקלטו', s.recorded)}
+        </div>
+        <div class="two">
+          <div class="card"><b>${ic('pulse')} התפלגות איכות</b>
+            ${q.map(x => `<div class="bar"><span>${x.k}</span>
+              <i style="width:${tot ? Math.round(x.n / tot * 100) : 0}%"></i><em>${x.n}</em></div>`).join('')}</div>
+          <div class="card"><b>${ic('alert')} סיבות מובילות</b>
+            ${iss.length ? iss.map(x => `<div class="li"><span>${esc(x.k)}</span><b>${x.n}</b></div>`).join('')
+              : '<p class="empty sm">אין תקלות שנרשמו</p>'}</div>
+        </div>
+        <div class="card"><b>${ic('wifi')} פילוח לפי מסלול חיבור</b>
+          ${Object.keys(s.byTransport).map(k => `<div class="li">
+            <span>${esc(TEL.transportOf(k).label)}</span><b>${s.byTransport[k]}</b></div>`).join('') || '<p class="empty sm">—</p>'}</div>`}
+      </div>`;
+  }
+  const kpi = (l, v, s) => `<div class="kpi ${s || ''}"><span>${l}</span><b>${v}</b></div>`;
+
+  /* ---------------- לוחות ווב ---------------- */
+  const WEB = {
+    crm:  { url: '../index.html', label: 'CallBiz Manager' },
+    wa:   { url: '../index.html#whatsapp', label: 'וואטסאפ' },
+    mail: { url: '../index.html#mail', label: 'דוא״ל' },
+    cal:  { url: '../index.html#meetings', label: 'יומן' },
+  };
+  function webPane(v) {
+    const w = WEB[v.key] || { url: '', label: v.label };
+    if (window.CB_EMBED_PANES === false) {
+      $('#stage').innerHTML = `<div class="pane"><div class="pane-h"><b>${ic(v.icon)} ${esc(w.label)}</b></div>
+        <div class="idle"><div class="idle-ic">${ic(v.icon)}</div>
+          <b>הלוח הזה נטען מתוך המערכת</b>
+          <small>בהרצה מקומית או מתוך CallBiz Manager, ${esc(w.label)} מוצג כאן בתוך המעטפת.<br>
+          בקישור לשיתוף מוצגת רק המעטפת עצמה.</small></div></div>`;
+      return;
+    }
+    $('#stage').innerHTML = `<div class="web">
+      <div class="web-h">${ic(v.icon)} <b>${esc(w.label)}</b>
+        <span class="web-u">${esc(w.url)}</span>
+        <button class="btn xs" id="webR">${ic('refresh')} רענן</button></div>
+      <iframe class="web-f" id="webF" src="${esc(w.url)}" title="${esc(w.label)}"></iframe>
+    </div>`;
+    const f = $('#webF');
+    $('#webR').addEventListener('click', () => { f.src = f.src; });
+  }
+
+  /* ---------------- הגדרות ---------------- */
+  function settings() {
+    const s = CRM.session() || {}, p = s.perms || {};
+    $('#stage').innerHTML = `
+      <div class="pane">
+        <div class="pane-h"><b>${ic('gear')} הגדרות</b></div>
+        <div class="card"><b>${ic('user')} זהות והרשאות</b>
+          <p class="pane-l sm">הזהות וההרשאות מגיעות מה-CRM ואינן ניתנות לעריכה כאן — כך אין שתי מערכות הרשאות.</p>
+          <div class="li"><span>עובד</span><b>${esc((s.employee || {}).name || '—')}</b></div>
+          <div class="li"><span>תפקיד</span><b>${esc((s.employee || {}).role || '—')}</b></div>
+          <div class="li"><span>סטטוס</span><b class="${s.active ? 'ok' : 'bad'}">${s.active ? 'פעיל' : 'לא פעיל'}</b></div>
+          <div class="li"><span>שיוך לפעילות</span><b>${esc((s.activities || []).join(' · ') || '—')}</b></div>
+          <div class="li"><span>מקור</span><b>${CRM.mode() === 'demo' ? 'הדגמה מקומית' : 'CRM'}</b></div>
+          <div class="perms">${Object.keys(p).map(k => `<span class="pm ${p[k] ? 'on' : ''}">
+            ${ic(p[k] ? 'check' : 'x')} ${esc(PERM_LBL[k] || k)}</span>`).join('')}</div>
+        </div>
+        <div class="card"><b>${ic('wifi')} טלפוניה</b>
+          <label class="sw"><input type="checkbox" id="sAuto" ${TEL.auto() ? 'checked' : ''}>
+            <span>בחירת מסלול אוטומטית לפי איכות</span></label>
+          <p class="pane-l sm">כשהאיכות יורדת מתחת לסף, המערכת עוברת למסלול יציב יותר בלי לנתק את השיחה.</p>
+        </div>
+        <div class="card"><b>${ic('alert')} מה עדיין מחייב שרת</b>
+          <ul class="todo">
+            <li>איתות SIP וגשר PSTN — חיוג אמיתי החוצה</li>
+            <li>תורים, זמינות נציגים והפצת שיחות</li>
+            <li>הקלטות — אחסון והרשאות גישה</li>
+            <li>דחיפת שיחות נכנסות (WebSocket)</li>
+          </ul>
+          <p class="pane-l sm">כל אלה מאחורי מתאם אחד — המעבר לשרת אמיתי לא ידרוש שינוי בממשק.</p>
+        </div>
+      </div>`;
+    const a = $('#sAuto'); if (a) a.addEventListener('change', () => TEL.auto(a.checked));
+  }
+  const PERM_LBL = { call: 'חיוג', transfer: 'העברה', conference: 'ועידה', record: 'הקלטה',
+    viewCrm: 'צפייה ב-CRM', editCrm: 'עריכה ב-CRM', diagnostics: 'אבחון', analytics: 'ביצועים', admin: 'ניהול' };
+
+  /* ============================================================
+     התראות וחלונות
+     ============================================================ */
+  function alert2(a) {
+    const host = $('#alerts');
+    const el = document.createElement('div');
+    el.className = 'al ' + (a.kind || 'warn');
+    el.innerHTML = `<span class="al-i">${ic(a.icon || 'alert')}</span>
+      <div><b>${esc(a.t)}</b>${a.why ? `<small>${esc(a.why)}</small>` : ''}
+      ${a.fix ? `<small class="fix">${esc(a.fix)}</small>` : ''}</div>
+      ${a.action ? `<button class="al-b">${esc(a.action)}</button>` : ''}
+      <button class="al-x">${ic('x')}</button>`;
+    host.appendChild(el);
+    const kill = () => { el.classList.add('out'); setTimeout(() => el.remove(), 200); };
+    el.querySelector('.al-x').addEventListener('click', kill);
+    const b = el.querySelector('.al-b');
+    if (b) b.addEventListener('click', () => { if (a.onAction) a.onAction(); kill(); });
+    setTimeout(kill, a.sticky ? 30000 : 9000);
+  }
+  function toast(t) { alert2({ t, kind: 'info', icon: 'check' }); }
+  function modal(title, body, bind) {
+    const host = $('#modalHost');
+    host.innerHTML = `<div class="mw"><div class="mb">
+      <div class="mh"><b>${esc(title)}</b><button class="mx">${ic('x')}</button></div>
+      <div class="mc">${body}</div></div></div>`;
+    host.classList.add('on');
+    host.querySelector('.mx').addEventListener('click', close);
+    host.querySelector('.mw').addEventListener('mousedown', e => { if (e.target.classList.contains('mw')) close(); });
+    if (bind) bind(host);
+  }
+  function close() { const h = $('#modalHost'); h.classList.remove('on'); h.innerHTML = ''; }
+
+  window.UIX = { rail, stage, go, phone, alert2, toast, modal, close, state: UI };
+})();
+
+</script>
+<script>
+/* ============================================================
+   CallBiz Desktop · פלטפורמת עדכונים
+   ------------------------------------------------------------
+   הנציג לא צריך לדעת מה זה cache או גרסה. הוא מקבל חיווי אחד:
+   "יש עדכון" → לוחץ → המערכת מתעדכנת ונטענת מחדש. כמו אפליקציה
+   בטלפון.
+
+   איך זה עובד:
+     · version.json יושב לצד האפליקציה ומכיל את הגרסה הנוכחית,
+       תאריך, ומה חדש. זה הקובץ היחיד שצריך לעדכן כדי לשחרר.
+     · בכל הפעלה, ואז כל 15 דקות, נבדק הקובץ עם מניעת cache.
+     · אם המספר גבוה ממה שרץ — מוצג באנר עדין (ולא חוסם).
+     · לחיצה על "עדכן" מנקה את ה-cache של הקבצים ומרעננת עם
+       חותמת גרסה חדשה, כך שהדפדפן מושך את הקוד החדש בוודאות.
+     · אם העדכון מסומן critical — לא ניתן לדחות.
+
+   בזמן שיחה פעילה העדכון לא מופעל אוטומטית ולא מציק — ממתין
+   לסיום השיחה. אף פעם לא מנתקים נציג באמצע.
+   ============================================================ */
+(function () {
+
+  const RUNNING = window.APP_VERSION || '1.0.0';
+  const SEEN = 'cbd_seenVer', LAST = 'cbd_lastCheck';
+  let latest = null, banner = null, timer = null;
+
+  const cmp = (a, b) => {
+    const A = String(a).split('.').map(Number), B = String(b).split('.').map(Number);
+    for (let i = 0; i < 3; i++) { if ((A[i] || 0) > (B[i] || 0)) return 1; if ((A[i] || 0) < (B[i] || 0)) return -1; }
+    return 0;
+  };
+
+  async function check(manual) {
+    /* בקובץ יחיד לשיתוף אין version.json — אין מה לבדוק */
+    if (window.CB_VERSION_INLINE && window.CB_EMBED_PANES === false) {
+      if (manual) toast('הגרסה שלך עדכנית · ' + RUNNING);
+      return null;
+    }
+    try {
+      const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) throw 0;
+      const v = await r.json();
+      localStorage.setItem(LAST, String(Date.now()));
+      latest = v;
+      if (cmp(v.version, RUNNING) > 0) { show(v); return v; }
+      if (manual) toast('הגרסה שלך עדכנית · ' + RUNNING);
+      return null;
+    } catch (e) {
+      if (manual) toast('לא ניתן לבדוק עדכונים כרגע');
+      return null;
+    }
+  }
+
+  function show(v) {
+    if (banner) banner.remove();
+    const critical = !!v.critical;
+    const dismissed = localStorage.getItem(SEEN) === v.version;
+    if (dismissed && !critical) return;
+    banner = document.createElement('div');
+    banner.className = 'upd' + (critical ? ' crit' : '');
+    banner.innerHTML = `
+      <span class="upd-i">${ic(critical ? 'alert' : 'refresh')}</span>
+      <div class="upd-t">
+        <b>${critical ? 'עדכון חובה זמין' : 'יש גרסה חדשה'} · ${esc(v.version)}</b>
+        <small>${esc(v.summary || 'שיפורים ותיקונים')}</small>
+      </div>
+      <button class="upd-go">${ic('refresh')} עדכן עכשיו</button>
+      ${critical ? '' : '<button class="upd-later">אחר כך</button>'}
+      <button class="upd-more" title="מה חדש">${ic('alert')}</button>`;
+    document.body.appendChild(banner);
+    banner.querySelector('.upd-go').addEventListener('click', () => apply(v));
+    const l = banner.querySelector('.upd-later');
+    if (l) l.addEventListener('click', () => { localStorage.setItem(SEEN, v.version); banner.remove(); banner = null; });
+    banner.querySelector('.upd-more').addEventListener('click', () => notes(v));
+  }
+
+  function notes(v) {
+    if (!window.UIX) return;
+    UIX.modal('מה חדש בגרסה ' + v.version, `
+      <p class="m-l">${esc(v.date || '')}${v.summary ? ' · ' + esc(v.summary) : ''}</p>
+      <ul class="upd-list">${(v.notes || []).map(n => `<li>${esc(n)}</li>`).join('') || '<li>שיפורים ותיקונים</li>'}</ul>
+      <p class="m-l sm">הגרסה שרצה אצלך: ${esc(RUNNING)}</p>`);
+  }
+
+  /* העדכון עצמו — ניקוי cache ורענון עם חותמת חדשה */
+  async function apply(v) {
+    const c = window.TEL && TEL.call();
+    if (c && c.state === 'active') {
+      toast('יש שיחה פעילה — העדכון יתבצע מיד בסיומה');
+      if (window.TEL) TEL.on('ended', () => setTimeout(() => apply(v), 800));
+      return;
+    }
+    if (banner) { banner.querySelector('.upd-go').innerHTML = '<i class="spin"></i> מעדכן…'; }
+    try {
+      if (window.caches && caches.keys) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.update().catch(() => {})));
+      }
+    } catch (e) {}
+    localStorage.setItem(SEEN, v.version);
+    /* חותמת הגרסה בכתובת מבטיחה משיכה מחדש של כל הקבצים */
+    const u = new URL(location.href);
+    u.searchParams.set('v', v.version);
+    location.replace(u.toString());
+  }
+
+  const toast = t => { if (window.UIX) UIX.toast(t); };
+
+  function start() {
+    check();
+    clearInterval(timer);
+    timer = setInterval(check, 15 * 60 * 1000);
+    /* בדיקה גם כשחוזרים לחלון אחרי שהיה ברקע */
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+  }
+
+  window.UPDATER = { check, apply, start, running: RUNNING, latest: () => latest, notes };
+})();
+
+</script>
+<script>
+/* ============================================================
+   CallBiz Desktop · הרכבה
+   ------------------------------------------------------------
+   מחבר את כל השכבות: זהות מה-CRM → מנוע טלפוניה → ממשק →
+   התראות בזמן אמת. שום שכבה לא מכירה את השנייה ישירות, הכל דרך
+   אירועים — כדי שאפשר יהיה להחליף את המנוע בשרת אמיתי בלי לגעת
+   בממשק.
+   ============================================================ */
+(async function () {
+
+  /* 1. זהות והרשאות — לפני הכל */
+  await CRM.connect();
+  UIX.rail(); UIX.stage();
+
+  if (!CRM.isActive()) {
+    UIX.alert2({ t: 'העובד אינו מסומן כפעיל ב-CRM', kind: 'warn', sticky: true,
+      why: 'שיחות לא ינותבו אליך עד שהסטטוס יעודכן במערכת הניהול.' });
+  }
+  if (CRM.mode() === 'demo') {
+    UIX.alert2({ t: 'מצב הדגמה — אין חיבור ל-CRM', kind: 'info', icon: 'alert',
+      why: 'הזהות, ההרשאות והלקוחות הם נתוני הדגמה. בהפעלה מתוך המנג׳ר הכל מגיע משם.' });
+  }
+
+  /* 2. מחזור השיחה → רענון הממשק */
+  TEL.on('call', () => { if (UIX.state.view === 'phone') UIX.phone(); });
+  TEL.on('tick', () => {
+    const el = document.querySelector('.live-time');
+    const c = TEL.call(); if (el && c) el.textContent = STATS.fmtSec(c.seconds);
+  });
+  TEL.on('contact', c => {
+    if (UIX.state.view === 'phone') UIX.phone();
+    if (c) UIX.alert2({ t: 'זוהה: ' + c.name, kind: 'info', icon: 'crm',
+      why: (c.org || '') + (c.lastCall ? ' · שיחה אחרונה ' + c.lastCall : ''),
+      action: 'פתח כרטיס', onAction: () => { CRM.screenPop(c); UIX.go('crm'); } });
+  });
+
+  /* 3. איכות — עדכון חי + זיהוי תקלה בשפה פשוטה */
+  TEL.on('stats', st => {
+    if (UIX.state.view === 'phone') {
+      const map = { mos: st.mos || '—', loss: (st.loss || 0) + '%', jitter: (st.jitter || 0) + 'ms', rtt: (st.rtt || 0) + 'ms' };
+      const boxes = document.querySelectorAll('.q-b');
+      const vals = [map.mos, map.loss, map.jitter, map.rtt];
+      boxes.forEach((b, i) => { const v = b.querySelector('b'); if (v) v.textContent = vals[i]; });
+    }
+    const issue = DIAG.watch(st);
+    if (issue) UIX.alert2({ t: issue.t, why: issue.why, fix: issue.fix, kind: 'warn', sticky: true,
+      action: 'עבור לגשר טלפוני', onAction: () => TEL.setTransport('pstn', true) });
+  });
+
+  /* 4. מעבר מסלול — הודעה שקטה, בלי לקטוע את השיחה */
+  TEL.on('transport', e => {
+    const to = TEL.transportOf(e.to);
+    UIX.alert2({ t: 'החיבור עבר ל' + to.label, kind: e.to === 'pstn' ? 'warn' : 'info',
+      icon: 'wifi', why: e.auto ? 'המעבר בוצע אוטומטית לפי איכות הרשת' : 'נבחר ידנית' });
+    if (UIX.state.view === 'phone') UIX.phone();
+  });
+
+  /* 5. סיום שיחה → סיכום קצר */
+  TEL.on('ended', c => {
+    UIX.alert2({ t: 'השיחה הסתיימה · ' + STATS.fmtSec(c.seconds), kind: 'info', icon: 'check',
+      why: 'איכות ממוצעת ' + (c.quality || '—') + ' · ' + TEL.transportOf(c.transport).label +
+        (c.switches.length ? ' · ' + c.switches.length + ' מעברי מסלול' : '') });
+    if (UIX.state.view === 'stats') UIX.stage();
+  });
+
+  TEL.on('error', e => UIX.alert2({ t: e.msg, kind: 'bad', icon: 'alert' }));
+
+  /* 6. חיוג יזום מהמנג׳ר (click-to-call) */
+  CRM.on('dial', d => {
+    if (!CRM.can('call')) return UIX.alert2({ t: 'אין הרשאת חיוג', kind: 'bad' });
+    TEL.dial(d.phone);
+    UIX.go('phone');
+  });
+  CRM.on('session', () => UIX.rail());
+
+  /* 7. קיצורי מקלדת של שולחן עבודה */
+  document.addEventListener('keydown', e => {
+    if (e.target && /input|textarea/i.test(e.target.tagName)) return;
+    const c = TEL.call();
+    if (e.key === 'm' && c) { TEL.mute(); }
+    if (e.key === 'h' && c) { TEL.hold(); }
+    if (e.key === 'Escape' && c) { TEL.hangup(); }
+    if (e.key === 'Enter' && !c) { const v = (document.getElementById('padIn') || {}).value; if (v) TEL.dial(v); }
+  });
+
+  /* 8. עדכונים — בדיקה בהפעלה ואז ברקע */
+  if (window.UPDATER) UPDATER.start();
+
+  console.log('[CallBiz Desktop] מוכן ·', CRM.mode(), '· גרסה', window.APP_VERSION);
+})();
+
+</script>
+</body>
+</html>

@@ -160,6 +160,7 @@
       state: opts.dir === 'in' ? 'ringing' : 'dialing', startedAt: new Date().toISOString(),
       answeredAt: null, seconds: 0, muted: false, held: false, recorded: false,
       contact: null, samples: [], switches: [], notes: '', outcome: null,
+      dtmf: '', recordingUrl: null, transferTo: null, consult: null, ext: opts.ext || null,
     };
     S.call = call;
     emit('call', call);
@@ -190,6 +191,13 @@
     c.transport = S.transport;
     stopMedia();
     S.history.unshift(c);
+    /* TODO(server): GET /pbx/recording/{callId} → { url }.
+       בהדגמה מיוצר מזהה כדי שהזרימה תהיה מלאה מקצה לקצה. */
+    if (c.recorded) {
+      const rid = 'rec_' + c.id.replace('call_', '');
+      setTimeout(() => attachRecording(c.id, 'pbx://recordings/' + rid), 600);
+      c.recordingId = rid;
+    }
     if (window.CRM) CRM.logCall(c);
     S.call = null;
     emit('call', null); emit('ended', c);
@@ -212,15 +220,72 @@
     if (S.stream) S.stream.getAudioTracks().forEach(t => { t.enabled = !c.held && !c.muted; });
     emit('call', c);
   }
+  /* ההקלטה מתבצעת במרכזייה ולא כאן. אנחנו רק מסמנים שהיא פועלת,
+     ובסיום מקבלים ממנה קישור. שום מדיה לא נשמרת אצלנו. */
   function record(on) {
     const c = S.call; if (!c) return;
     if (window.CRM && !CRM.can('record')) { emit('error', { kind: 'perm', msg: 'אין הרשאת הקלטה' }); return; }
     c.recorded = on == null ? !c.recorded : !!on;
+    /* TODO(server): POST /pbx/recording {callId, on} */
     emit('call', c);
   }
-  function transfer(to) {   /* TODO(server): REFER */
+  /* המרכזייה מחזירה קישור בסיום — נשמר כמזהה, לא כקובץ */
+  function attachRecording(callId, url) {
+    const c = S.history.find(x => x.id === callId) || (S.call && S.call.id === callId ? S.call : null);
+    if (c) { c.recordingUrl = url; emit('recording', { callId, url }); }
+    if (window.CRM && CRM.attachRecording) CRM.attachRecording(callId, url);
+    return c;
+  }
+  /* ---------------- הקשה בזמן שיחה (DTMF) ----------------
+     שימושי לניווט בתפריט קולי של הצד השני ולבחירת שלוחה. */
+  function dtmf(key) {
     const c = S.call; if (!c) return;
-    emit('transfer', { to }); hangup('הועברה ל' + to);
+    c.dtmf += key;
+    /* צליל קצר כדי שהנציג ישמע שההקשה נקלטה */
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = 700 + '123A456B789C*0#D'.indexOf(key) * 40;
+      g.gain.value = 0.05; o.connect(g); g.connect(ctx.destination); o.start();
+      setTimeout(() => { o.stop(); ctx.close(); }, 90);
+    } catch (e) {}
+    /* TODO(server): RTCDTMFSender.insertDTMF(key) על הערוץ החי */
+    if (S.pcA && S.pcA.getSenders) {
+      const sd = S.pcA.getSenders().find(x => x.dtmf);
+      if (sd && sd.dtmf) { try { sd.dtmf.insertDTMF(key, 100, 70); } catch (e) {} }
+    }
+    emit('dtmf', { key, all: c.dtmf });
+    emit('call', c);
+  }
+
+  /* ---------------- שיחה מקדימה (Consult) ----------------
+     מתקשרים ליעד לפני ההעברה, מדברים איתו, ורק אז מחברים. */
+  function consult(target) {
+    const c = S.call; if (!c) return null;
+    hold(true);
+    c.consult = { target, startedAt: Date.now(), state: 'ringing' };
+    emit('consult', c.consult);
+    emit('call', c);
+    /* TODO(server): שיחה שנייה אמיתית מול השלוחה */
+    setTimeout(() => { if (S.call === c && c.consult) { c.consult.state = 'active'; emit('consult', c.consult); emit('call', c); } }, 1200);
+    return c.consult;
+  }
+  function consultCancel() {
+    const c = S.call; if (!c || !c.consult) return;
+    c.consult = null; hold(false); emit('consult', null); emit('call', c);
+  }
+  function consultComplete() {   /* חיבור שני הצדדים והשתחררות */
+    const c = S.call; if (!c || !c.consult) return;
+    const to = c.consult.target;
+    c.consult = null;
+    transfer(to, 'attended');
+  }
+
+  function transfer(to, kind) {   /* TODO(server): REFER (blind) / REPLACES (attended) */
+    const c = S.call; if (!c) return;
+    c.transferTo = to;
+    emit('transfer', { to, kind: kind || 'blind' });
+    hangup((kind === 'attended' ? 'חוברה ל' : 'הועברה ל') + to);
   }
   function conference(who) { emit('conference', { who }); }   /* TODO(server) */
 
@@ -229,6 +294,7 @@
 
   window.TEL = {
     dial, answer, hangup, mute, hold, record, transfer, conference, incoming,
+    dtmf, consult, consultCancel, consultComplete, attachRecording,
     on, stats: () => S.stats, call: () => S.call, history: () => S.history,
     transport: () => S.transport, transports: () => TRANSPORTS, transportOf,
     setTransport, auto: v => { if (v != null) S.auto = !!v; return S.auto; },

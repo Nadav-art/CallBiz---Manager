@@ -234,6 +234,14 @@
   };
   function webPane(v) {
     const w = WEB[v.key] || { url: '', label: v.label };
+    if (window.CB_EMBED_PANES === false) {
+      $('#stage').innerHTML = `<div class="pane"><div class="pane-h"><b>${ic(v.icon)} ${esc(w.label)}</b></div>
+        <div class="idle"><div class="idle-ic">${ic(v.icon)}</div>
+          <b>הלוח הזה נטען מתוך המערכת</b>
+          <small>בהרצה מקומית או מתוך CallBiz Manager, ${esc(w.label)} מוצג כאן בתוך המעטפת.<br>
+          בקישור לשיתוף מוצגת רק המעטפת עצמה.</small></div></div>`;
+      return;
+    }
     $('#stage').innerHTML = `<div class="web">
       <div class="web-h">${ic(v.icon)} <b>${esc(w.label)}</b>
         <span class="web-u">${esc(w.url)}</span>

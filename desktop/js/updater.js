@@ -30,6 +30,11 @@
   };
 
   async function check(manual) {
+    /* בקובץ יחיד לשיתוף אין version.json — אין מה לבדוק */
+    if (window.CB_VERSION_INLINE && window.CB_EMBED_PANES === false) {
+      if (manual) toast('הגרסה שלך עדכנית · ' + RUNNING);
+      return null;
+    }
     try {
       const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
       if (!r.ok) throw 0;
