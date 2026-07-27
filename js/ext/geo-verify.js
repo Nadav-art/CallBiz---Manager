@@ -157,6 +157,24 @@
     desc: 'שדה העיר הפך להשלמה חיה: מקלידים, המערכת מציעה ומאמתת מול מרשם היישובים, מתקנת כתיב לשם הרשמי ומסמנת בבירור כשלא נמצאה התאמה. מקור הנתונים ניתן להחלפה לספק חיצוני בשורה אחת.',
     files: ['js/ext/geo-verify.js', 'css/ext/geo.css'],
     install() {
+      /* כתובת הלקוח נדרשת רק כשמבקשים את הסניף הקרוב לביתו —
+         אחרת היא רק תופסת את ראש המסך. */
+      if (typeof leadAddrHTML === 'function') CBX.wrap('geoverify', 'leadAddrHTML', o => function (r) {
+        const n = (r && r.needs) || {};
+        if (n.branch !== '__near' && n.nearBranch !== '1') return '';
+        return o.apply(this, arguments);
+      });
+      /* וכשהיא כן מוצגת — היא יושבת מתחת לשאלת הסניף, לא מעל הכול */
+      if (typeof openNeedsClarify === 'function') CBX.wrap('geoverify', 'openNeedsClarify', o => function (r) {
+        const out = o.apply(this, arguments);
+        try {
+          const box = document.querySelector('#modal .geo-box');
+          const bq = document.querySelector('#modal [data-nq="branch"]');
+          const q = bq && bq.closest('.needs-q');
+          if (box && q && q.nextElementSibling !== box) q.parentNode.insertBefore(box, q.nextSibling);
+        } catch (e) {}
+        return out;
+      });
       if (typeof bindLeadAddr === 'function') CBX.wrap('geoverify', 'bindLeadAddr', o => function (r, after) {
         const out = o.apply(this, arguments);
         try {

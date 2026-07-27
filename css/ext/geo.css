@@ -33,3 +33,28 @@
 .gv-flag b { color: var(--text); }
 .gv-fix { font: inherit; font-size: 10.5px; cursor: pointer; padding: 1px 8px; border-radius: 999px;
   border: 1px solid currentColor; background: transparent; color: inherit; }
+
+/* השורה מיושרת לראש — הודעת האימות מתחת לשדה העיר לא אמורה
+   למתוח את "רחוב" ו"מס׳" לגובה שלה */
+.geo-row { align-items: start; }        /* grid — הפריטים לא נמתחים לגובה הגבוה */
+.geo-row > .cc-inp, .gv-wrap > .cc-inp { align-self: start; }
+
+/* ---------- ייבוא מרשם ---------- */
+.gi-lead { font-size: 12.5px; color: var(--text-2); line-height: 1.65; margin: 2px 0 12px; }
+.gi-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 9px; }
+.gi-file { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;
+  padding: 8px 11px; border-radius: 10px; border: 1px dashed var(--line); background: var(--surface-2); }
+.gi-file svg { width: 13px; height: 13px; color: var(--brand); }
+.gi-file input { display: none; }
+.gi-ta { width: 100%; font-family: ui-monospace, monospace; font-size: 12px; line-height: 1.6; }
+.gi-prev { margin-top: 10px; padding: 10px 12px; border-radius: 11px;
+  border: 1px solid color-mix(in srgb, var(--ok, #16a34a) 35%, transparent);
+  background: color-mix(in srgb, var(--ok, #16a34a) 6%, transparent); }
+.gi-prev b { display: flex; align-items: center; gap: 5px; font-size: 12.5px; }
+.gi-prev b svg { width: 13px; height: 13px; color: var(--ok, #16a34a); }
+.gi-prev small { display: block; font-size: 11px; color: var(--text-2); margin: 3px 0 7px; }
+.gi-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.gi-chips span { font-size: 11px; padding: 2px 8px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); }
+.gi-chips .more { color: var(--text-2); border-style: dashed; }
+.gi-open { margin-inline-start: auto; }

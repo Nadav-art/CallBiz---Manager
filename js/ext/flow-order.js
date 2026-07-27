@@ -433,7 +433,7 @@
             const fresh = sv.cloneNode(true); fresh.__fl = true;
             const steps = stepsOf(rec), i = steps.findIndex(s => s.key === 'crit');
             const nxt = steps[i + 1] || steps[steps.length - 1];
-            fresh.innerHTML = `${ic('check')} שמור והמשך ל${nxt.key === 'svc' ? 'בחירת שירות / מוצר' : nxt.key === 'cal' ? 'תיאום' : 'המשך'}`;
+            fresh.innerHTML = `${ic('check')} שמור והמשך`;
             sv.parentNode.replaceChild(fresh, sv);
             fresh.addEventListener('click', () => {
               const nt = document.getElementById('needsNoteM'); if (nt) rec.needs.note = nt.value;
@@ -468,7 +468,13 @@
           if (ci < 0 || si < 0) return list;
           const c = list[ci], s = list[si];
           const both = [c, s];
-          const state = both.every(x => x.state === 'done') ? 'done'
+          /* הושלם בפועל: נבחר שירות *וגם* נענו קריטריונים — אז השלב
+             נצבע ירוק בדיוק כמו אחרי תיאום, בלי לחכות לשלב הבא. */
+          const sumOK = (typeof needsSummary === 'function' ? needsSummary(r) : []).length > 0;
+          const svcOK = ((r.services || []).length > 0);
+          const filled = sumOK && svcOK;
+          const state = filled ? 'done'
+            : both.every(x => x.state === 'done') ? 'done'
             : both.some(x => x.state === 'overdue') ? 'overdue'
             : both.some(x => x.state === 'active') ? 'active'
             : both.some(x => x.state === 'done') ? 'active' : 'todo';
@@ -476,7 +482,7 @@
           const merged = Object.assign({}, ci < si ? c : s, {
             key: c.key, title: 'התאמת שירות / מוצר', state: state,
             result: parts.length ? parts.join(' · ') : null,
-            noContent: state === 'done' && !parts.length,
+            noContent: state === 'done' && !parts.length && !filled,
             idx: Math.min(c.idx, s.idx),
           });
           const out = list.filter((x, i) => i !== ci && i !== si);

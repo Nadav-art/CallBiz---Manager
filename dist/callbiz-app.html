@@ -7563,6 +7563,18 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 .fl-st.now b { color: var(--brand); font-weight: 800; }
 .fl-arr svg { width: 14px; height: 14px; }
 
+/* ---------- סיווג קריטריון: העדפה / קריטי ---------- */
+.ck-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 600;
+  padding: 2px 8px; border-radius: 999px; margin-inline-start: 7px; vertical-align: middle;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--text-2); }
+.ck-tag svg { width: 11px; height: 11px; }
+.ck-tag.pref { color: var(--brand); border-color: color-mix(in srgb, var(--brand) 32%, transparent);
+  background: color-mix(in srgb, var(--brand) 8%, transparent); }
+.ck-tag.crit { color: var(--amber, #B7791F); border-color: color-mix(in srgb, var(--amber, #B7791F) 38%, transparent);
+  background: color-mix(in srgb, var(--amber, #B7791F) 9%, transparent); }
+.ck-tag.btn-like { cursor: pointer; font: inherit; font-size: 10.5px; font-weight: 600; }
+.ck-tag.btn-like:hover { filter: brightness(.95); }
+
 </style>
   <style>
 /* ============================================================
@@ -7683,6 +7695,55 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 .gv-flag b { color: var(--text); }
 .gv-fix { font: inherit; font-size: 10.5px; cursor: pointer; padding: 1px 8px; border-radius: 999px;
   border: 1px solid currentColor; background: transparent; color: inherit; }
+
+/* השורה מיושרת לראש — הודעת האימות מתחת לשדה העיר לא אמורה
+   למתוח את "רחוב" ו"מס׳" לגובה שלה */
+.geo-row { align-items: start; }        /* grid — הפריטים לא נמתחים לגובה הגבוה */
+.geo-row > .cc-inp, .gv-wrap > .cc-inp { align-self: start; }
+
+/* ---------- ייבוא מרשם ---------- */
+.gi-lead { font-size: 12.5px; color: var(--text-2); line-height: 1.65; margin: 2px 0 12px; }
+.gi-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 9px; }
+.gi-file { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;
+  padding: 8px 11px; border-radius: 10px; border: 1px dashed var(--line); background: var(--surface-2); }
+.gi-file svg { width: 13px; height: 13px; color: var(--brand); }
+.gi-file input { display: none; }
+.gi-ta { width: 100%; font-family: ui-monospace, monospace; font-size: 12px; line-height: 1.6; }
+.gi-prev { margin-top: 10px; padding: 10px 12px; border-radius: 11px;
+  border: 1px solid color-mix(in srgb, var(--ok, #16a34a) 35%, transparent);
+  background: color-mix(in srgb, var(--ok, #16a34a) 6%, transparent); }
+.gi-prev b { display: flex; align-items: center; gap: 5px; font-size: 12.5px; }
+.gi-prev b svg { width: 13px; height: 13px; color: var(--ok, #16a34a); }
+.gi-prev small { display: block; font-size: 11px; color: var(--text-2); margin: 3px 0 7px; }
+.gi-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.gi-chips span { font-size: 11px; padding: 2px 8px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); }
+.gi-chips .more { color: var(--text-2); border-style: dashed; }
+.gi-open { margin-inline-start: auto; }
+
+</style>
+  <style>
+/* ============================================================
+   פולו-אפ מסונכרן (fusync)
+   ============================================================ */
+.fus-src { display: flex; align-items: flex-start; gap: 8px; padding: 9px 11px; border-radius: 11px;
+  margin-bottom: 12px; border: 1px solid var(--line); background: var(--surface-2); }
+.fus-src > svg { width: 14px; height: 14px; flex: 0 0 auto; margin-top: 1px; color: var(--brand); }
+.fus-src b { display: block; font-size: 12.5px; }
+.fus-src small { display: block; font-size: 11px; color: var(--text-2); line-height: 1.55; margin-top: 2px; }
+.fus-block { display: flex; align-items: center; gap: 7px; padding: 9px 11px; border-radius: 11px;
+  margin-bottom: 10px; font-size: 12px;
+  color: var(--danger, #dc2626);
+  border: 1px solid color-mix(in srgb, var(--danger, #dc2626) 40%, transparent);
+  background: color-mix(in srgb, var(--danger, #dc2626) 7%, transparent); }
+.fus-block svg { width: 13px; height: 13px; }
+.fus-empty { display: flex; align-items: center; gap: 7px; padding: 14px; border-radius: 11px;
+  font-size: 12px; color: var(--text-2); border: 1px dashed var(--line); background: var(--surface-2); }
+.fus-empty svg { width: 14px; height: 14px; }
+.fu2-win.rec { border-color: color-mix(in srgb, var(--brand) 45%, transparent); }
+.fus-rec { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--brand);
+  padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, var(--brand) 10%, transparent); }
+.fus-rec svg { width: 10px; height: 10px; }
 
 </style>
 </head>
@@ -30699,7 +30760,7 @@ function openExtPanel() {
             const fresh = sv.cloneNode(true); fresh.__fl = true;
             const steps = stepsOf(rec), i = steps.findIndex(s => s.key === 'crit');
             const nxt = steps[i + 1] || steps[steps.length - 1];
-            fresh.innerHTML = `${ic('check')} שמור והמשך ל${nxt.key === 'svc' ? 'בחירת שירות / מוצר' : nxt.key === 'cal' ? 'תיאום' : 'המשך'}`;
+            fresh.innerHTML = `${ic('check')} שמור והמשך`;
             sv.parentNode.replaceChild(fresh, sv);
             fresh.addEventListener('click', () => {
               const nt = document.getElementById('needsNoteM'); if (nt) rec.needs.note = nt.value;
@@ -30734,7 +30795,13 @@ function openExtPanel() {
           if (ci < 0 || si < 0) return list;
           const c = list[ci], s = list[si];
           const both = [c, s];
-          const state = both.every(x => x.state === 'done') ? 'done'
+          /* הושלם בפועל: נבחר שירות *וגם* נענו קריטריונים — אז השלב
+             נצבע ירוק בדיוק כמו אחרי תיאום, בלי לחכות לשלב הבא. */
+          const sumOK = (typeof needsSummary === 'function' ? needsSummary(r) : []).length > 0;
+          const svcOK = ((r.services || []).length > 0);
+          const filled = sumOK && svcOK;
+          const state = filled ? 'done'
+            : both.every(x => x.state === 'done') ? 'done'
             : both.some(x => x.state === 'overdue') ? 'overdue'
             : both.some(x => x.state === 'active') ? 'active'
             : both.some(x => x.state === 'done') ? 'active' : 'todo';
@@ -30742,7 +30809,7 @@ function openExtPanel() {
           const merged = Object.assign({}, ci < si ? c : s, {
             key: c.key, title: 'התאמת שירות / מוצר', state: state,
             result: parts.length ? parts.join(' · ') : null,
-            noContent: state === 'done' && !parts.length,
+            noContent: state === 'done' && !parts.length && !filled,
             idx: Math.min(c.idx, s.idx),
           });
           const out = list.filter((x, i) => i !== ci && i !== si);
@@ -31242,6 +31309,164 @@ function openExtPanel() {
   });
 
   window.CRITFX = { candidates, countFor, mark: markQuestions, last: () => lastMark };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: סיווג קריטריונים — העדפה מול קריטי  ·  key = 'critkind'
+   ------------------------------------------------------------
+   לא כל הקריטריונים שווים:
+
+     העדפה  — "הייתי מעדיף בוקר", "הייתי מעדיפה מטפלת". אם אין —
+              מתאמים בכל זאת. ברירת המחדל שלהם היא "אין העדפה",
+              כלומר הם נחשבים כנענו גם בלי לגעת בהם.
+     קריטי  — תנאי סף: הסדר קופה, גיל, אישור רפואי. בלעדיו אי-אפשר
+              לתאם, ולכן הוא חייב מענה מפורש.
+
+   הסיווג מוצג ליד כל קריטריון גם במסך ההגדרות וגם בבירור הצורך,
+   וניתן לשינוי משם. בנוסף — "גמיש" בהעדפת זמן ביום הוא בדיוק
+   "אין העדפה", ולכן אוחד לניסוח אחד בכל המערכת.
+   ============================================================ */
+(function () {
+
+  const KINDS = {
+    pref: { label: 'העדפה', icon: 'target', desc: 'אם אין — מתאמים בכל זאת. ברירת מחדל: אין העדפה' },
+    crit: { label: 'קריטי', icon: 'lock', desc: 'תנאי סף — בלעדיו לא ניתן לתאם' },
+  };
+  /* המובנים הם העדפות; קריטריון שהוגדר כחובה הוא קריטי מעצם הגדרתו */
+  const BUILTIN_PREF = ['branch', 'timeOfDay', 'gender', 'nearBranch'];
+
+  function kindOf(key) {
+    const cfg = (typeof NEEDS_CFG !== 'undefined' && NEEDS_CFG[key]) || {};
+    if (cfg.kind === 'pref' || cfg.kind === 'crit') return cfg.kind;
+    if (BUILTIN_PREF.indexOf(key) >= 0) return 'pref';
+    const def = (typeof needsDefOf === 'function') ? needsDefOf(key) : null;
+    if (def && typeof needsCfgOf === 'function' && needsCfgOf(def).required) return 'crit';
+    return 'crit';
+  }
+  function setKind(key, k) {
+    if (typeof NEEDS_CFG === 'undefined') return;
+    NEEDS_CFG[key] = Object.assign({}, NEEDS_CFG[key], { kind: k });
+    if (typeof needsSave === 'function') needsSave();
+  }
+  const isPref = key => kindOf(key) === 'pref';
+
+  /* "אין העדפה" — ניסוח אחיד לכל אפשרות ריקה של קריטריון העדפה */
+  const NO_PREF = 'אין העדפה';
+
+  /* ברירת המחדל אינה בחירה: כל עוד הנציג לא אישר, שום אפשרות אינה
+     מסומנת. רק לחיצה על "שמור והמשך" מקבעת את ההעדפות שלא נגעו
+     בהן כ"אין העדפה" — ומאז הן מוצגות כנבחרות. */
+  function seedPrefs(r) {
+    if (!r) return;
+    r.needs = r.needs || {};
+    (typeof needsQuestions === 'function' ? needsQuestions(r) : []).forEach(q => {
+      if (!isPref(q.key)) return;
+      if (!Object.prototype.hasOwnProperty.call(r.needs, q.key)) r.needs[q.key] = '';
+    });
+  }
+
+  /* קיבוע ההעדפות מתבצע רק בלחיצה על "שמור והמשך" — בשלב לכידה,
+     לפני כל מטפל אחר, כדי שמה שנשמר יכלול אותן. */
+  let lastRec = null;
+  function armSave(modKey) {
+    const fn = e => {
+      const b = e.target && e.target.closest ? e.target.closest('#needsSave') : null;
+      if (!b || !lastRec) return;
+      try { seedPrefs(lastRec); } catch (err) {}
+    };
+    document.addEventListener('click', fn, true);
+    CBX._remember(modKey, () => document.removeEventListener('click', fn, true));
+  }
+
+  CBX.register({
+    key: 'critkind', label: 'סיווג קריטריונים — העדפה / קריטי', icon: 'target',
+    desc: 'כל קריטריון מסווג כהעדפה או כתנאי סף. העדפה מקבלת "אין העדפה" כברירת מחדל ואינה נחשבת חסרה, וקריטריון קריטי חייב מענה. "גמיש" בהעדפת זמן אוחד ל"אין העדפה" בכל המערכת.',
+    files: ['js/ext/crit-kind.js'],
+    install() {
+      armSave('critkind');
+      /* ניסוח אחיד + סימון הסיווג על השאלה */
+      if (typeof needsQuestions === 'function') CBX.wrap('critkind', 'needsQuestions', o => function (r) {
+        const qs = o.apply(this, arguments);
+        try {
+          qs.forEach(q => {
+            q.kind = kindOf(q.key);
+            if (q.kind !== 'pref') return;
+            (q.opts || []).forEach(op => {
+              if (op.v === '' && op.t !== NO_PREF && !/הקרוב/.test(op.t)) op.t = NO_PREF;
+            });
+          });
+        } catch (e) { console.error('[critkind]', e); }
+        return qs;
+      });
+
+      /* העדפה שלא נענתה אינה "חסרה" */
+      if (typeof needsMissingRequired === 'function') CBX.wrap('critkind', 'needsMissingRequired', o => function (r) {
+        const miss = o.apply(this, arguments);
+        try {
+          const byLabel = {};
+          (typeof needsQuestions === 'function' ? needsQuestions(r) : []).forEach(q => {
+            byLabel[q.label.replace(/\s*\*$/, '')] = q.key;
+          });
+          return miss.filter(m => !isPref(byLabel[m] || ''));
+        } catch (e) { return miss; }
+      });
+
+      /* פתיחת בירור הצורך — העדפות מסומנות מראש כ"אין העדפה" */
+      if (typeof openNeedsClarify === 'function') CBX.wrap('critkind', 'openNeedsClarify', o => function (r, after) {
+        lastRec = r || null;
+        const out = o.apply(this, arguments);
+        try {
+          /* תגית הסיווג ליד כל שאלה */
+          const body = document.querySelector('#modal .needs-body');
+          if (body) (typeof needsQuestions === 'function' ? needsQuestions(r) : []).forEach(q => {
+            const btn = body.querySelector(`[data-nq="${CSS.escape(q.key)}"]`);
+            const wrap = btn && btn.closest('.needs-q');
+            const lbl = wrap && wrap.querySelector('.needs-lbl');
+            if (!lbl || lbl.querySelector('.ck-tag')) return;
+            const k = KINDS[kindOf(q.key)];
+            const s = document.createElement('span');
+            s.className = 'ck-tag ' + kindOf(q.key);
+            s.title = k.desc;
+            s.innerHTML = ic(k.icon) + ' ' + k.label;
+            lbl.appendChild(s);
+          });
+        } catch (e) { console.error('[critkind] tag', e); }
+        return out;
+      });
+
+      /* מסך ההגדרות — סיווג גלוי וניתן לשינוי */
+      if (typeof renderFieldsManagerView === 'function') CBX.wrap('critkind', 'renderFieldsManagerView', o => function () {
+        const out = o.apply(this, arguments);
+        try { paintSettings(); } catch (e) { console.error('[critkind] settings', e); }
+        return out;
+      });
+      CBX.delegate('critkind', '[data-ckkind]', el => {
+        const p = el.dataset.ckkind.split('|');
+        setKind(p[0], p[1] === 'pref' ? 'crit' : 'pref');
+        toast(p[1] === 'pref' ? 'סווג כקריטריון קריטי — חייב מענה' : 'סווג כהעדפה — ברירת מחדל "אין העדפה"');
+        if (typeof renderFieldsManagerView === 'function') renderFieldsManagerView();
+      });
+
+      function paintSettings() {
+        document.querySelectorAll('[data-critrow], .crit-row, .fx-crit').forEach(row => {
+          const key = row.dataset.critrow || row.dataset.crit || row.getAttribute('data-critkey');
+          if (!key || row.querySelector('.ck-tag')) return;
+          const k = kindOf(key), meta = KINDS[k];
+          const b = document.createElement('button');
+          b.className = 'ck-tag btn-like ' + k;
+          b.setAttribute('data-ckkind', key + '|' + k);
+          b.title = meta.desc + ' · לחצו להחלפה';
+          b.innerHTML = ic(meta.icon) + ' ' + meta.label;
+          const host = row.querySelector('.crit-name, .fx-name, b') || row;
+          host.appendChild(b);
+        });
+      }
+    },
+  });
+
+  window.CRITKIND = { kindOf, setKind, isPref, seed: seedPrefs, KINDS, NO_PREF };
 })();
 
 </script>
@@ -31993,6 +32218,24 @@ function openExtPanel() {
     desc: 'שדה העיר הפך להשלמה חיה: מקלידים, המערכת מציעה ומאמתת מול מרשם היישובים, מתקנת כתיב לשם הרשמי ומסמנת בבירור כשלא נמצאה התאמה. מקור הנתונים ניתן להחלפה לספק חיצוני בשורה אחת.',
     files: ['js/ext/geo-verify.js', 'css/ext/geo.css'],
     install() {
+      /* כתובת הלקוח נדרשת רק כשמבקשים את הסניף הקרוב לביתו —
+         אחרת היא רק תופסת את ראש המסך. */
+      if (typeof leadAddrHTML === 'function') CBX.wrap('geoverify', 'leadAddrHTML', o => function (r) {
+        const n = (r && r.needs) || {};
+        if (n.branch !== '__near' && n.nearBranch !== '1') return '';
+        return o.apply(this, arguments);
+      });
+      /* וכשהיא כן מוצגת — היא יושבת מתחת לשאלת הסניף, לא מעל הכול */
+      if (typeof openNeedsClarify === 'function') CBX.wrap('geoverify', 'openNeedsClarify', o => function (r) {
+        const out = o.apply(this, arguments);
+        try {
+          const box = document.querySelector('#modal .geo-box');
+          const bq = document.querySelector('#modal [data-nq="branch"]');
+          const q = bq && bq.closest('.needs-q');
+          if (box && q && q.nextElementSibling !== box) q.parentNode.insertBefore(box, q.nextSibling);
+        } catch (e) {}
+        return out;
+      });
       if (typeof bindLeadAddr === 'function') CBX.wrap('geoverify', 'bindLeadAddr', o => function (r, after) {
         const out = o.apply(this, arguments);
         try {
@@ -32007,6 +32250,394 @@ function openExtPanel() {
   });
 
   window.GEOV = { lookup, verify, norm, registry, setProvider, attach };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: ייבוא מרשם יישובים  ·  key = 'geoimport'
+   ------------------------------------------------------------
+   הרשימה המובנית לעולם לא תהיה מלאה — במרשם היישובים של הלמ״ס יש
+   כ-1,270 יישובים (כולל קיבוצים, מושבים ויישובים קהילתיים).
+   במקום לנחש, כאן יש נתיב ייבוא: מדביקים או מעלים קובץ עם עמודת
+   שם (ואם יש — גם מחוז/אזור), והמרשם מוחלף במלואו ונשמר.
+
+   מקורות מתאימים: קובץ היישובים של הלמ״ס, data.gov.il, או כל
+   טבלה פנימית. תומך CSV / TSV / הדבקה מאקסל.
+   ============================================================ */
+(function () {
+
+  const KEY = 'cb_geoRegistry';
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { return null; } };
+  const save = list => { try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) {} };
+  const clear = () => { try { localStorage.removeItem(KEY); } catch (e) {} };
+
+  /* זיהוי העמודות לבד — שם היישוב הוא העמודה עם הכי הרבה טקסט עברי */
+  function parse(text) {
+    const lines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    if (!lines.length) return { rows: [], cols: 0 };
+    const split = l => l.indexOf('\t') >= 0 ? l.split('\t') : l.split(',');
+    const table = lines.map(split).map(a => a.map(c => c.replace(/^["']|["']$/g, '').trim()));
+    const cols = Math.max.apply(null, table.map(a => a.length));
+    const heb = s => /[֐-׿]/.test(s);
+    /* עמודת השם: הכי הרבה תאים עבריים; עמודת המחוז: השנייה אחריה */
+    let nameCol = 0, best = -1;
+    for (let c = 0; c < cols; c++) {
+      const n = table.filter(a => heb(a[c] || '')).length;
+      if (n > best) { best = n; nameCol = c; }
+    }
+    let regCol = -1, bestR = -1;
+    for (let c = 0; c < cols; c++) {
+      if (c === nameCol) continue;
+      const vals = table.map(a => a[c] || '').filter(heb);
+      const uniq = new Set(vals).size;
+      /* מחוז = הרבה חזרות על מעט ערכים */
+      if (vals.length > table.length * 0.5 && uniq < Math.max(3, table.length / 5) && vals.length > bestR) { bestR = vals.length; regCol = c; }
+    }
+    const first = table[0][nameCol] || '';
+    const start = /שם|יישוב|ישוב|city|name/i.test(first) ? 1 : 0;
+    const seen = {}, rows = [];
+    for (let i = start; i < table.length; i++) {
+      const nm = (table[i][nameCol] || '').trim();
+      if (!nm || !heb(nm)) continue;
+      if (seen[nm]) continue; seen[nm] = 1;
+      rows.push({ name: nm, official: nm, region: regCol >= 0 ? (table[i][regCol] || '') : '' });
+    }
+    return { rows, cols, nameCol, regCol };
+  }
+
+  function apply(rows) {
+    if (!rows || !rows.length) return 0;
+    save(rows);
+    window.IL_CITIES_EXT = rows.slice();
+    return rows.length;
+  }
+
+  /* ---------------- פאנל הייבוא ---------------- */
+  function openImport() {
+    const old = document.getElementById('geoImp'); if (old) old.remove();
+    const w = document.createElement('div'); w.className = 'cbc-wrap'; w.id = 'geoImp';
+    const cur = (window.IL_CITIES_EXT || []).length;
+    let parsed = null;
+    const render = () => {
+      w.innerHTML = `<div class="cbc-box gi-box" style="max-width:560px;text-align:start">
+        <div class="cbc-head"><span class="cbc-ic">${ic('org')}</span><b>ייבוא מרשם יישובים</b></div>
+        <p class="gi-lead">המרשם הנוכחי מכיל <b>${cur}</b> יישובים. הדביקו טבלה מאקסל או העלו CSV —
+          המערכת תזהה לבד את עמודת השם ואת עמודת המחוז, ותחליף את המרשם כולו.</p>
+        <div class="gi-row">
+          <label class="gi-file">${ic('docs')} העלאת קובץ CSV / TXT
+            <input type="file" id="giFile" accept=".csv,.txt,.tsv"></label>
+          <button class="btn sm" id="giClear">${ic('sync')} חזרה למרשם המובנה</button>
+        </div>
+        <textarea class="cc-inp gi-ta" id="giText" rows="7"
+          placeholder="שם יישוב,מחוז&#10;תל אביב-יפו,תל אביב&#10;כפר ורדים,צפון&#10;…"></textarea>
+        ${parsed ? `<div class="gi-prev">
+          <b>${ic('check')} זוהו ${parsed.rows.length} יישובים</b>
+          <small>עמודת שם: ${parsed.nameCol + 1}${parsed.regCol >= 0 ? ' · עמודת מחוז: ' + (parsed.regCol + 1) : ' · לא זוהתה עמודת מחוז'}</small>
+          <div class="gi-chips">${parsed.rows.slice(0, 8).map(r => `<span>${esc(r.official)}${r.region ? ' · ' + esc(r.region) : ''}</span>`).join('')}
+            ${parsed.rows.length > 8 ? `<span class="more">+${parsed.rows.length - 8}</span>` : ''}</div>
+        </div>` : ''}
+        <div class="cbc-actions">
+          <button class="btn ghost" id="giCancel">ביטול</button>
+          <button class="btn" id="giCheck">${ic('eye')} בדיקה</button>
+          <button class="btn primary" id="giSave" ${parsed && parsed.rows.length ? '' : 'disabled'}>${ic('check')} ייבוא והחלפה</button>
+        </div></div>`;
+      const ta = w.querySelector('#giText');
+      w.querySelector('#giCheck').addEventListener('click', () => { parsed = parse(ta.value); render(); });
+      w.querySelector('#giCancel').addEventListener('click', () => w.remove());
+      w.querySelector('#giClear').addEventListener('click', () => {
+        clear(); toast('חזרה למרשם המובנה — יש לרענן את הדף'); w.remove();
+      });
+      w.querySelector('#giSave').addEventListener('click', () => {
+        const n = apply(parsed && parsed.rows);
+        toast(n ? `יובאו ${n} יישובים · ההשלמה מעודכנת` : 'לא זוהו יישובים');
+        w.remove();
+      });
+      const f = w.querySelector('#giFile');
+      f.addEventListener('change', () => {
+        const file = f.files && f.files[0]; if (!file) return;
+        const rd = new FileReader();
+        rd.onload = () => { ta.value = String(rd.result || ''); parsed = parse(ta.value); render(); };
+        rd.readAsText(file, 'utf-8');
+      });
+    };
+    render();
+    document.body.appendChild(w);
+    w.addEventListener('mousedown', e => { if (e.target === w) w.remove(); });
+  }
+
+  CBX.register({
+    key: 'geoimport', label: 'ייבוא מרשם יישובים', icon: 'org',
+    desc: 'נתיב ייבוא לרשימת היישובים המלאה — הדבקה מאקסל או קובץ CSV. המערכת מזהה לבד את עמודת השם ואת המחוז, ומחליפה את המרשם שההשלמה עובדת מולו.',
+    files: ['js/ext/geo-import.js'],
+    install() {
+      /* מרשם שיובא גובר על המובנה */
+      const saved = load();
+      if (saved && saved.length) window.IL_CITIES_EXT = saved;
+
+      /* כפתור בתוך שדה הכתובת */
+      if (typeof leadAddrHTML === 'function') CBX.wrap('geoimport', 'leadAddrHTML', o => function (r) {
+        const html = o.apply(this, arguments);
+        return html.replace('</div>\n  </div>', '</div>\n  </div>')
+          .replace(/(<div class="geo-head">[\s\S]*?<\/div>)/,
+            `$1<button class="btn xs gi-open" data-geoimp>${ic('org')} מרשם היישובים (${(window.IL_CITIES_EXT || []).length})</button>`);
+      });
+      CBX.delegate('geoimport', '[data-geoimp]', () => openImport());
+    },
+  });
+
+  window.GEOIMP = { parse, apply, open: openImport, saved: load, clear };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: פולו-אפ מסונכרן  ·  key = 'fusync'
+   ------------------------------------------------------------
+   מה שהיה: פאנל הפולו-אפ הציג נתונים קבועים בקוד — שלושה ימים
+   כתובים מראש (22–24/05), ארבעה חלונות עם "קיבולת" ו"תפוסים"
+   דמיוניים, וכפתורי "בעוד 15 דק׳" עם שעות קשיחות. הוא לא הכיר
+   את יומן העובד, לא את שעות העבודה שבהגדרות, לא את ההרשאות
+   ולא את הקריטריונים של הפנייה.
+
+   מה שיש עכשיו — הכול נגזר ממקורות האמת:
+     · הימים   — ימי העבודה הפעילים של האחראי (הגדרות › שעות פעילות)
+     · השעות   — המשמרות של אותו יום, בלי ההפסקות
+     · התפוסה  — האירועים האמיתיים ביומן שלו (CAL_EVENTS) והתורים
+     · העבר    — שעון המערכת; חלון שעבר אינו ניתן לבחירה
+     · הרשאות  — עובד מתזמן לעצמו; שיבוץ לאחר דורש הרשאת מנהל
+     · קריטריונים — העדפת הזמן של הלקוח מסומנת כמומלצת
+   ============================================================ */
+(function () {
+
+  const DOW = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+  const hm = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+  const toMin = t => { const p = String(t || '').split(':'); return (+p[0] || 0) * 60 + (+p[1] || 0); };
+
+  /* מי האחראי על הפנייה — ולפי היומן שלו נבנה הפאנל */
+  function ownerOf(r) {
+    const name = (r && (r.assignee || r.owner)) || (typeof CURRENT_USER !== 'undefined' ? CURRENT_USER : '');
+    const emp = (typeof STAFF !== 'undefined') ? STAFF.find(s => s.name === name) : null;
+    return { name, emp };
+  }
+  /* הרשאה: לעצמי תמיד; לאחר — רק אם יש הרשאת ניהול */
+  function mayBookFor(name) {
+    if (typeof CURRENT_USER === 'undefined' || name === CURRENT_USER) return true;
+    if (window.CALROLE && CALROLE.canSee) return CALROLE.canSee(name);
+    const me = (typeof STAFF !== 'undefined') ? STAFF.find(s => s.name === CURRENT_USER) : null;
+    return !!me && (me.perm === 'מנהל רשת' || me.perm === 'אדמין' || me.perm === 'מנהל סניף');
+  }
+
+  /* ימי העבודה הבאים של האחראי — לפי ההגדרות, לא לפי תאריכים קשיחים */
+  function daysFor(r, n) {
+    const out = [];
+    const base = (typeof COORD_TODAY !== 'undefined') ? COORD_TODAY : null;
+    if (!base || typeof workSchedule === 'undefined') return out;
+    const d0 = new Date(base + 'T00:00:00');
+    for (let i = 0; out.length < (n || 3) && i < 21; i++) {
+      const d = new Date(d0.getTime() + i * 86400000);
+      const dayName = DOW[d.getDay()];
+      const ws = workSchedule.find(x => x.day === dayName);
+      if (!ws || !ws.on) continue;                       // יום שאינו פעיל בהגדרות
+      out.push({
+        label: i === 0 ? 'היום' : i === 1 ? 'מחר' : dayName,
+        date: String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0'),
+        iso: d.toISOString().slice(0, 10), dayName, ws, offset: i,
+      });
+    }
+    return out;
+  }
+
+  /* חלונות היום — משמרות בלי הפסקות, בחתך שעה */
+  function windowsFor(day) {
+    if (!day) return [];
+    const out = [];
+    (day.ws.segments || []).forEach(sg => {
+      if (sg.type === 'break') return;
+      let a = toMin(sg.start); const end = toMin(sg.end);
+      while (a + 60 <= end) { out.push({ from: a, to: a + 60, range: hm(a) + ' - ' + hm(a + 60) }); a += 60; }
+      if (a < end && end - a >= 30) out.push({ from: a, to: end, range: hm(a) + ' - ' + hm(end) });
+    });
+    return out;
+  }
+
+  /* תפוסה אמיתית: אירועי היומן של האחראי + פולו-אפים שכבר נקבעו */
+  function loadOf(win, day, owner) {
+    const evs = (typeof CAL_EVENTS !== 'undefined' && CAL_EVENTS[owner.name]) || [];
+    let busy = 0;
+    if (day.offset === 0) evs.forEach(e => {                 // הדמו מחזיק אירועים ליום הראשון
+      const a = e.h * 60, b = (e.h + e.dur) * 60;
+      if (a < win.to && b > win.from) busy++;
+    });
+    const fus = (typeof RECORDS !== 'undefined' ? RECORDS : []).filter(x => {
+      if (!x.fuAt) return false;
+      return String(x.fuAt).indexOf(day.date) >= 0 && String(x.fuAt).indexOf(win.range) >= 0;
+    }).length;
+    const cap = Math.max(1, Math.round((win.to - win.from) / 15));   // רבע שעה לשיחה
+    return { busy: busy + fus, cap, free: Math.max(0, cap - busy - fus) };
+  }
+
+  /* חלון שכבר עבר לפי שעון המערכת */
+  function isPast(win, day) {
+    if (day.offset !== 0) return false;
+    const now = (typeof APP_NOW !== 'undefined' && APP_NOW.min != null) ? APP_NOW.min
+      : (typeof nowHM === 'function' ? nowHM() : 0);
+    return win.to <= now;
+  }
+  /* העדפת הזמן של הלקוח — מסומנת כמומלצת */
+  const PREF = { morning: [8 * 60, 12 * 60], noon: [12 * 60, 16 * 60], evening: [16 * 60, 18 * 60] };
+  function matchesPref(win, r) {
+    const p = (r && r.needs && r.needs.timeOfDay) ? PREF[r.needs.timeOfDay] : null;
+    return p ? (win.from >= p[0] && win.to <= p[1]) : false;
+  }
+
+  let fuDayIdx = 0;
+
+  function panelHTML(r) {
+    const own = ownerOf(r);
+    const may = mayBookFor(own.name);
+    const days = daysFor(r, 3);
+    if (!days.length) return `<div class="fus-empty">${ic('alert')} אין ימי עבודה פעילים ל${esc(own.name)} — יש להגדיר שעות פעילות</div>`;
+    if (fuDayIdx >= days.length) fuDayIdx = 0;
+    const day = days[fuDayIdx];
+    const wins = windowsFor(day);
+    const cur = r.fuAt || null;
+
+    return `<div class="fus">
+      <div class="fus-src">${ic('sync')}
+        <div><b>מסונכרן עם היומן של ${esc(own.name)}</b>
+          <small>ימים ושעות מתוך הגדרות שעות הפעילות · תפוסה לפי האירועים ביומן
+          ${(r.needs || {}).timeOfDay ? ' · העדפת הלקוח מסומנת' : ''}</small></div></div>
+      ${!may ? `<div class="fus-block">${ic('lock')} אין לך הרשאה לקבוע ביומן של ${esc(own.name)} — פנה למנהל</div>` : ''}
+
+      <div class="fu2-lbl">בחר יום · ימי עבודה בלבד</div>
+      <div class="fu2-days">${days.map((d, i) => `<button class="fu2-day ${i === fuDayIdx ? 'on' : ''}" data-fusday="${i}">
+        <b>${esc(d.label)}</b><small>${esc(d.date)}</small></button>`).join('')}</div>
+
+      <div class="fu2-lbl">${ic('clock')} חלונות פנויים · ${esc(day.label)} ${esc(day.date)}</div>
+      <div class="fu2-wins">${wins.length ? wins.map(w => {
+        const L = loadOf(w, day, own), past = isPast(w, day), full = L.free <= 0;
+        const label = `${day.label} ${day.date} · ${w.range}`;
+        const isCur = cur === label;
+        const dis = past || full || !may;
+        const rec = matchesPref(w, r) && !dis;
+        return `<button class="fu2-win ${dis ? 'full' : ''} ${isCur ? 'cur' : ''} ${rec ? 'rec' : ''}"
+          ${dis ? 'disabled' : `data-fuspick="${esc(label)}"`}>
+          <span class="fw-time">${w.range}</span>
+          ${rec ? `<span class="fus-rec">${ic('target')} מועדף ללקוח</span>` : ''}
+          ${isCur ? `<span class="fw-cap cur">✓ נבחר</span>`
+            : `<span class="fw-cap ${past || full ? 'full' : L.free <= 2 ? 'low' : ''}">${past ? 'עבר' : full ? 'מלא' : L.free + ' פנויים'}</span>`}
+        </button>`;
+      }).join('') : `<div class="fus-empty">${ic('alert')} אין משמרת ביום הזה</div>`}</div>
+    </div>`;
+  }
+
+  CBX.register({
+    key: 'fusync', label: 'פולו-אפ מסונכרן ליומן ולהגדרות', icon: 'sync',
+    desc: 'פאנל הפולו-אפ נגזר מיומן האחראי, משעות הפעילות שבהגדרות ומההרשאות — במקום ימים וחלונות שהיו כתובים קשיח בקוד. חלון שעבר או מלא נחסם, והעדפת הזמן של הלקוח מסומנת.',
+    files: ['js/ext/fu-sync.js', 'css/ext/fusync.css'],
+    install() {
+      if (typeof renderFollowup === 'function') CBX.wrap('fusync', 'renderFollowup', o => function (r) {
+        const out = o.apply(this, arguments);
+        try {
+          const body = document.querySelector('#modal .fu2');
+          if (!body || !r) return out;
+          /* מחליפים את הימים והחלונות הקשיחים בגזורים מהיומן */
+          const old1 = body.querySelector('.fu2-days'), old2 = body.querySelector('.fu2-wins');
+          const lbls = body.querySelectorAll('.fu2-lbl');
+          const d = document.createElement('div'); d.innerHTML = panelHTML(r);
+          const block = d.firstElementChild;
+          if (old1 && old1.previousElementSibling && old1.previousElementSibling.classList.contains('fu2-lbl'))
+            old1.previousElementSibling.remove();
+          if (old2 && old2.previousElementSibling && old2.previousElementSibling.classList.contains('fu2-lbl'))
+            old2.previousElementSibling.remove();
+          if (old1) old1.remove();
+          if (old2) old2.parentNode.insertBefore(block, old2), old2.remove();
+          else body.insertBefore(block, body.firstChild.nextSibling);
+
+          block.querySelectorAll('[data-fusday]').forEach(b => b.addEventListener('click', () => {
+            fuDayIdx = +b.dataset.fusday; renderFollowup(r);
+          }));
+          block.querySelectorAll('[data-fuspick]').forEach(b => b.addEventListener('click', () => {
+            r.fuAt = b.dataset.fuspick;
+            r.next = { type: 'followup', at: r.fuAt };
+            toast('מועד הפולו-אפ נקבע · ' + r.fuAt);
+            renderFollowup(r);
+            if (typeof renderList === 'function') renderList();
+          }));
+        } catch (e) { console.error('[fusync]', e); }
+        return out;
+      });
+    },
+  });
+
+  window.FUSYNC = { days: daysFor, windows: windowsFor, load: loadOf, owner: ownerOf, may: mayBookFor };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: איחוד "חזרה ללקוח" ו"פולו-אפ"  ·  key = 'nextmerge'
+   ------------------------------------------------------------
+   שתי פעולות נפרדות שמשמעותן זהה — לחזור ללקוח במועד שנקבע.
+   ההפרדה רק בלבלה: אותו אייקון, אותו תהליך, שני צבעים ושני
+   שמות. כאן הן מאוחדות ל"פולו-אפ · חזרה ללקוח" אחד:
+
+     · "חזרה ללקוח" יורדת מרשימות הבחירה
+     · פניות שכבר סומנו callback ממשיכות לעבוד ומוצגות כפולו-אפ
+     · תיעוד "ביקש לחזור מאוחר" ביומן השיחות נשאר כפי שהוא —
+       זו סיבה לשיחה, לא סוג הפעולה הבאה
+
+   הסרת ההרחבה מחזירה את שתי הפעולות בדיוק כפי שהיו.
+   ============================================================ */
+(function () {
+
+  const LABEL = 'פולו-אפ · חזרה ללקוח';
+
+  CBX.register({
+    key: 'nextmerge', label: 'איחוד "חזרה ללקוח" ו"פולו-אפ"', icon: 'phone',
+    desc: 'שתי הפעולות היו מילים נרדפות לאותו דבר. עכשיו יש אחת — "פולו-אפ · חזרה ללקוח" — ופניות קיימות שסומנו כ"חזרה ללקוח" ממשיכות לעבוד ומוצגות תחתיה.',
+    files: ['js/ext/next-merge.js'],
+    install() {
+      if (typeof NEXT_ACTIONS === 'undefined') return;
+
+      /* השם המאוחד, ו-callback מוצג בדיוק כמוהו לתאימות אחורה */
+      CBX.assign('nextmerge', NEXT_ACTIONS.followup, { label: LABEL });
+      CBX.assign('nextmerge', NEXT_ACTIONS.callback,
+        { label: LABEL, color: NEXT_ACTIONS.followup.color, icon: NEXT_ACTIONS.followup.icon, alias: true });
+
+      /* יורדת מרשימות הבחירה — בלי למחוק אותה מהמערכת */
+      if (typeof NEXT_BY_DEPT !== 'undefined') Object.keys(NEXT_BY_DEPT).forEach(k => {
+        const list = NEXT_BY_DEPT[k];
+        const i = list.indexOf('callback');
+        if (i < 0) return;
+        list.splice(i, 1);
+        if (list.indexOf('followup') < 0) list.splice(i, 0, 'followup');
+        CBX._remember('nextmerge', () => { if (list.indexOf('callback') < 0) list.splice(i, 0, 'callback'); });
+      });
+
+      /* בכל מסך שמרנדר את רשימת הפעולות — מסירים כפילות שנותרה */
+      const dedupe = () => {
+        document.querySelectorAll('select#naType, select.na-sel').forEach(sel => {
+          let seen = false;
+          Array.prototype.slice.call(sel.options).forEach(op => {
+            if (op.value !== 'callback' && op.value !== 'followup') return;
+            if (seen) { op.remove(); return; }
+            seen = true; op.textContent = LABEL;
+            if (op.value === 'callback') op.value = 'followup';
+          });
+        });
+      };
+      if (typeof openNextActionEditor === 'function') CBX.wrap('nextmerge', 'openNextActionEditor', o => function () {
+        const out = o.apply(this, arguments); try { dedupe(); } catch (e) {} return out;
+      });
+      if (typeof renderNextAction === 'function') CBX.wrap('nextmerge', 'renderNextAction', o => function () {
+        const out = o.apply(this, arguments); try { dedupe(); } catch (e) {} return out;
+      });
+    },
+  });
+
+  window.NEXTMERGE = { label: LABEL };
 })();
 
 </script>
