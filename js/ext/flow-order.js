@@ -36,7 +36,7 @@
   const STEP_DEF = { crit: S_CRIT, svc: S_SVC, cal: S_CAL,
     contract: { key: 'contract', label: 'הסכם', icon: 'docs' },
     pay:      { key: 'pay',      label: 'סליקה', icon: 'check' },
-    summary:  { key: 'summary',  label: 'סיכום', icon: 'note' } };
+    summary:  { key: 'summary',  label: 'סיכום הצעה', icon: 'note' } };
   /* ספק חיצוני (flow-steps) גוזר את השלבים מדרישות הפריטים.
      בלעדיו — שלושת השלבים הבסיסיים, כפי שהיה. */
   const stepsOf = r => {
@@ -207,13 +207,24 @@
       ${stripHTML(r, cur)}
     </div>`;
   }
+  /* שלב שנוסף בעקבות הבחירה — נכנס עם אנימציה, כדי שיהיה ברור
+     שהמהלך התארך בגלל מה שנבחר ולא "קפץ" משום מקום. */
+  const seenSteps = {};
+  function markNew(r, keys) {
+    const id = r && r.id, prev = seenSteps[id] || [];
+    const fresh = keys.filter(k => prev.indexOf(k) < 0);
+    seenSteps[id] = keys.slice();
+    return prev.length ? fresh : [];
+  }
   function stripHTML(r, cur) {
     if (jumpTo1) { const s = stepsOf(r)[0]; if (s) cur = s.key; }
     const st = stepsOf(r); if (!modeOf(r)) return '';
     const done = { crit: !reqMissing(r).length && Object.keys(r.needs || {}).some(k => r.needs[k] && k !== 'note'),
       svc: !!(r.services || []).length, cal: !!r.meeting };
+    const fresh = markNew(r, st.map(x => x.key));
     return `<div class="fl-strip">${st.map((s, i) => {
-      const cls = s.key === cur ? 'now' : (done[s.key] ? 'done' : 'todo');
+      const cls = (s.key === cur ? 'now' : (done[s.key] ? 'done' : 'todo'))
+        + (fresh.indexOf(s.key) >= 0 ? ' fl-new' : '');
       return `<button class="fl-st ${cls}" data-flgo="${s.key}"><span class="fl-si">${done[s.key] && s.key !== cur ? ic('check') : ic(s.icon)}</span>
         <b>${s.label}</b><small>שלב ${i + 1}</small></button>`;
     }).join('<span class="fl-arr">' + ic('chevronL') + '</span>')}</div>`;

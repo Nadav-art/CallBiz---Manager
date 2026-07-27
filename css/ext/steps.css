@@ -75,3 +75,29 @@
 .cbc-actions.col .btn { justify-content: center; }
 
 @media (max-width: 640px) { .fs-grid { grid-template-columns: 1fr; } }
+
+/* ---------- הגדרת התשלום בכרטיס השירות ---------- */
+.cfg-pay { border: 1px solid var(--line); border-radius: 12px; padding: 10px 11px; margin: 8px 0; }
+.cfg-pay-h { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin-bottom: 8px; }
+.cfg-pay-h svg { width: 13px; height: 13px; color: var(--brand); }
+.cfg-pay-o { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 10px;
+  cursor: pointer; border: 1px solid transparent; margin-bottom: 4px; }
+.cfg-pay-o input { margin-top: 3px; }
+.cfg-pay-o b { display: block; font-size: 12.5px; }
+.cfg-pay-o small { display: block; font-size: 11px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
+.cfg-pay-o:hover { background: var(--surface-2); }
+.cfg-pay-o.on { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 8%, transparent); }
+.cfg-pay-o.on b { color: var(--brand); }
+
+/* ---------- שלב שנוסף בעקבות הבחירה ---------- */
+@keyframes fsStepIn {
+  0%   { opacity: 0; transform: translateY(-8px) scale(.94); }
+  60%  { opacity: 1; transform: translateY(0) scale(1.04); }
+  100% { opacity: 1; transform: none; }
+}
+.fl-st.fl-new { animation: fsStepIn .42s cubic-bezier(.2,.9,.3,1); }
+.fl-st.fl-new::after { content: 'נוסף'; position: absolute; inset-inline-end: 6px; top: 5px;
+  font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 999px;
+  color: #fff; background: var(--brand); animation: fsTagOut 2.4s forwards; }
+@keyframes fsTagOut { 0%,70% { opacity: 1; } 100% { opacity: 0; } }
+.fl-st { position: relative; }

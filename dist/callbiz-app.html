@@ -7661,6 +7661,92 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 
 @media (max-width: 640px) { .fs-grid { grid-template-columns: 1fr; } }
 
+/* ---------- הגדרת התשלום בכרטיס השירות ---------- */
+.cfg-pay { border: 1px solid var(--line); border-radius: 12px; padding: 10px 11px; margin: 8px 0; }
+.cfg-pay-h { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin-bottom: 8px; }
+.cfg-pay-h svg { width: 13px; height: 13px; color: var(--brand); }
+.cfg-pay-o { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 10px;
+  cursor: pointer; border: 1px solid transparent; margin-bottom: 4px; }
+.cfg-pay-o input { margin-top: 3px; }
+.cfg-pay-o b { display: block; font-size: 12.5px; }
+.cfg-pay-o small { display: block; font-size: 11px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
+.cfg-pay-o:hover { background: var(--surface-2); }
+.cfg-pay-o.on { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 8%, transparent); }
+.cfg-pay-o.on b { color: var(--brand); }
+
+/* ---------- שלב שנוסף בעקבות הבחירה ---------- */
+@keyframes fsStepIn {
+  0%   { opacity: 0; transform: translateY(-8px) scale(.94); }
+  60%  { opacity: 1; transform: translateY(0) scale(1.04); }
+  100% { opacity: 1; transform: none; }
+}
+.fl-st.fl-new { animation: fsStepIn .42s cubic-bezier(.2,.9,.3,1); }
+.fl-st.fl-new::after { content: 'נוסף'; position: absolute; inset-inline-end: 6px; top: 5px;
+  font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 999px;
+  color: #fff; background: var(--brand); animation: fsTagOut 2.4s forwards; }
+@keyframes fsTagOut { 0%,70% { opacity: 1; } 100% { opacity: 0; } }
+.fl-st { position: relative; }
+
+</style>
+  <style>
+/* ============================================================
+   פריסת פופ-אפים לצד זה — מצב אבחון (ptile)
+   ------------------------------------------------------------
+   הכול מבוסס מחלקות ומשתני CSS בלבד. אין נגיעה בסגנון המקורי של
+   אף חלון, ולכן הסרת המחלקות מחזירה את המצב הקודם בדיוק.
+   ============================================================ */
+
+/* הרקע הכהה מוצג פעם אחת בלבד, אחרת הוא מצטבר ומחשיך את המסך */
+body.pt-on .pt-item { background: transparent !important; pointer-events: none; }
+body.pt-on .pt-item:first-of-type { background: rgba(20, 22, 34, .38) !important; }
+
+/* כל חלון מקבל טור משלו — הראשון מימין, לפי סדר הקריאה */
+body.pt-on .pt-item > .cbc-box,
+body.pt-on .pt-item > #modal,
+body.pt-on .pt-item > .ct-modal,
+body.pt-on .pt-item > .ps-side-in,
+body.pt-on .pt-item > .pt-inner {
+  position: fixed !important;
+  top: 14px !important;
+  bottom: 14px !important;
+  inset-inline-start: calc(10px + var(--pt-i) * ((100vw - 20px) / var(--pt-n))) !important;
+  inset-inline-end: auto !important;
+  width: calc((100vw - 20px) / var(--pt-n) - 10px) !important;
+  max-width: none !important;
+  max-height: none !important;
+  height: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+  overflow-y: auto !important;
+  pointer-events: auto;
+  box-shadow: 0 10px 40px rgba(20, 22, 34, .22) !important;
+  outline: 2px solid color-mix(in srgb, var(--brand) 45%, transparent);
+  outline-offset: -2px;
+}
+body.pt-on #proposePanel.pt-item { inset: auto !important; }
+
+/* מספר סידורי */
+.pt-num {
+  position: absolute; top: 8px; inset-inline-start: 8px; z-index: 9;
+  min-width: 24px; height: 24px; padding: 0 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 8px; font-size: 13px; font-weight: 800; line-height: 1;
+  color: #fff; background: var(--brand);
+  box-shadow: 0 2px 8px rgba(20, 22, 34, .25);
+}
+
+/* בצר — עוברים לשתי שורות כדי שהתוכן יישאר קריא */
+@media (max-width: 900px) {
+  body.pt-on .pt-item > .cbc-box,
+  body.pt-on .pt-item > #modal {
+    inset-inline-start: 8px !important;
+    width: calc(100vw - 16px) !important;
+    top: calc(8px + var(--pt-i) * 42px) !important;
+    bottom: auto !important;
+    max-height: calc(100vh - 16px - var(--pt-i) * 42px) !important;
+  }
+}
+
 </style>
   <style>
 /* ============================================================
@@ -12935,6 +13021,12 @@ function openCatalogItemEditor(key) {
   // קורא את כל שדות ה-[data-ce] וה-[data-crit] אל האובייקט לפני רינדור-מחדש (כדי לא לאבד עריכות)
   const syncFields = () => {
     $$('[data-ce]').forEach(inp => {
+  $$('[data-cepay]').forEach(b => b.addEventListener('change', () => {
+    const k = b.dataset.cepay;
+    t.requiresBilling = k !== 'none';
+    t.canScheduleWithoutBilling = k !== 'pre';
+    openServiceCfgEditor(key);
+  }));
       const k = inp.dataset.ce;
       if (inp.type === 'checkbox') t[k] = inp.checked;
       else if (inp.type === 'number') t[k] = +inp.value;
@@ -12973,8 +13065,19 @@ function openCatalogItemEditor(key) {
         <div class="field"><label>מקדמה (₪)</label><input class="cc-inp" type="number" data-ce="deposit" value="${t.deposit || 0}" min="0" step="10"></div>
       </div>
       <label class="cfg-row"><span>דורש פגישה</span><input type="checkbox" data-ce="requiresMeeting" ${t.requiresMeeting ? 'checked' : ''}></label>
-      <label class="cfg-row"><span>דורש סליקה</span><input type="checkbox" data-ce="requiresBilling" ${t.requiresBilling ? 'checked' : ''}></label>
-      <label class="cfg-row"><span>ניתן לתאם ללא סליקה</span><input type="checkbox" data-ce="canScheduleWithoutBilling" ${t.canScheduleWithoutBilling ? 'checked' : ''}></label>
+      ${(() => {   /* "דורש סליקה" + "ניתן לתאם ללא סליקה" היו שתי תיבות
+                      שסותרות זו את זו. במציאות זו שאלה אחת: מתי משלמים. */
+        const mode = !t.requiresBilling ? 'none' : (t.canScheduleWithoutBilling === false ? 'pre' : 'later');
+        const OPTS = [
+          { k: 'none',  t: 'ללא תשלום',            d: 'השירות אינו כרוך בתשלום — אין שלב סליקה' },
+          { k: 'pre',   t: 'תשלום לפני התיאום',    d: 'התור נסגר רק אחרי סליקה. עד אז — שיריון זמני בלבד' },
+          { k: 'later', t: 'תשלום אחרי התיאום',    d: 'אפשר לתאם עכשיו ולשלם במקום או בהמשך' },
+        ];
+        return `<div class="cfg-pay"><div class="cfg-pay-h">${ic('check')} <b>מתי משלמים?</b></div>
+          ${OPTS.map(o => `<label class="cfg-pay-o ${mode === o.k ? 'on' : ''}">
+            <input type="radio" name="cePay" data-cepay="${o.k}" ${mode === o.k ? 'checked' : ''}>
+            <span><b>${o.t}</b><small>${o.d}</small></span></label>`).join('')}</div>`;
+      })()}
       <label class="cfg-row"><span>דורש אישור</span><input type="checkbox" data-ce="approval" ${t.approval ? 'checked' : ''}></label>
       <label class="cfg-row hl"><span>${ic('docs')} דורש הסכם חתום<small>לפני התיאום — ההסכם נשלח לחתימה, ורק אחריו סליקה (אם נדרשת)</small></span><input type="checkbox" data-ce="requiresContract" ${t.requiresContract ? 'checked' : ''}></label>
       <label class="cfg-row hl"><span>${ic('layers')} הרחבת שירות (Upsell)<small>יוצע כתוספת בהצעות מחיר</small></span><input type="checkbox" data-ce="isExtension" ${t.isExtension ? 'checked' : ''}></label>
@@ -19718,8 +19821,18 @@ function openServiceCfgEditor(key) {
       <button class="close-btn" id="cfgClose">${ic('close')}</button></div>
     <div class="modal-body svc-cfg">
       <label class="cfg-row"><span>דורש פגישה</span><input type="checkbox" data-cfg="requiresMeeting" ${t.requiresMeeting ? 'checked' : ''}></label>
-      <label class="cfg-row"><span>דורש סליקה</span><input type="checkbox" data-cfg="requiresBilling" ${t.requiresBilling ? 'checked' : ''}></label>
-      <label class="cfg-row"><span>ניתן לתאם ללא סליקה</span><input type="checkbox" data-cfg="canScheduleWithoutBilling" ${t.canScheduleWithoutBilling ? 'checked' : ''}></label>
+      ${(() => {   /* שאלה אחת ברורה במקום שתי תיבות סותרות */
+        const mode = !t.requiresBilling ? 'none' : (t.canScheduleWithoutBilling === false ? 'pre' : 'later');
+        const OPTS = [
+          { k: 'none',  t: 'ללא תשלום',         d: 'אין שלב סליקה במהלך' },
+          { k: 'pre',   t: 'תשלום לפני התיאום', d: 'התור נסגר רק אחרי סליקה — עד אז שיריון זמני בלבד' },
+          { k: 'later', t: 'תשלום אחרי התיאום', d: 'אפשר לתאם עכשיו ולשלם במקום או בהמשך' },
+        ];
+        return `<div class="cfg-pay"><div class="cfg-pay-h">${ic('check')} <b>מתי משלמים?</b></div>
+          ${OPTS.map(o => `<label class="cfg-pay-o ${mode === o.k ? 'on' : ''}">
+            <input type="radio" name="cfgPay" data-cfgpay="${o.k}" ${mode === o.k ? 'checked' : ''}>
+            <span><b>${o.t}</b><small>${o.d}</small></span></label>`).join('')}</div>`;
+      })()}
       <label class="cfg-row"><span>משך פגישה (ד׳)</span><input type="number" class="cc-inp" data-cfg="dur" min="15" max="180" step="15" value="${t.dur}"></label>
       <label class="cfg-row"><span>מחיר (₪)</span><input type="number" class="cc-inp" data-cfg="price" min="0" step="10" value="${t.price}"></label>
       <label class="cfg-row"><span>גובה מקדמה (₪)</span><input type="number" class="cc-inp" data-cfg="deposit" min="0" step="10" value="${t.deposit}"></label>
@@ -19728,6 +19841,12 @@ function openServiceCfgEditor(key) {
     <div class="modal-foot"><button class="btn primary block" id="cfgSave">${ic('check')} שמור</button></div>`;
   $('#cfgClose').addEventListener('click', () => { $('#modal').innerHTML = prev; renderServiceSelect(); });
   $('#cfgSave').addEventListener('click', () => {
+    $$('[data-cfgpay]').forEach(b => b.addEventListener('change', () => {
+      const k = b.dataset.cfgpay;
+      t.requiresBilling = k !== 'none';
+      t.canScheduleWithoutBilling = k !== 'pre';
+      openServiceCfgEditor(key);
+    }));
     $$('[data-cfg]').forEach(inp => {
       const k = inp.dataset.cfg;
       t[k] = inp.type === 'checkbox' ? inp.checked : +inp.value;
@@ -30429,7 +30548,7 @@ function openExtPanel() {
   const STEP_DEF = { crit: S_CRIT, svc: S_SVC, cal: S_CAL,
     contract: { key: 'contract', label: 'הסכם', icon: 'docs' },
     pay:      { key: 'pay',      label: 'סליקה', icon: 'check' },
-    summary:  { key: 'summary',  label: 'סיכום', icon: 'note' } };
+    summary:  { key: 'summary',  label: 'סיכום הצעה', icon: 'note' } };
   /* ספק חיצוני (flow-steps) גוזר את השלבים מדרישות הפריטים.
      בלעדיו — שלושת השלבים הבסיסיים, כפי שהיה. */
   const stepsOf = r => {
@@ -30600,13 +30719,24 @@ function openExtPanel() {
       ${stripHTML(r, cur)}
     </div>`;
   }
+  /* שלב שנוסף בעקבות הבחירה — נכנס עם אנימציה, כדי שיהיה ברור
+     שהמהלך התארך בגלל מה שנבחר ולא "קפץ" משום מקום. */
+  const seenSteps = {};
+  function markNew(r, keys) {
+    const id = r && r.id, prev = seenSteps[id] || [];
+    const fresh = keys.filter(k => prev.indexOf(k) < 0);
+    seenSteps[id] = keys.slice();
+    return prev.length ? fresh : [];
+  }
   function stripHTML(r, cur) {
     if (jumpTo1) { const s = stepsOf(r)[0]; if (s) cur = s.key; }
     const st = stepsOf(r); if (!modeOf(r)) return '';
     const done = { crit: !reqMissing(r).length && Object.keys(r.needs || {}).some(k => r.needs[k] && k !== 'note'),
       svc: !!(r.services || []).length, cal: !!r.meeting };
+    const fresh = markNew(r, st.map(x => x.key));
     return `<div class="fl-strip">${st.map((s, i) => {
-      const cls = s.key === cur ? 'now' : (done[s.key] ? 'done' : 'todo');
+      const cls = (s.key === cur ? 'now' : (done[s.key] ? 'done' : 'todo'))
+        + (fresh.indexOf(s.key) >= 0 ? ' fl-new' : '');
       return `<button class="fl-st ${cls}" data-flgo="${s.key}"><span class="fl-si">${done[s.key] && s.key !== cur ? ic('check') : ic(s.icon)}</span>
         <b>${s.label}</b><small>שלב ${i + 1}</small></button>`;
     }).join('<span class="fl-arr">' + ic('chevronL') + '</span>')}</div>`;
@@ -31034,17 +31164,26 @@ function openExtPanel() {
     && COORD_TREATMENTS.some(t => t.requiresMeeting);
 
   /* ---------------- השלבים ---------------- */
-  function steps(r) {
+  function steps(r, keys) {
+    /* המסלול נקבע ברשומה בלבד. אסור לגזור אותו מהבחירה הזמנית —
+       modeOf מחזיר 'known' ברגע שיש שירותים, וזה היה מהפך את הסדר
+       באמצע המהלך ומחזיר את הנציג לקריטריונים. */
     const mode = (window.FLOW && FLOW.mode) ? FLOW.mode(r) : 'unknown';
     const base = mode === 'unknown' ? ['crit', 'svc'] : ['svc', 'crit'];
-    const q = reqsOf(r);
+    /* כשמסך הבחירה פתוח — הרצועה משקפת את הבחירה החיה, כך שהשלב
+       הנדרש נכנס לרצועה ברגע הסימון ולא רק אחרי השמירה. */
+    let use = keys;
+    if (!use && typeof svcSelState !== 'undefined' && svcSelState && svcSelState.rec === r
+        && document.querySelector('#modal .svc-sel')) use = svcSelState.sel;
+    const q = reqsOf(r, use);
     if (!q.list.length) return base.concat(['summary']);
     const out = base.slice();
     if (q.on.contract) out.push('contract');
     /* פגישה — רק אם פריט דורש אותה, או שסומנה פגישה פנימית לקידום */
     if (q.on.meeting || r.internalMeet) out.push('cal');
-    if (q.on.billing) out.push('pay');
+    /* סיכום ההצעה קודם — הוא מסכם את מה שהוצע, והסליקה חותמת אחריו */
     out.push('summary');
+    if (q.on.billing) out.push('pay');
     return out;
   }
 
@@ -31110,7 +31249,7 @@ function openExtPanel() {
     const money = n => (n || 0).toLocaleString('he-IL') + ' ₪';
     w.innerHTML = `<div class="cbc-box fs-sum" style="max-width:640px;text-align:start">
       <div class="cbc-head"><span class="cbc-ic">${ic('check')}</span>
-        <div><b>סיכום</b><small class="fs-sub">${esc(r.name)}${r.org ? ' · ' + esc(r.org) : ''}</small></div></div>
+        <div><b>סיכום הצעה</b><small class="fs-sub">${esc(r.name)}${r.org ? ' · ' + esc(r.org) : ''}</small></div></div>
 
       <div class="fs-sec">${ic('layers')} <b>מה נבחר</b></div>
       <div class="fs-items">${q.list.map(t => `<div class="fs-item">
@@ -31138,12 +31277,16 @@ function openExtPanel() {
 
       <div class="cbc-actions">
         <button class="btn ghost" id="fsBack">${ic('layers')} חזרה לפריטים</button>
-        <button class="btn primary" id="fsDone">${ic('check')} סיום</button>
+        <button class="btn primary" id="fsDone">${q.on.billing && !r.paid
+          ? ic('check') + ' המשך לסליקה' : ic('check') + ' סיום'}</button>
       </div></div>`;
     document.body.appendChild(w);
     w.querySelector('#fsBack').addEventListener('click', () => { w.remove(); if (typeof openServiceSelect === 'function') openServiceSelect(r); });
     w.querySelector('#fsDone').addEventListener('click', () => {
-      w.remove(); r.dealDone = true;
+      w.remove();
+      /* אם נדרשת סליקה — היא השלב האחרון, וממנו מסיימים */
+      if (q.on.billing && !r.paid) return openPay(r);
+      r.dealDone = true;
       toast('המהלך הושלם');
       if (typeof renderDrawerTab === 'function') renderDrawerTab(r);
       if (typeof renderList === 'function') renderList();
@@ -31269,7 +31412,7 @@ function openExtPanel() {
           /* הכפתור הראשי — לשלב הבא האמיתי */
           const nextBtn = document.getElementById('svcNext');
           if (nextBtn) {
-            const stx = steps(Object.assign({}, r, { services: st.sel }));
+            const stx = steps(r, st.sel);
             const i = stx.indexOf('svc'), nk = stx[i + 1];
             const LBL = { crit: 'לקריטריונים', contract: 'להסכם', cal: 'לתיאום', pay: 'לסליקה', summary: 'לסיכום' };
             if (nk && LBL[nk]) nextBtn.innerHTML = `בחירה והמשך ${LBL[nk]} ${ic('chevronL')}`;
@@ -31277,8 +31420,12 @@ function openExtPanel() {
               nextBtn.__fs = true;
               nextBtn.addEventListener('click', () => {
                 r.services = (st.sel || []).slice();
-                if (!nk || nk === 'cal') return;             /* הליבה כבר מטפלת בתיאום */
-                setTimeout(() => { if (typeof closeModal === 'function') closeModal(); open(r, nk); }, 30);
+                /* השלב הבא נגזר מחדש *אחרי* השמירה — כך שכל שלב ביניים
+                   שיתווסף בעתיד ייכנס לרצף מאליו, בלי לגעת כאן. */
+                const seq = steps(r);
+                const nx2 = seq[seq.indexOf('svc') + 1];
+                if (!nx2 || nx2 === 'cal') return;           /* הליבה פותחת את מסך התיאום */
+                setTimeout(() => { if (typeof closeModal === 'function') closeModal(); open(r, nx2); }, 30);
               }, true);
             }
           }
@@ -31294,7 +31441,7 @@ function openExtPanel() {
           if (!r || (!r.meeting && !r.slotHold)) return out;
           if (document.getElementById('fsSum') || document.getElementById('fsPay')) return out;
           const q = reqsOf(r);
-          setTimeout(() => { q.on.billing && !r.paid ? openPay(r) : openSummary(r); }, 220);
+          setTimeout(() => openSummary(r), 220);
         } catch (e) {}
         return out;
       });
@@ -31314,6 +31461,93 @@ function openExtPanel() {
 
   window.FLOWSTEPS = { steps, reqs: reqsOf, addReq, REQS, block: svcBlock, summary: openSummary,
     pay: openPay, open, next, holdAllowed, hasMeetingCatalog: catalogHasMeeting };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: פריסת פופ-אפים לצד זה — מצב אבחון  ·  key = 'ptile'
+   ------------------------------------------------------------
+   בזמן בניית מהלך התאמת השירות נפתחים כמה חלונות זה על גבי זה,
+   וקשה לראות כמה בדיוק פתוחים ומי פתח את מי. במצב הזה כל חלון
+   פתוח נפרס לצד השני, ממוספר לפי סדר הפתיחה, והדף מצטמצם לרוחב
+   אחד — כדי לזהות את הכפילויות.
+
+   חשוב: המצב הזה **אינו נוגע בסגנון של אף חלון**. הוא רק מוסיף
+   מחלקות ומשתני CSS. לכן הפקודה "החזר פופאפ למקור" מסירה אותן
+   והכול חוזר בדיוק לגודל ולמיקום המקוריים, בלי מספור:
+
+       POPUPS.restore()      // או כיבוי ההרחבה במסך ההרחבות
+   ============================================================ */
+(function () {
+
+  /* כל מה שנחשב "חלון" במערכת */
+  const SEL = '.cbc-wrap, #modalWrap.open, #proposePanel.open, .ps-side.open, .ct-modal-wrap.open';
+  const visible = el => {
+    if (!el || !el.isConnected) return false;
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+    if (el.id === 'modalWrap' && !el.classList.contains('open')) return false;
+    return el.getBoundingClientRect().width > 0;
+  };
+
+  function boxOf(w) {
+    return w.querySelector('.cbc-box, #modal, .pt-inner, .ct-modal, .ps-side-in') || w.firstElementChild;
+  }
+
+  let on = false;
+
+  function tick() {
+    if (!on) return;
+    const wraps = Array.prototype.slice.call(document.querySelectorAll(SEL)).filter(visible);
+    document.body.classList.toggle('pt-on', wraps.length > 1);
+    /* ניקוי סימונים מחלונות שנסגרו */
+    document.querySelectorAll('.pt-item').forEach(el => {
+      if (wraps.indexOf(el) < 0) { el.classList.remove('pt-item'); el.style.removeProperty('--pt-i');
+        el.style.removeProperty('--pt-n'); const b = el.querySelector('.pt-num'); if (b) b.remove(); }
+    });
+    if (wraps.length < 2) return;
+    wraps.forEach((w, i) => {
+      w.classList.add('pt-item');
+      w.style.setProperty('--pt-i', i);
+      w.style.setProperty('--pt-n', wraps.length);
+      const box = boxOf(w); if (!box) return;
+      let b = w.querySelector('.pt-num');
+      if (!b) { b = document.createElement('span'); b.className = 'pt-num'; box.appendChild(b); }
+      b.textContent = String(i + 1);
+      b.title = (box.id || box.className || '').split(' ')[0] + ' · חלון ' + (i + 1) + ' מתוך ' + wraps.length;
+    });
+  }
+
+  function restore() {
+    on = false;
+    document.body.classList.remove('pt-on');
+    document.querySelectorAll('.pt-item').forEach(el => {
+      el.classList.remove('pt-item');
+      el.style.removeProperty('--pt-i'); el.style.removeProperty('--pt-n');
+    });
+    document.querySelectorAll('.pt-num').forEach(b => b.remove());
+    if (typeof toast === 'function') toast('הפופ-אפים חזרו לגודל ולמיקום המקוריים');
+  }
+
+  let mo = null, iv = null;
+
+  CBX.register({
+    key: 'ptile', label: 'פריסת פופ-אפים לצד זה (אבחון)', icon: 'layers',
+    desc: 'מצב זמני לאיתור כפילויות: כשנפתח יותר מחלון אחד, כולם נפרסים זה לצד זה וממוספרים לפי סדר הפתיחה. המצב אינו משנה סגנון של אף חלון — "החזר פופאפ למקור" (POPUPS.restore) מחזיר הכול בדיוק כפי שהיה, בלי מספור.',
+    files: ['js/ext/popup-tile.js', 'css/ext/ptile.css'],
+    install() {
+      on = true;
+      mo = new MutationObserver(() => tick());
+      mo.observe(document.body, { childList: true, subtree: false, attributes: true, attributeFilter: ['class'] });
+      /* גם שינויי מחלקה על העטיפות עצמן (open/close) */
+      iv = setInterval(tick, 400);
+      tick();
+      CBX._remember('ptile', () => { if (mo) mo.disconnect(); if (iv) clearInterval(iv); restore(); });
+    },
+  });
+
+  window.POPUPS = { restore, tick, count: () => document.querySelectorAll('.pt-item').length };
 })();
 
 </script>

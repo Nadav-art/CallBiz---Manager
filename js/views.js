@@ -863,6 +863,12 @@ function openCatalogItemEditor(key) {
   // קורא את כל שדות ה-[data-ce] וה-[data-crit] אל האובייקט לפני רינדור-מחדש (כדי לא לאבד עריכות)
   const syncFields = () => {
     $$('[data-ce]').forEach(inp => {
+  $$('[data-cepay]').forEach(b => b.addEventListener('change', () => {
+    const k = b.dataset.cepay;
+    t.requiresBilling = k !== 'none';
+    t.canScheduleWithoutBilling = k !== 'pre';
+    openServiceCfgEditor(key);
+  }));
       const k = inp.dataset.ce;
       if (inp.type === 'checkbox') t[k] = inp.checked;
       else if (inp.type === 'number') t[k] = +inp.value;
@@ -901,8 +907,19 @@ function openCatalogItemEditor(key) {
         <div class="field"><label>מקדמה (₪)</label><input class="cc-inp" type="number" data-ce="deposit" value="${t.deposit || 0}" min="0" step="10"></div>
       </div>
       <label class="cfg-row"><span>דורש פגישה</span><input type="checkbox" data-ce="requiresMeeting" ${t.requiresMeeting ? 'checked' : ''}></label>
-      <label class="cfg-row"><span>דורש סליקה</span><input type="checkbox" data-ce="requiresBilling" ${t.requiresBilling ? 'checked' : ''}></label>
-      <label class="cfg-row"><span>ניתן לתאם ללא סליקה</span><input type="checkbox" data-ce="canScheduleWithoutBilling" ${t.canScheduleWithoutBilling ? 'checked' : ''}></label>
+      ${(() => {   /* "דורש סליקה" + "ניתן לתאם ללא סליקה" היו שתי תיבות
+                      שסותרות זו את זו. במציאות זו שאלה אחת: מתי משלמים. */
+        const mode = !t.requiresBilling ? 'none' : (t.canScheduleWithoutBilling === false ? 'pre' : 'later');
+        const OPTS = [
+          { k: 'none',  t: 'ללא תשלום',            d: 'השירות אינו כרוך בתשלום — אין שלב סליקה' },
+          { k: 'pre',   t: 'תשלום לפני התיאום',    d: 'התור נסגר רק אחרי סליקה. עד אז — שיריון זמני בלבד' },
+          { k: 'later', t: 'תשלום אחרי התיאום',    d: 'אפשר לתאם עכשיו ולשלם במקום או בהמשך' },
+        ];
+        return `<div class="cfg-pay"><div class="cfg-pay-h">${ic('check')} <b>מתי משלמים?</b></div>
+          ${OPTS.map(o => `<label class="cfg-pay-o ${mode === o.k ? 'on' : ''}">
+            <input type="radio" name="cePay" data-cepay="${o.k}" ${mode === o.k ? 'checked' : ''}>
+            <span><b>${o.t}</b><small>${o.d}</small></span></label>`).join('')}</div>`;
+      })()}
       <label class="cfg-row"><span>דורש אישור</span><input type="checkbox" data-ce="approval" ${t.approval ? 'checked' : ''}></label>
       <label class="cfg-row hl"><span>${ic('docs')} דורש הסכם חתום<small>לפני התיאום — ההסכם נשלח לחתימה, ורק אחריו סליקה (אם נדרשת)</small></span><input type="checkbox" data-ce="requiresContract" ${t.requiresContract ? 'checked' : ''}></label>
       <label class="cfg-row hl"><span>${ic('layers')} הרחבת שירות (Upsell)<small>יוצע כתוספת בהצעות מחיר</small></span><input type="checkbox" data-ce="isExtension" ${t.isExtension ? 'checked' : ''}></label>

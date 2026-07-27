@@ -221,8 +221,18 @@ function openServiceCfgEditor(key) {
       <button class="close-btn" id="cfgClose">${ic('close')}</button></div>
     <div class="modal-body svc-cfg">
       <label class="cfg-row"><span>דורש פגישה</span><input type="checkbox" data-cfg="requiresMeeting" ${t.requiresMeeting ? 'checked' : ''}></label>
-      <label class="cfg-row"><span>דורש סליקה</span><input type="checkbox" data-cfg="requiresBilling" ${t.requiresBilling ? 'checked' : ''}></label>
-      <label class="cfg-row"><span>ניתן לתאם ללא סליקה</span><input type="checkbox" data-cfg="canScheduleWithoutBilling" ${t.canScheduleWithoutBilling ? 'checked' : ''}></label>
+      ${(() => {   /* שאלה אחת ברורה במקום שתי תיבות סותרות */
+        const mode = !t.requiresBilling ? 'none' : (t.canScheduleWithoutBilling === false ? 'pre' : 'later');
+        const OPTS = [
+          { k: 'none',  t: 'ללא תשלום',         d: 'אין שלב סליקה במהלך' },
+          { k: 'pre',   t: 'תשלום לפני התיאום', d: 'התור נסגר רק אחרי סליקה — עד אז שיריון זמני בלבד' },
+          { k: 'later', t: 'תשלום אחרי התיאום', d: 'אפשר לתאם עכשיו ולשלם במקום או בהמשך' },
+        ];
+        return `<div class="cfg-pay"><div class="cfg-pay-h">${ic('check')} <b>מתי משלמים?</b></div>
+          ${OPTS.map(o => `<label class="cfg-pay-o ${mode === o.k ? 'on' : ''}">
+            <input type="radio" name="cfgPay" data-cfgpay="${o.k}" ${mode === o.k ? 'checked' : ''}>
+            <span><b>${o.t}</b><small>${o.d}</small></span></label>`).join('')}</div>`;
+      })()}
       <label class="cfg-row"><span>משך פגישה (ד׳)</span><input type="number" class="cc-inp" data-cfg="dur" min="15" max="180" step="15" value="${t.dur}"></label>
       <label class="cfg-row"><span>מחיר (₪)</span><input type="number" class="cc-inp" data-cfg="price" min="0" step="10" value="${t.price}"></label>
       <label class="cfg-row"><span>גובה מקדמה (₪)</span><input type="number" class="cc-inp" data-cfg="deposit" min="0" step="10" value="${t.deposit}"></label>
@@ -231,6 +241,12 @@ function openServiceCfgEditor(key) {
     <div class="modal-foot"><button class="btn primary block" id="cfgSave">${ic('check')} שמור</button></div>`;
   $('#cfgClose').addEventListener('click', () => { $('#modal').innerHTML = prev; renderServiceSelect(); });
   $('#cfgSave').addEventListener('click', () => {
+    $$('[data-cfgpay]').forEach(b => b.addEventListener('change', () => {
+      const k = b.dataset.cfgpay;
+      t.requiresBilling = k !== 'none';
+      t.canScheduleWithoutBilling = k !== 'pre';
+      openServiceCfgEditor(key);
+    }));
     $$('[data-cfg]').forEach(inp => {
       const k = inp.dataset.cfg;
       t[k] = inp.type === 'checkbox' ? inp.checked : +inp.value;

@@ -43,17 +43,26 @@
     && COORD_TREATMENTS.some(t => t.requiresMeeting);
 
   /* ---------------- השלבים ---------------- */
-  function steps(r) {
+  function steps(r, keys) {
+    /* המסלול נקבע ברשומה בלבד. אסור לגזור אותו מהבחירה הזמנית —
+       modeOf מחזיר 'known' ברגע שיש שירותים, וזה היה מהפך את הסדר
+       באמצע המהלך ומחזיר את הנציג לקריטריונים. */
     const mode = (window.FLOW && FLOW.mode) ? FLOW.mode(r) : 'unknown';
     const base = mode === 'unknown' ? ['crit', 'svc'] : ['svc', 'crit'];
-    const q = reqsOf(r);
+    /* כשמסך הבחירה פתוח — הרצועה משקפת את הבחירה החיה, כך שהשלב
+       הנדרש נכנס לרצועה ברגע הסימון ולא רק אחרי השמירה. */
+    let use = keys;
+    if (!use && typeof svcSelState !== 'undefined' && svcSelState && svcSelState.rec === r
+        && document.querySelector('#modal .svc-sel')) use = svcSelState.sel;
+    const q = reqsOf(r, use);
     if (!q.list.length) return base.concat(['summary']);
     const out = base.slice();
     if (q.on.contract) out.push('contract');
     /* פגישה — רק אם פריט דורש אותה, או שסומנה פגישה פנימית לקידום */
     if (q.on.meeting || r.internalMeet) out.push('cal');
-    if (q.on.billing) out.push('pay');
+    /* סיכום ההצעה קודם — הוא מסכם את מה שהוצע, והסליקה חותמת אחריו */
     out.push('summary');
+    if (q.on.billing) out.push('pay');
     return out;
   }
 
@@ -119,7 +128,7 @@
     const money = n => (n || 0).toLocaleString('he-IL') + ' ₪';
     w.innerHTML = `<div class="cbc-box fs-sum" style="max-width:640px;text-align:start">
       <div class="cbc-head"><span class="cbc-ic">${ic('check')}</span>
-        <div><b>סיכום</b><small class="fs-sub">${esc(r.name)}${r.org ? ' · ' + esc(r.org) : ''}</small></div></div>
+        <div><b>סיכום הצעה</b><small class="fs-sub">${esc(r.name)}${r.org ? ' · ' + esc(r.org) : ''}</small></div></div>
 
       <div class="fs-sec">${ic('layers')} <b>מה נבחר</b></div>
       <div class="fs-items">${q.list.map(t => `<div class="fs-item">
@@ -147,12 +156,16 @@
 
       <div class="cbc-actions">
         <button class="btn ghost" id="fsBack">${ic('layers')} חזרה לפריטים</button>
-        <button class="btn primary" id="fsDone">${ic('check')} סיום</button>
+        <button class="btn primary" id="fsDone">${q.on.billing && !r.paid
+          ? ic('check') + ' המשך לסליקה' : ic('check') + ' סיום'}</button>
       </div></div>`;
     document.body.appendChild(w);
     w.querySelector('#fsBack').addEventListener('click', () => { w.remove(); if (typeof openServiceSelect === 'function') openServiceSelect(r); });
     w.querySelector('#fsDone').addEventListener('click', () => {
-      w.remove(); r.dealDone = true;
+      w.remove();
+      /* אם נדרשת סליקה — היא השלב האחרון, וממנו מסיימים */
+      if (q.on.billing && !r.paid) return openPay(r);
+      r.dealDone = true;
       toast('המהלך הושלם');
       if (typeof renderDrawerTab === 'function') renderDrawerTab(r);
       if (typeof renderList === 'function') renderList();
@@ -278,7 +291,7 @@
           /* הכפתור הראשי — לשלב הבא האמיתי */
           const nextBtn = document.getElementById('svcNext');
           if (nextBtn) {
-            const stx = steps(Object.assign({}, r, { services: st.sel }));
+            const stx = steps(r, st.sel);
             const i = stx.indexOf('svc'), nk = stx[i + 1];
             const LBL = { crit: 'לקריטריונים', contract: 'להסכם', cal: 'לתיאום', pay: 'לסליקה', summary: 'לסיכום' };
             if (nk && LBL[nk]) nextBtn.innerHTML = `בחירה והמשך ${LBL[nk]} ${ic('chevronL')}`;
@@ -286,8 +299,12 @@
               nextBtn.__fs = true;
               nextBtn.addEventListener('click', () => {
                 r.services = (st.sel || []).slice();
-                if (!nk || nk === 'cal') return;             /* הליבה כבר מטפלת בתיאום */
-                setTimeout(() => { if (typeof closeModal === 'function') closeModal(); open(r, nk); }, 30);
+                /* השלב הבא נגזר מחדש *אחרי* השמירה — כך שכל שלב ביניים
+                   שיתווסף בעתיד ייכנס לרצף מאליו, בלי לגעת כאן. */
+                const seq = steps(r);
+                const nx2 = seq[seq.indexOf('svc') + 1];
+                if (!nx2 || nx2 === 'cal') return;           /* הליבה פותחת את מסך התיאום */
+                setTimeout(() => { if (typeof closeModal === 'function') closeModal(); open(r, nx2); }, 30);
               }, true);
             }
           }
@@ -303,7 +320,7 @@
           if (!r || (!r.meeting && !r.slotHold)) return out;
           if (document.getElementById('fsSum') || document.getElementById('fsPay')) return out;
           const q = reqsOf(r);
-          setTimeout(() => { q.on.billing && !r.paid ? openPay(r) : openSummary(r); }, 220);
+          setTimeout(() => openSummary(r), 220);
         } catch (e) {}
         return out;
       });
