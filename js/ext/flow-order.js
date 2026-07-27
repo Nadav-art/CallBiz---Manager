@@ -140,6 +140,22 @@
      החלפת מסלול משנה את סדר השלבים — ולכן הרצועה מונפשת (FLIP)
      והמיקוד חוזר לשלב 1 החדש. */
   let jumpTo1 = false;
+
+  /* שני המסכים הם אותו מהלך — ולכן אותו חלון בדיוק: אותו רוחב (הרחב
+     מבין השניים) ואותו גובה, כדי שהמעבר בין שלב לשלב לא "יקפיץ"
+     את הפופ-אפ למקום אחר על המסך. */
+  function sizeModal() {
+    const m = document.getElementById('modal'); if (!m) return;
+    m.classList.add('fl-modal');
+    m.style.maxWidth = '600px';
+    m.style.width = '100%';
+    m.style.height = 'min(78vh, 720px)';
+  }
+  function unsizeModal() {
+    const m = document.getElementById('modal'); if (!m) return;
+    m.classList.remove('fl-modal');
+    m.style.height = ''; m.style.width = '';
+  }
   function stripRects(host) {
     const m = {};
     (host ? host.querySelectorAll('[data-flgo]') : []).forEach(el => { m[el.dataset.flgo] = el.getBoundingClientRect().left; });
@@ -343,7 +359,9 @@
         try {
           const rec = (typeof svcSelState !== 'undefined' && svcSelState) ? svcSelState.rec : null;
           const body = document.querySelector('#modal .svc-sel');
-          if (!rec || !body || body.querySelector('.fl-gate')) return r;
+          if (!rec || !body) return r;
+          sizeModal();
+          if (body.querySelector('.fl-gate')) return r;
           const d = document.createElement('div'); d.innerHTML = gateHTML(rec);
           while (d.lastElementChild) body.insertBefore(d.lastElementChild, body.firstChild);
 
@@ -391,7 +409,9 @@
         });
         try {
           const body = document.querySelector('#modal .needs-body');
-          if (!body || !rec || body.querySelector('.fl-strip')) return out;
+          if (!body || !rec) return out;
+          sizeModal();
+          if (body.querySelector('.fl-strip')) return out;
           const rd = readiness(rec);
           const d = document.createElement('div');
           d.innerHTML = headerHTML(rec, 'crit') + ((rec.services || []).length ? `<div class="fl-ready ${rd.ok ? 'ok' : 'bad'}">
@@ -488,6 +508,10 @@
             : ic('search') + ' המסלול: הלקוח לא יודע — קריטריונים ואז שירות'}</small>
         </div>`;
       });
+      if (typeof closeModal === 'function') CBX.wrap('flow', 'closeModal', o => function () {
+        unsizeModal(); return o.apply(this, arguments);
+      });
+
       /* הכפתור פותח את המהלך בשלב 1 של המסלול הנוכחי */
       CBX.delegate('flow', '[data-flopencrit]', el => {
         const r = (typeof RECORDS !== 'undefined') ? RECORDS.find(x => String(x.id) === el.dataset.flopencrit) : null;

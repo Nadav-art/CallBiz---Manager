@@ -7349,10 +7349,6 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
   background-image: repeating-linear-gradient(135deg,
     color-mix(in srgb, var(--text-2) 13%, transparent) 0 5px, transparent 5px 10px);
 }
-.cbx-critfx .needs-opt.blocked::after {
-  content: ''; position: absolute; inset-inline: 9px; top: 50%; height: 1px;
-  background: currentColor; opacity: .55;
-}
 .cbx-critfx .needs-opt.blocked:hover { opacity: .68; }
 .cbx-critfx .needs-opt.blocked svg { width: 11px; height: 11px; opacity: .8; }
 
@@ -7441,7 +7437,6 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 .cbx-critfx .needs-opt.blocked .nopt-hint { display: block; font-size: 10px; line-height: 1.35;
   margin-top: 2px; opacity: .95; text-decoration: none; }
 .cbx-critfx .needs-opt.blocked { flex-direction: column; align-items: flex-start; text-align: start; }
-.cbx-critfx .needs-opt.blocked::after { inset-inline: 9px; top: 12px; }
 
 /* ---------- השלב המאוחד: התאמת שירות / מוצר ---------- */
 .fl-mini { display: flex; flex-direction: column; gap: 6px; margin: 9px 0 11px; }
@@ -7457,6 +7452,11 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
   font-size: 11px; color: var(--text-2); }
 .fl-modehint svg { width: 12px; height: 12px; color: var(--brand); }
 .fl-gate.gate-body:empty { display: none; }
+
+/* חלון אחיד לכל שלבי המהלך — אותו רוחב, אותו גובה, בלי קפיצות */
+#modal.fl-modal { display: flex; flex-direction: column; }
+#modal.fl-modal .modal-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+#modal.fl-modal .modal-head, #modal.fl-modal .modal-foot { flex: 0 0 auto; }
 
 </style>
   <style>
@@ -30290,6 +30290,22 @@ function openExtPanel() {
      החלפת מסלול משנה את סדר השלבים — ולכן הרצועה מונפשת (FLIP)
      והמיקוד חוזר לשלב 1 החדש. */
   let jumpTo1 = false;
+
+  /* שני המסכים הם אותו מהלך — ולכן אותו חלון בדיוק: אותו רוחב (הרחב
+     מבין השניים) ואותו גובה, כדי שהמעבר בין שלב לשלב לא "יקפיץ"
+     את הפופ-אפ למקום אחר על המסך. */
+  function sizeModal() {
+    const m = document.getElementById('modal'); if (!m) return;
+    m.classList.add('fl-modal');
+    m.style.maxWidth = '600px';
+    m.style.width = '100%';
+    m.style.height = 'min(78vh, 720px)';
+  }
+  function unsizeModal() {
+    const m = document.getElementById('modal'); if (!m) return;
+    m.classList.remove('fl-modal');
+    m.style.height = ''; m.style.width = '';
+  }
   function stripRects(host) {
     const m = {};
     (host ? host.querySelectorAll('[data-flgo]') : []).forEach(el => { m[el.dataset.flgo] = el.getBoundingClientRect().left; });
@@ -30493,7 +30509,9 @@ function openExtPanel() {
         try {
           const rec = (typeof svcSelState !== 'undefined' && svcSelState) ? svcSelState.rec : null;
           const body = document.querySelector('#modal .svc-sel');
-          if (!rec || !body || body.querySelector('.fl-gate')) return r;
+          if (!rec || !body) return r;
+          sizeModal();
+          if (body.querySelector('.fl-gate')) return r;
           const d = document.createElement('div'); d.innerHTML = gateHTML(rec);
           while (d.lastElementChild) body.insertBefore(d.lastElementChild, body.firstChild);
 
@@ -30541,7 +30559,9 @@ function openExtPanel() {
         });
         try {
           const body = document.querySelector('#modal .needs-body');
-          if (!body || !rec || body.querySelector('.fl-strip')) return out;
+          if (!body || !rec) return out;
+          sizeModal();
+          if (body.querySelector('.fl-strip')) return out;
           const rd = readiness(rec);
           const d = document.createElement('div');
           d.innerHTML = headerHTML(rec, 'crit') + ((rec.services || []).length ? `<div class="fl-ready ${rd.ok ? 'ok' : 'bad'}">
@@ -30638,6 +30658,10 @@ function openExtPanel() {
             : ic('search') + ' המסלול: הלקוח לא יודע — קריטריונים ואז שירות'}</small>
         </div>`;
       });
+      if (typeof closeModal === 'function') CBX.wrap('flow', 'closeModal', o => function () {
+        unsizeModal(); return o.apply(this, arguments);
+      });
+
       /* הכפתור פותח את המהלך בשלב 1 של המסלול הנוכחי */
       CBX.delegate('flow', '[data-flopencrit]', el => {
         const r = (typeof RECORDS !== 'undefined') ? RECORDS.find(x => String(x.id) === el.dataset.flopencrit) : null;

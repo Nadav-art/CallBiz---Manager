@@ -62,10 +62,6 @@
   background-image: repeating-linear-gradient(135deg,
     color-mix(in srgb, var(--text-2) 13%, transparent) 0 5px, transparent 5px 10px);
 }
-.cbx-critfx .needs-opt.blocked::after {
-  content: ''; position: absolute; inset-inline: 9px; top: 50%; height: 1px;
-  background: currentColor; opacity: .55;
-}
 .cbx-critfx .needs-opt.blocked:hover { opacity: .68; }
 .cbx-critfx .needs-opt.blocked svg { width: 11px; height: 11px; opacity: .8; }
 
@@ -154,7 +150,6 @@
 .cbx-critfx .needs-opt.blocked .nopt-hint { display: block; font-size: 10px; line-height: 1.35;
   margin-top: 2px; opacity: .95; text-decoration: none; }
 .cbx-critfx .needs-opt.blocked { flex-direction: column; align-items: flex-start; text-align: start; }
-.cbx-critfx .needs-opt.blocked::after { inset-inline: 9px; top: 12px; }
 
 /* ---------- השלב המאוחד: התאמת שירות / מוצר ---------- */
 .fl-mini { display: flex; flex-direction: column; gap: 6px; margin: 9px 0 11px; }
@@ -170,3 +165,8 @@
   font-size: 11px; color: var(--text-2); }
 .fl-modehint svg { width: 12px; height: 12px; color: var(--brand); }
 .fl-gate.gate-body:empty { display: none; }
+
+/* חלון אחיד לכל שלבי המהלך — אותו רוחב, אותו גובה, בלי קפיצות */
+#modal.fl-modal { display: flex; flex-direction: column; }
+#modal.fl-modal .modal-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+#modal.fl-modal .modal-head, #modal.fl-modal .modal-foot { flex: 0 0 auto; }
