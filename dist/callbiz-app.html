@@ -7843,6 +7843,138 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 </style>
   <style>
 /* ============================================================
+   אומניצ׳אנל — ניהול ערוצי תקשורת (omni)
+   ============================================================ */
+.om { display: flex; flex-direction: column; gap: 14px; }
+.om-head { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap;
+  padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); }
+.om-head b { display: flex; align-items: center; gap: 7px; font-size: 15px; }
+.om-head b svg { width: 17px; height: 17px; color: var(--brand); }
+.om-head small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 3px; }
+.om-head code { font-size: 11px; padding: 1px 6px; border-radius: 6px; background: var(--surface-2); }
+.om-tabs { margin-inline-start: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.om-tab { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; cursor: pointer;
+  padding: 7px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
+.om-tab svg { width: 12px; height: 12px; }
+.om-tab.on { border-color: var(--brand); color: var(--brand); font-weight: 600;
+  background: color-mix(in srgb, var(--brand) 9%, transparent); }
+.om-perm { display: flex; align-items: center; gap: 8px; padding: 10px 13px; border-radius: 12px;
+  font-size: 12px; color: var(--text-2); border: 1px dashed var(--line); background: var(--surface-2); }
+.om-perm svg { width: 13px; height: 13px; }
+
+/* ---------- כרטיסי ערוצים ---------- */
+.om-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.om-card { display: flex; flex-direction: column; gap: 10px; padding: 13px 14px; border-radius: 14px;
+  border: 1px solid var(--line); background: var(--surface); }
+.om-card.ok { border-color: color-mix(in srgb, var(--ok, #16a34a) 35%, transparent); }
+.om-card.bad { border-color: color-mix(in srgb, var(--danger, #dc2626) 40%, transparent); }
+.om-card.warn { border-color: color-mix(in srgb, var(--amber, #B7791F) 40%, transparent); }
+.om-c-h { display: flex; align-items: center; gap: 10px; }
+.om-ic { width: 38px; height: 38px; flex: 0 0 auto; border-radius: 11px; display: flex; align-items: center;
+  justify-content: center; background: color-mix(in srgb, var(--ch) 14%, transparent); color: var(--ch); }
+.om-ic svg { width: 19px; height: 19px; }
+.om-ic.sm { width: 30px; height: 30px; } .om-ic.sm svg { width: 15px; height: 15px; }
+.om-c-t { flex: 1 1 auto; min-width: 0; }
+.om-c-t b { display: block; font-size: 13.5px; }
+.om-c-t small { display: block; font-size: 10.5px; color: var(--text-2); margin-top: 1px; }
+.om-st { flex: 0 0 auto; font-size: 10.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--text-2); }
+.om-st.ok { color: var(--ok, #16a34a); border-color: color-mix(in srgb, var(--ok, #16a34a) 40%, transparent);
+  background: color-mix(in srgb, var(--ok, #16a34a) 9%, transparent); }
+.om-st.warn { color: var(--amber, #B7791F); border-color: color-mix(in srgb, var(--amber, #B7791F) 40%, transparent); }
+.om-st.bad { color: var(--danger, #dc2626); border-color: color-mix(in srgb, var(--danger, #dc2626) 40%, transparent); }
+.om-c-b { display: flex; flex-direction: column; gap: 3px; padding: 9px 10px; border-radius: 11px; background: var(--surface-2); }
+.om-kv { display: flex; align-items: center; gap: 8px; font-size: 11.5px; }
+.om-kv span { color: var(--text-2); }
+.om-kv b { margin-inline-start: auto; font-size: 11.5px; }
+.om-kv b.mono { font-family: ui-monospace, monospace; font-size: 10.5px; }
+.om-none { font-size: 11.5px; color: var(--text-2); line-height: 1.6; margin: 0; }
+.om-caps { display: flex; flex-wrap: wrap; gap: 5px; }
+.om-caps span { font-size: 10px; padding: 1px 8px; border-radius: 999px; color: var(--text-2);
+  border: 1px solid var(--line); background: var(--surface-2); }
+.om-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
+.om-lock { font-size: 11px; color: var(--text-2); }
+
+/* ---------- ניהול חיבורים ---------- */
+.om-panel { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 14px 16px; }
+.om-p-h { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 10px; }
+.om-p-h svg { width: 14px; height: 14px; color: var(--brand); }
+.om-p-h b { font-size: 13.5px; }
+.om-p-h small { font-size: 11px; color: var(--text-2); }
+.om-p-h.sub { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.om-tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+.om-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.om-tbl th { text-align: start; font-size: 10.5px; color: var(--text-2); padding: 9px 10px;
+  background: var(--surface-2); border-bottom: 1px solid var(--line); white-space: nowrap; }
+.om-tbl td { padding: 10px; border-bottom: 1px solid var(--border-2, var(--line)); white-space: nowrap; }
+.om-tbl tbody tr:last-child td { border-bottom: 0; }
+.om-row-acts { display: flex; gap: 5px; flex-wrap: wrap; }
+.om-hook { font-size: 10.5px; padding: 1px 8px; border-radius: 999px; }
+.om-hook.ok { color: var(--ok, #16a34a); background: color-mix(in srgb, var(--ok, #16a34a) 10%, transparent); }
+.om-hook.bad { color: var(--danger, #dc2626); background: color-mix(in srgb, var(--danger, #dc2626) 10%, transparent); }
+.om-empty { text-align: center; color: var(--text-2); padding: 16px; font-size: 12px; }
+.om-log { display: flex; flex-direction: column; gap: 5px; max-height: 260px; overflow-y: auto; }
+.om-log-i { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding: 8px 10px;
+  border-radius: 10px; background: var(--surface-2); font-size: 11.5px; }
+.om-log-i b { font-size: 12px; }
+.om-log-i small { margin-inline-start: auto; font-size: 10.5px; color: var(--text-2); }
+
+/* ---------- מודל ומחברים ---------- */
+.om-model { display: flex; flex-direction: column; gap: 4px; }
+.om-m-r { display: flex; gap: 10px; font-size: 11.5px; padding: 6px 9px; border-radius: 9px; background: var(--surface-2); }
+.om-m-r code { flex: 0 0 130px; font-family: ui-monospace, monospace; color: var(--brand); }
+.om-m-r span { color: var(--text-2); }
+.om-conn-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.om-conn { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 11px;
+  border: 1px solid var(--line); background: var(--surface); }
+.om-conn b { display: block; font-size: 12.5px; }
+.om-conn small { display: block; font-size: 10.5px; color: var(--text-2); }
+.om-code { margin: 12px 0 0; padding: 12px; border-radius: 11px; background: var(--surface-2);
+  font-family: ui-monospace, monospace; font-size: 11.5px; line-height: 1.7; direction: ltr; text-align: left;
+  overflow-x: auto; border: 1px solid var(--line); }
+.om-note { display: flex; align-items: flex-start; gap: 7px; font-size: 11.5px; color: var(--text-2);
+  line-height: 1.65; margin: 10px 0 0; }
+.om-note svg { width: 13px; height: 13px; flex: 0 0 auto; margin-top: 2px; color: var(--amber, #B7791F); }
+
+/* ---------- מסך ההרשאה וההגדרות ---------- */
+.om-auth-l { font-size: 12.5px; color: var(--text-2); line-height: 1.65; margin: 2px 0 10px; }
+.om-scopes { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 11px; }
+.om-scopes span { font-size: 10.5px; font-family: ui-monospace, monospace; padding: 2px 8px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--text-2); }
+.om-warn { display: flex; align-items: flex-start; gap: 7px; font-size: 11px; color: var(--amber, #B7791F);
+  line-height: 1.6; margin: 10px 0 0; }
+.om-warn svg { width: 12px; height: 12px; flex: 0 0 auto; margin-top: 2px; }
+.om-cfg-b { display: flex; flex-direction: column; gap: 12px; max-height: 58vh; overflow-y: auto; padding-inline-end: 2px; }
+.om-f { display: flex; flex-direction: column; gap: 5px; }
+.om-f > span { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-2); }
+.om-f > span svg { width: 12px; height: 12px; }
+.om-f2 { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.om-f2 .om-f { flex: 0 0 130px; }
+.om-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.om-chip { font: inherit; font-size: 11.5px; cursor: pointer; padding: 5px 11px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
+.om-chip.on { border-color: var(--brand); color: var(--brand); font-weight: 600;
+  background: color-mix(in srgb, var(--brand) 9%, transparent); }
+.om-chips.days .om-chip { min-width: 34px; text-align: center; }
+.om-hours { display: flex; align-items: center; gap: 8px; }
+.om-hours input { flex: 0 0 120px; }
+.om-hours span { font-size: 11.5px; color: var(--text-2); }
+.om-sw { display: flex; align-items: center; gap: 7px; font-size: 12px; }
+
+/* ---------- חיווי ברשימת השיחות ---------- */
+.om-src { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 24px 4px;
+  font-size: 11.5px; color: var(--text-2); }
+.om-src > svg { width: 13px; height: 13px; }
+.om-src-c { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; padding: 2px 9px;
+  border-radius: 999px; color: var(--ch); background: color-mix(in srgb, var(--ch) 11%, transparent); }
+.om-src-c svg { width: 11px; height: 11px; }
+.om-src-n { font-style: italic; }
+
+@media (max-width: 640px) { .om-tabs { margin-inline-start: 0; } .om-grid { grid-template-columns: 1fr; } }
+
+</style>
+  <style>
+/* ============================================================
    פריסת פופ-אפים לצד זה — מצב אבחון (ptile)
    ------------------------------------------------------------
    הכול מבוסס מחלקות ומשתני CSS בלבד. אין נגיעה בסגנון המקורי של
@@ -32124,6 +32256,436 @@ function openExtPanel() {
   });
 
   window.REMINDG = { due, leadMins, setLead, meetAt };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: אומניצ׳אנל — ניהול ערוצי תקשורת  ·  key = 'omni'
+   ------------------------------------------------------------
+   ארכיטקטורת מחברים (Connector Architecture): כל ערוץ הוא מחבר
+   עצמאי שמצהיר על היכולות שלו, ונרשם בשורה אחת:
+
+       OMNI.registerConnector({
+         key: 'telegram', label: 'Telegram', icon: 'chat',
+         auth: 'oauth', caps: { media: true, read: true, templates: false },
+         webhook: true, docs: '…',
+       });
+
+   הליבה לא יודעת דבר על ערוץ מסוים — היא עובדת מול המודל האחיד
+   (Unified Message Model) שמוגדר כאן, ולכן הוספת ערוץ חדש אינה
+   דורשת שינוי בשום מסך.
+
+   רב-דיירות: כל חיבור נשמר תחת מזהה הלקוח (tenant). אין גישה
+   לחיבורים של דייר אחר — לא בקריאה ולא בכתיבה.
+
+   הערה חשובה: אין כאן שרת. תהליך ה-OAuth, יצירת ה-Webhook
+   ובדיקות ה-API מדמים את הזרימה ושומרים מטא-דאטה בלבד — לעולם
+   לא טוקן אמיתי. נקודות החיבור לשרת מסומנות ב-TODO(server).
+   ============================================================ */
+(function () {
+
+  /* ============================================================
+     1. המודל האחיד — כל ערוץ ממופה אליו
+     ============================================================ */
+  const MESSAGE_MODEL = {
+    id: 'string', tenant: 'string', channel: 'string', accountId: 'string',
+    conversationId: 'string', direction: 'in|out',
+    from: '{ id, name, avatar }', to: '{ id, name }',
+    type: 'text|image|video|audio|file|location|template|system',
+    body: 'string', media: '[{ url, mime, name, size }]',
+    replyTo: 'messageId|null', reactions: '[{ by, emoji }]',
+    status: 'queued|sent|delivered|read|failed',
+    at: 'ISO', raw: 'object (payload מקורי לצורכי דיבוג)',
+  };
+
+  /* ============================================================
+     2. מרשם המחברים
+     ============================================================ */
+  const CONNECTORS = [];
+  function registerConnector(def) {
+    if (!def || !def.key || CONNECTORS.some(c => c.key === def.key)) return;
+    CONNECTORS.push(Object.assign({
+      auth: 'oauth', webhook: true, color: '#5B4CE6',
+      caps: { media: true, read: false, reactions: false, templates: false, voice: false },
+      scopes: [], note: '',
+    }, def));
+  }
+  const connectorOf = k => CONNECTORS.find(c => c.key === k);
+
+  registerConnector({ key: 'whatsapp', label: 'WhatsApp Business', icon: 'whatsapp', color: '#25D366',
+    scopes: ['whatsapp_business_messaging', 'whatsapp_business_management'],
+    caps: { media: true, read: true, reactions: true, templates: true, voice: true },
+    note: 'תבניות מאושרות בלבד מחוץ לחלון 24 השעות' });
+  registerConnector({ key: 'messenger', label: 'Facebook Messenger', icon: 'chat', color: '#0084FF',
+    scopes: ['pages_messaging', 'pages_manage_metadata'],
+    caps: { media: true, read: true, reactions: true, templates: false, voice: true } });
+  registerConnector({ key: 'instagram', label: 'Instagram', icon: 'chat', color: '#E1306C',
+    scopes: ['instagram_manage_messages', 'pages_show_list'],
+    caps: { media: true, read: true, reactions: true, templates: false, voice: true },
+    note: 'דורש חשבון מקושר לעמוד פייסבוק' });
+  registerConnector({ key: 'gmail', label: 'Gmail', icon: 'mail', color: '#EA4335',
+    scopes: ['gmail.readonly', 'gmail.send'],
+    caps: { media: true, read: false, reactions: false, templates: true, voice: false },
+    note: 'סטטוס "נקרא" אינו נתמך בדוא״ל' });
+  registerConnector({ key: 'outlook', label: 'Outlook · Microsoft 365', icon: 'mail', color: '#0078D4',
+    scopes: ['Mail.ReadWrite', 'Mail.Send'],
+    caps: { media: true, read: false, reactions: false, templates: true, voice: false } });
+  /* מוכן להרחבה — נרשם באותה שורה בדיוק */
+  registerConnector({ key: 'webchat', label: 'צ׳אט באתר', icon: 'chat', color: '#6B7085', auth: 'apikey',
+    caps: { media: true, read: true, reactions: false, templates: false, voice: false },
+    note: 'לא נדרש OAuth — מפתח API והטמעת סקריפט' });
+
+  /* ============================================================
+     3. רב-דיירות ואחסון
+     ============================================================ */
+  const TKEY = 'cb_tenant', SKEY = 'cb_omni';
+  const tenant = () => { try { return localStorage.getItem(TKEY) || 'callbiz-demo'; } catch (e) { return 'callbiz-demo'; } };
+  function store() { try { return JSON.parse(localStorage.getItem(SKEY)) || {}; } catch (e) { return {}; } }
+  function save(all) { try { localStorage.setItem(SKEY, JSON.stringify(all)); } catch (e) {} }
+  function state() { const all = store(); return (all[tenant()] = all[tenant()] || { conns: {}, log: [] }); }
+  function commit(st) { const all = store(); all[tenant()] = st; save(all); }
+  const connOf = k => state().conns[k] || null;
+
+  function logAdd(act, ch, extra) {
+    const st = state();
+    st.log.unshift(Object.assign({ act, ch, by: (typeof CURRENT_USER !== 'undefined' ? CURRENT_USER : ''),
+      at: (typeof docStamp === 'function') ? docStamp() : '' }, extra || {}));
+    st.log = st.log.slice(0, 80);
+    commit(st);
+  }
+
+  /* ============================================================
+     4. הרשאות
+     ============================================================ */
+  const ROLES = {
+    cbadmin: { label: 'מנהל CallBiz', can: { view: true, logs: true, diag: true, connect: false, settings: false, content: false } },
+    owner:   { label: 'מנהל הלקוח',   can: { view: true, logs: true, diag: true, connect: true,  settings: true,  content: true  } },
+    agent:   { label: 'נציג',          can: { view: false, logs: false, diag: false, connect: false, settings: false, content: true } },
+  };
+  function myRole() {
+    const me = (typeof STAFF !== 'undefined') ? STAFF.find(s => s.name === (typeof CURRENT_USER !== 'undefined' ? CURRENT_USER : '')) : null;
+    const p = me ? me.perm : 'נציג';
+    if (p === 'אדמין') return 'cbadmin';
+    if (p === 'מנהל רשת' || p === 'מנהל סניף') return 'owner';
+    return 'agent';
+  }
+  const can = k => !!(ROLES[myRole()].can[k]);
+
+  /* ============================================================
+     5. פעולות החיבור  —  TODO(server): כאן מתחברים לשרת אמיתי
+     ============================================================ */
+  const nowStamp = () => (typeof docStamp === 'function') ? docStamp() : '';
+  function connect(key, account) {
+    const c = connectorOf(key); if (!c) return;
+    const st = state();
+    st.conns[key] = {
+      key, status: 'connected', account: account || demoAccount(c),
+      accountId: c.key + '_' + Math.abs(hash(tenant() + key)).toString(36).slice(0, 8),
+      at: nowStamp(), by: (typeof CURRENT_USER !== 'undefined' ? CURRENT_USER : ''),
+      scopes: (c.scopes || []).slice(),
+      /* לעולם לא נשמר טוקן אמיתי בצד לקוח — רק מטא-דאטה */
+      token: { kind: c.auth, expiresIn: c.auth === 'oauth' ? 60 : null, ref: 'srv:' + tenant() + ':' + key },
+      webhook: c.webhook ? { url: '/api/hooks/' + tenant() + '/' + key, ok: true, at: nowStamp() } : null,
+      cfg: st.conns[key] && st.conns[key].cfg ? st.conns[key].cfg : defaultCfg(),
+    };
+    commit(st); logAdd('חובר', key, { account: st.conns[key].account });
+  }
+  function disconnect(key) {
+    const st = state(); if (!st.conns[key]) return;
+    const acc = st.conns[key].account;
+    st.conns[key].status = 'disconnected';
+    st.conns[key].token = null; st.conns[key].webhook = null;
+    commit(st); logAdd('נותק', key, { account: acc });
+  }
+  function refresh(key) {
+    const st = state(); const c = st.conns[key]; if (!c) return;
+    c.status = 'connected'; c.at = nowStamp();
+    c.token = Object.assign({}, c.token, { expiresIn: 60, refreshedAt: nowStamp() });
+    commit(st); logAdd('רענון הרשאות', key);
+  }
+  function testHook(key) {
+    const st = state(); const c = st.conns[key]; if (!c || !c.webhook) return { ok: false, msg: 'אין Webhook לערוץ הזה' };
+    c.webhook.ok = true; c.webhook.at = nowStamp(); commit(st); logAdd('בדיקת Webhook', key, { result: 'תקין' });
+    return { ok: true, msg: 'ה-Webhook הגיב · ' + c.webhook.url };
+  }
+  function testApi(key) {
+    const c = connOf(key);
+    if (!c || c.status !== 'connected') return { ok: false, msg: 'הערוץ אינו מחובר' };
+    logAdd('בדיקת API', key, { result: 'תקין' });
+    return { ok: true, msg: 'קריאת API הצליחה · ' + (c.account || '') };
+  }
+  const hash = s => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; };
+  function demoAccount(c) {
+    return ({ whatsapp: '+972-50-0000000', messenger: 'CallBiz · עמוד עסקי', instagram: '@callbiz',
+      gmail: 'service@callbiz.co.il', outlook: 'service@callbiz.co.il', webchat: 'callbiz.co.il' })[c.key] || c.label;
+  }
+  function defaultCfg() {
+    return { agents: [], team: '', hours: { from: '08:00', to: '18:00', days: [0, 1, 2, 3, 4] },
+      greeting: 'שלום! הגעתם ל-CallBiz. נציג יענה בהקדם.',
+      offHours: 'קיבלנו את פנייתכם מחוץ לשעות הפעילות ונחזור אליכם עם פתיחת המשרד.',
+      tags: [], sla: 30, notify: true };
+  }
+
+  /* ============================================================
+     6. המסך
+     ============================================================ */
+  const ST = { connected: { label: 'מחובר', color: 'ok' }, disconnected: { label: 'מנותק', color: 'off' },
+    pending: { label: 'דורש הרשאה', color: 'warn' }, error: { label: 'שגיאה', color: 'bad' } };
+  let omTab = 'channels', omSettings = null;
+
+  function screenHTML() {
+    const role = myRole();
+    return `<div class="om">
+      <div class="om-head">
+        <div><b>${ic('chat')} ערוצי תקשורת · אומניצ׳אנל</b>
+          <small>כל הערוצים של הלקוח במקום אחד · דייר: <code>${esc(tenant())}</code> · תפקידך: ${esc(ROLES[role].label)}</small></div>
+        <div class="om-tabs">
+          <button class="om-tab ${omTab === 'channels' ? 'on' : ''}" data-omtab="channels">${ic('layers')} ערוצים</button>
+          ${can('logs') ? `<button class="om-tab ${omTab === 'conns' ? 'on' : ''}" data-omtab="conns">${ic('lock')} ניהול חיבורים</button>` : ''}
+          <button class="om-tab ${omTab === 'model' ? 'on' : ''}" data-omtab="model">${ic('docs')} מודל ומחברים</button>
+        </div>
+      </div>
+      ${!can('connect') ? `<div class="om-perm">${ic('lock')} ${role === 'agent'
+        ? 'כנציג — אפשר לעבוד על השיחות בלבד. חיבור וניתוק ערוצים שמורים למנהל הלקוח.'
+        : 'כמנהל CallBiz — צפייה, לוגים ואבחון בלבד. אין גישה אוטומטית לתוכן שיחות של לקוחות.'}</div>` : ''}
+      ${omTab === 'channels' ? channelsHTML() : omTab === 'conns' ? connsHTML() : modelHTML()}
+    </div>`;
+  }
+
+  function channelsHTML() {
+    return `<div class="om-grid">${CONNECTORS.map(c => {
+      const n = connOf(c.key), st = ST[(n && n.status) || 'disconnected'];
+      return `<section class="om-card ${st.color}">
+        <div class="om-c-h"><span class="om-ic" style="--ch:${c.color}">${ic(c.icon)}</span>
+          <div class="om-c-t"><b>${esc(c.label)}</b>
+            <small>${c.auth === 'oauth' ? 'OAuth' : 'מפתח API'}${c.webhook ? ' · Webhook' : ''}</small></div>
+          <span class="om-st ${st.color}">${st.label}</span></div>
+        ${n && n.status === 'connected' ? `<div class="om-c-b">
+          <div class="om-kv"><span>חשבון</span><b>${esc(n.account || '')}</b></div>
+          <div class="om-kv"><span>מזהה</span><b class="mono">${esc(n.accountId || '')}</b></div>
+          <div class="om-kv"><span>חובר</span><b>${esc(n.at || '')}</b></div>
+          <div class="om-kv"><span>ע״י</span><b>${esc(n.by || '')}</b></div>
+          ${n.token && n.token.expiresIn ? `<div class="om-kv"><span>תוקף הרשאה</span><b>${n.token.expiresIn} ימים</b></div>` : ''}
+        </div>` : `<p class="om-none">${esc(c.note || 'לא מחובר — חיבור פותח את מסך ההרשאות של הספק.')}</p>`}
+        <div class="om-caps">${Object.keys(c.caps).filter(k => c.caps[k]).map(k => `<span>${esc(CAPS[k] || k)}</span>`).join('')}</div>
+        <div class="om-acts">
+          ${n && n.status === 'connected'
+            ? `${can('settings') ? `<button class="btn xs" data-omcfg="${c.key}">${ic('settings')} הגדרות</button>` : ''}
+               ${can('connect') ? `<button class="btn xs" data-omref="${c.key}">${ic('sync')} רענון הרשאות</button>
+               <button class="btn xs" data-omdis="${c.key}">${ic('close')} ניתוק</button>` : ''}`
+            : `${can('connect') ? `<button class="btn xs primary" data-omcon="${c.key}">${ic('check')} חבר</button>` : '<span class="om-lock">אין הרשאה לחבר</span>'}`}
+        </div>
+      </section>`;
+    }).join('')}</div>`;
+  }
+  const CAPS = { media: 'מדיה', read: 'נקרא/נמסר', reactions: 'תגובות', templates: 'תבניות', voice: 'הודעות קול' };
+
+  function connsHTML() {
+    const st = state(), rows = Object.keys(st.conns).map(k => st.conns[k]);
+    return `<section class="om-panel">
+      <div class="om-p-h">${ic('lock')} <b>חשבונות מחוברים</b><small>${rows.length} חיבורים · דייר ${esc(tenant())}</small></div>
+      <div class="om-tbl-wrap"><table class="om-tbl">
+        <thead><tr><th>ערוץ</th><th>חשבון</th><th>סטטוס</th><th>תוקף</th><th>Webhook</th><th>פעולות</th></tr></thead>
+        <tbody>${rows.length ? rows.map(n => { const c = connectorOf(n.key) || {}; const s = ST[n.status] || ST.disconnected;
+          return `<tr><td><b>${esc(c.label || n.key)}</b></td><td>${esc(n.account || '')}</td>
+            <td><span class="om-st ${s.color}">${s.label}</span></td>
+            <td>${n.token && n.token.expiresIn ? n.token.expiresIn + ' ימים' : '—'}</td>
+            <td>${n.webhook ? `<span class="om-hook ${n.webhook.ok ? 'ok' : 'bad'}">${n.webhook.ok ? 'תקין' : 'שגיאה'}</span>` : '—'}</td>
+            <td class="om-row-acts">
+              <button class="btn xs" data-omhook="${n.key}">בדיקת Webhook</button>
+              <button class="btn xs" data-omapi="${n.key}">בדיקת API</button>
+              ${can('connect') ? `<button class="btn xs" data-omref="${n.key}">חידוש</button>
+              <button class="btn xs" data-omdis="${n.key}">ניתוק</button>` : ''}
+            </td></tr>`; }).join('')
+          : '<tr><td colspan="6" class="om-empty">אין עדיין חיבורים</td></tr>'}</tbody>
+      </table></div>
+      <div class="om-p-h sub">${ic('history')} <b>לוג חיבורים</b></div>
+      <div class="om-log">${st.log.length ? st.log.map(l => `<div class="om-log-i">
+        <b>${esc(l.act)}</b><span>${esc((connectorOf(l.ch) || {}).label || l.ch)}</span>
+        <small>${esc(l.by || '')} · ${esc(l.at || '')}${l.result ? ' · ' + esc(l.result) : ''}${l.account ? ' · ' + esc(l.account) : ''}</small>
+      </div>`).join('') : '<p class="om-empty">אין רשומות</p>'}</div>
+    </section>`;
+  }
+
+  function modelHTML() {
+    return `<section class="om-panel">
+      <div class="om-p-h">${ic('docs')} <b>מודל ההודעות האחיד</b>
+        <small>כל מחבר ממפה את ה-payload שלו למבנה הזה — הליבה לא מכירה ערוץ מסוים</small></div>
+      <div class="om-model">${Object.keys(MESSAGE_MODEL).map(k => `<div class="om-m-r">
+        <code>${esc(k)}</code><span>${esc(MESSAGE_MODEL[k])}</span></div>`).join('')}</div>
+      <div class="om-p-h sub">${ic('layers')} <b>מחברים רשומים</b>
+        <small>הוספת ערוץ = רישום מחבר, בלי לגעת במסכים</small></div>
+      <div class="om-conn-list">${CONNECTORS.map(c => `<div class="om-conn">
+        <span class="om-ic sm" style="--ch:${c.color}">${ic(c.icon)}</span>
+        <div><b>${esc(c.label)}</b><small>${esc(c.auth)}${c.webhook ? ' · webhook' : ''} · ${(c.scopes || []).join(', ') || 'ללא scopes'}</small></div>
+      </div>`).join('')}</div>
+      <pre class="om-code">OMNI.registerConnector({
+  key: 'telegram', label: 'Telegram', icon: 'chat', color: '#229ED9',
+  auth: 'oauth', webhook: true,
+  caps: { media: true, read: true, reactions: true, templates: false },
+  scopes: ['bot'],
+});</pre>
+      <p class="om-note">${ic('alert')} אין שרת בגרסה הזו: תהליך ההרשאה, ה-Webhook ובדיקות ה-API מדמים את הזרימה
+        ושומרים מטא-דאטה בלבד. הטוקן עצמו לעולם אינו נשמר בצד הלקוח — רק הפניה אליו בשרת.</p>
+    </section>`;
+  }
+
+  /* ---------- מסך ההרשאה (מדמה OAuth) ---------- */
+  function oauthFlow(key) {
+    const c = connectorOf(key); if (!c) return;
+    const old = document.getElementById('omAuth'); if (old) old.remove();
+    const w = document.createElement('div'); w.className = 'cbc-wrap'; w.id = 'omAuth';
+    w.innerHTML = `<div class="cbc-box om-auth" style="max-width:460px;text-align:start">
+      <div class="cbc-head"><span class="cbc-ic" style="background:${c.color}22;color:${c.color}">${ic(c.icon)}</span>
+        <b>חיבור ${esc(c.label)}</b></div>
+      <p class="om-auth-l">${c.auth === 'oauth'
+        ? 'ייפתח מסך ההרשאה של הספק. לאחר האישור המערכת תשמור את מזהה החשבון, תיצור Webhook ותעדכן את הסטטוס.'
+        : 'הזינו את מפתח ה-API של הערוץ. המפתח נשמר בשרת בלבד.'}</p>
+      <div class="om-scopes">${(c.scopes || []).map(s => `<span>${esc(s)}</span>`).join('') || '<span>ללא scopes</span>'}</div>
+      <label class="om-f"><span>חשבון לחיבור</span>
+        <input class="cc-inp" id="omAcc" value="${esc(demoAccount(c))}"></label>
+      <p class="om-warn">${ic('alert')} בגרסה הזו אין שרת — התהליך מדומה ונשמרת מטא-דאטה בלבד, בלי טוקן אמיתי.</p>
+      <div class="cbc-actions">
+        <button class="btn ghost" id="omAuthX">ביטול</button>
+        <button class="btn primary" id="omAuthGo">${ic('check')} ${c.auth === 'oauth' ? 'אשר והתחבר' : 'שמור מפתח'}</button>
+      </div></div>`;
+    document.body.appendChild(w);
+    w.querySelector('#omAuthX').addEventListener('click', () => w.remove());
+    w.querySelector('#omAuthGo').addEventListener('click', () => {
+      connect(key, (w.querySelector('#omAcc') || {}).value);
+      w.remove(); toast(c.label + ' חובר בהצלחה'); render();
+    });
+  }
+
+  /* ---------- הגדרות ערוץ ---------- */
+  const DAYS = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
+  function cfgPanel(key) {
+    const c = connectorOf(key), n = connOf(key); if (!c || !n) return;
+    const cfg = n.cfg = n.cfg || defaultCfg();
+    const old = document.getElementById('omCfg'); if (old) old.remove();
+    const w = document.createElement('div'); w.className = 'cbc-wrap'; w.id = 'omCfg';
+    const staff = (typeof STAFF !== 'undefined') ? STAFF.filter(s => s.on !== false) : [];
+    const teams = (typeof DEPARTMENTS !== 'undefined') ? DEPARTMENTS : [];
+    w.innerHTML = `<div class="cbc-box om-cfg" style="max-width:560px;text-align:start">
+      <div class="cbc-head"><span class="cbc-ic" style="background:${c.color}22;color:${c.color}">${ic(c.icon)}</span>
+        <b>הגדרות ${esc(c.label)}</b></div>
+      <div class="om-cfg-b">
+        <div class="om-f"><span>${ic('clients')} מי יכול לענות</span>
+          <div class="om-chips">${staff.map(s => `<button class="om-chip ${cfg.agents.indexOf(s.id) >= 0 ? 'on' : ''}" data-omag="${esc(s.id)}">${esc(s.name)}</button>`).join('')}</div></div>
+        <label class="om-f"><span>${ic('layers')} ניתוב לצוות</span>
+          <select class="cc-inp" id="omTeam"><option value="">ללא ניתוב</option>
+            ${teams.map(t => `<option ${cfg.team === t ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select></label>
+        <div class="om-f"><span>${ic('clock')} שעות פעילות</span>
+          <div class="om-hours">
+            <input type="time" class="cc-inp" id="omFrom" value="${esc(cfg.hours.from)}">
+            <span>עד</span>
+            <input type="time" class="cc-inp" id="omTo" value="${esc(cfg.hours.to)}">
+          </div>
+          <div class="om-chips days">${DAYS.map((d, i) => `<button class="om-chip ${cfg.hours.days.indexOf(i) >= 0 ? 'on' : ''}" data-omday="${i}">${d}</button>`).join('')}</div></div>
+        <label class="om-f"><span>${ic('chat')} הודעת פתיחה אוטומטית</span>
+          <textarea class="cc-inp" id="omGreet" rows="2">${esc(cfg.greeting)}</textarea></label>
+        <label class="om-f"><span>${ic('clock')} הודעה מחוץ לשעות הפעילות</span>
+          <textarea class="cc-inp" id="omOff" rows="2">${esc(cfg.offHours)}</textarea></label>
+        <label class="om-f"><span>${ic('flag')} תגיות ברירת מחדל</span>
+          <input class="cc-inp" id="omTags" value="${esc((cfg.tags || []).join(', '))}" placeholder="לדוגמה: נכנס, ${esc(c.label)}"></label>
+        <div class="om-f2">
+          <label class="om-f"><span>${ic('alert')} SLA (דקות)</span>
+            <input type="number" class="cc-inp" id="omSla" min="1" max="1440" value="${+cfg.sla || 30}"></label>
+          <label class="om-sw"><input type="checkbox" id="omNotify" ${cfg.notify ? 'checked' : ''}>
+            <span>התראות לנציג בהודעה חדשה</span></label>
+        </div>
+      </div>
+      <div class="cbc-actions">
+        <button class="btn ghost" id="omCfgX">ביטול</button>
+        <button class="btn primary" id="omCfgS">${ic('check')} שמור הגדרות</button>
+      </div></div>`;
+    document.body.appendChild(w);
+    w.querySelectorAll('[data-omag]').forEach(b => b.addEventListener('click', () => {
+      const id = b.dataset.omag, i = cfg.agents.indexOf(id);
+      i >= 0 ? cfg.agents.splice(i, 1) : cfg.agents.push(id);
+      b.classList.toggle('on');
+    }));
+    w.querySelectorAll('[data-omday]').forEach(b => b.addEventListener('click', () => {
+      const d = +b.dataset.omday, i = cfg.hours.days.indexOf(d);
+      i >= 0 ? cfg.hours.days.splice(i, 1) : cfg.hours.days.push(d);
+      b.classList.toggle('on');
+    }));
+    w.querySelector('#omCfgX').addEventListener('click', () => w.remove());
+    w.querySelector('#omCfgS').addEventListener('click', () => {
+      const g = id => (w.querySelector('#' + id) || {}).value;
+      cfg.team = g('omTeam'); cfg.hours.from = g('omFrom'); cfg.hours.to = g('omTo');
+      cfg.greeting = g('omGreet'); cfg.offHours = g('omOff');
+      cfg.tags = String(g('omTags') || '').split(',').map(x => x.trim()).filter(Boolean);
+      cfg.sla = +g('omSla') || 30;
+      cfg.notify = !!(w.querySelector('#omNotify') || {}).checked;
+      const st = state(); st.conns[key].cfg = cfg; commit(st);
+      logAdd('עודכנו הגדרות', key);
+      w.remove(); toast('הגדרות ' + c.label + ' נשמרו'); render();
+    });
+  }
+
+  /* ---------- רינדור וקישור ---------- */
+  let omMode = false;
+  function render() {
+    if (!omMode) return;
+    const host = document.getElementById('viewHost'); if (!host) return;
+    host.innerHTML = (typeof settingsHeader === 'function' ? settingsHeader() : '') + screenHTML();
+    if (typeof bindSettingsHeader === 'function') bindSettingsHeader();
+    bind();
+  }
+  function bind() {
+    const q = s => Array.prototype.slice.call(document.querySelectorAll(s));
+    q('[data-omtab]').forEach(b => b.addEventListener('click', () => { omTab = b.dataset.omtab; render(); }));
+    q('[data-omcon]').forEach(b => b.addEventListener('click', () => oauthFlow(b.dataset.omcon)));
+    q('[data-omdis]').forEach(b => b.addEventListener('click', () => {
+      disconnect(b.dataset.omdis); toast('הערוץ נותק'); render(); }));
+    q('[data-omref]').forEach(b => b.addEventListener('click', () => {
+      refresh(b.dataset.omref); toast('ההרשאות רועננו'); render(); }));
+    q('[data-omcfg]').forEach(b => b.addEventListener('click', () => cfgPanel(b.dataset.omcfg)));
+    q('[data-omhook]').forEach(b => b.addEventListener('click', () => { const r = testHook(b.dataset.omhook); toast(r.msg); render(); }));
+    q('[data-omapi]').forEach(b => b.addEventListener('click', () => { const r = testApi(b.dataset.omapi); toast(r.msg); render(); }));
+  }
+
+  CBX.register({
+    key: 'omni', label: 'אומניצ׳אנל — ניהול ערוצים', icon: 'chat',
+    desc: 'מסך ניהול לכל ערוצי התקשורת: WhatsApp, Messenger, Instagram, Gmail, Outlook וצ׳אט באתר. חיבור וניתוק, רענון הרשאות, הגדרות ניתוב ושעות פעילות, ניהול חיבורים עם לוג ובדיקות Webhook/API, רב-דיירות והרשאות לפי תפקיד. ארכיטקטורת מחברים — ערוץ חדש נרשם בשורה אחת.',
+    files: ['js/ext/omni.js', 'css/ext/omni.css'],
+    install() {
+      if (typeof SET_GROUPS === 'undefined' || typeof applySetMode !== 'function') return;
+      const g = SET_GROUPS.find(x => x.key === 'manage');
+      if (g && !g.items.some(i => i.m === 'omni'))
+        CBX.push('omni', g.items, { m: 'omni', label: 'ערוצי תקשורת', icon: 'chat', desc: 'אומניצ׳אנל · חיבורים, ניתוב והרשאות' });
+
+      CBX.wrap('omni', 'applySetMode', o => function (m) { omMode = m === 'omni'; return o.apply(this, arguments); });
+      if (typeof currentSetModeKey === 'function')
+        CBX.wrap('omni', 'currentSetModeKey', o => function () { return omMode ? 'omni' : o.apply(this, arguments); });
+      if (typeof renderSettingsView === 'function')
+        CBX.wrap('omni', 'renderSettingsView', o => function () {
+          if (!omMode) return o.apply(this, arguments);
+          render();
+        });
+
+      /* חיווי הערוץ ברשימת השיחות הקיימת — בלי לשכפל את המסך */
+      if (typeof renderChatPlatform === 'function') CBX.wrap('omni', 'renderChatPlatform', o => function () {
+        const out = o.apply(this, arguments);
+        try {
+          const host = document.querySelector('.plat-pills');
+          if (!host || host.querySelector('.om-src')) return out;
+          const on = CONNECTORS.filter(c => (connOf(c.key) || {}).status === 'connected');
+          const d = document.createElement('div'); d.className = 'om-src';
+          d.innerHTML = `${ic('chat')} <b>ערוצים מחוברים:</b>
+            ${on.length ? on.map(c => `<span class="om-src-c" style="--ch:${c.color}">${ic(c.icon)} ${esc(c.label)}</span>`).join('')
+              : '<span class="om-src-n">אין ערוצים מחוברים — הגדרות › ערוצי תקשורת</span>'}`;
+          host.parentNode.insertBefore(d, host.nextSibling);
+        } catch (e) {}
+        return out;
+      });
+    },
+  });
+
+  window.OMNI = { registerConnector, connectors: () => CONNECTORS.slice(), MESSAGE_MODEL,
+    tenant, state, connect, disconnect, refresh, testHook, testApi, role: myRole, can, ROLES };
 })();
 
 </script>

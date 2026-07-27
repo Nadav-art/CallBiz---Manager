@@ -1,0 +1,129 @@
+/* ============================================================
+   אומניצ׳אנל — ניהול ערוצי תקשורת (omni)
+   ============================================================ */
+.om { display: flex; flex-direction: column; gap: 14px; }
+.om-head { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap;
+  padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); }
+.om-head b { display: flex; align-items: center; gap: 7px; font-size: 15px; }
+.om-head b svg { width: 17px; height: 17px; color: var(--brand); }
+.om-head small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 3px; }
+.om-head code { font-size: 11px; padding: 1px 6px; border-radius: 6px; background: var(--surface-2); }
+.om-tabs { margin-inline-start: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.om-tab { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; cursor: pointer;
+  padding: 7px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
+.om-tab svg { width: 12px; height: 12px; }
+.om-tab.on { border-color: var(--brand); color: var(--brand); font-weight: 600;
+  background: color-mix(in srgb, var(--brand) 9%, transparent); }
+.om-perm { display: flex; align-items: center; gap: 8px; padding: 10px 13px; border-radius: 12px;
+  font-size: 12px; color: var(--text-2); border: 1px dashed var(--line); background: var(--surface-2); }
+.om-perm svg { width: 13px; height: 13px; }
+
+/* ---------- כרטיסי ערוצים ---------- */
+.om-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.om-card { display: flex; flex-direction: column; gap: 10px; padding: 13px 14px; border-radius: 14px;
+  border: 1px solid var(--line); background: var(--surface); }
+.om-card.ok { border-color: color-mix(in srgb, var(--ok, #16a34a) 35%, transparent); }
+.om-card.bad { border-color: color-mix(in srgb, var(--danger, #dc2626) 40%, transparent); }
+.om-card.warn { border-color: color-mix(in srgb, var(--amber, #B7791F) 40%, transparent); }
+.om-c-h { display: flex; align-items: center; gap: 10px; }
+.om-ic { width: 38px; height: 38px; flex: 0 0 auto; border-radius: 11px; display: flex; align-items: center;
+  justify-content: center; background: color-mix(in srgb, var(--ch) 14%, transparent); color: var(--ch); }
+.om-ic svg { width: 19px; height: 19px; }
+.om-ic.sm { width: 30px; height: 30px; } .om-ic.sm svg { width: 15px; height: 15px; }
+.om-c-t { flex: 1 1 auto; min-width: 0; }
+.om-c-t b { display: block; font-size: 13.5px; }
+.om-c-t small { display: block; font-size: 10.5px; color: var(--text-2); margin-top: 1px; }
+.om-st { flex: 0 0 auto; font-size: 10.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--text-2); }
+.om-st.ok { color: var(--ok, #16a34a); border-color: color-mix(in srgb, var(--ok, #16a34a) 40%, transparent);
+  background: color-mix(in srgb, var(--ok, #16a34a) 9%, transparent); }
+.om-st.warn { color: var(--amber, #B7791F); border-color: color-mix(in srgb, var(--amber, #B7791F) 40%, transparent); }
+.om-st.bad { color: var(--danger, #dc2626); border-color: color-mix(in srgb, var(--danger, #dc2626) 40%, transparent); }
+.om-c-b { display: flex; flex-direction: column; gap: 3px; padding: 9px 10px; border-radius: 11px; background: var(--surface-2); }
+.om-kv { display: flex; align-items: center; gap: 8px; font-size: 11.5px; }
+.om-kv span { color: var(--text-2); }
+.om-kv b { margin-inline-start: auto; font-size: 11.5px; }
+.om-kv b.mono { font-family: ui-monospace, monospace; font-size: 10.5px; }
+.om-none { font-size: 11.5px; color: var(--text-2); line-height: 1.6; margin: 0; }
+.om-caps { display: flex; flex-wrap: wrap; gap: 5px; }
+.om-caps span { font-size: 10px; padding: 1px 8px; border-radius: 999px; color: var(--text-2);
+  border: 1px solid var(--line); background: var(--surface-2); }
+.om-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
+.om-lock { font-size: 11px; color: var(--text-2); }
+
+/* ---------- ניהול חיבורים ---------- */
+.om-panel { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 14px 16px; }
+.om-p-h { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 10px; }
+.om-p-h svg { width: 14px; height: 14px; color: var(--brand); }
+.om-p-h b { font-size: 13.5px; }
+.om-p-h small { font-size: 11px; color: var(--text-2); }
+.om-p-h.sub { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.om-tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+.om-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.om-tbl th { text-align: start; font-size: 10.5px; color: var(--text-2); padding: 9px 10px;
+  background: var(--surface-2); border-bottom: 1px solid var(--line); white-space: nowrap; }
+.om-tbl td { padding: 10px; border-bottom: 1px solid var(--border-2, var(--line)); white-space: nowrap; }
+.om-tbl tbody tr:last-child td { border-bottom: 0; }
+.om-row-acts { display: flex; gap: 5px; flex-wrap: wrap; }
+.om-hook { font-size: 10.5px; padding: 1px 8px; border-radius: 999px; }
+.om-hook.ok { color: var(--ok, #16a34a); background: color-mix(in srgb, var(--ok, #16a34a) 10%, transparent); }
+.om-hook.bad { color: var(--danger, #dc2626); background: color-mix(in srgb, var(--danger, #dc2626) 10%, transparent); }
+.om-empty { text-align: center; color: var(--text-2); padding: 16px; font-size: 12px; }
+.om-log { display: flex; flex-direction: column; gap: 5px; max-height: 260px; overflow-y: auto; }
+.om-log-i { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; padding: 8px 10px;
+  border-radius: 10px; background: var(--surface-2); font-size: 11.5px; }
+.om-log-i b { font-size: 12px; }
+.om-log-i small { margin-inline-start: auto; font-size: 10.5px; color: var(--text-2); }
+
+/* ---------- מודל ומחברים ---------- */
+.om-model { display: flex; flex-direction: column; gap: 4px; }
+.om-m-r { display: flex; gap: 10px; font-size: 11.5px; padding: 6px 9px; border-radius: 9px; background: var(--surface-2); }
+.om-m-r code { flex: 0 0 130px; font-family: ui-monospace, monospace; color: var(--brand); }
+.om-m-r span { color: var(--text-2); }
+.om-conn-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.om-conn { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 11px;
+  border: 1px solid var(--line); background: var(--surface); }
+.om-conn b { display: block; font-size: 12.5px; }
+.om-conn small { display: block; font-size: 10.5px; color: var(--text-2); }
+.om-code { margin: 12px 0 0; padding: 12px; border-radius: 11px; background: var(--surface-2);
+  font-family: ui-monospace, monospace; font-size: 11.5px; line-height: 1.7; direction: ltr; text-align: left;
+  overflow-x: auto; border: 1px solid var(--line); }
+.om-note { display: flex; align-items: flex-start; gap: 7px; font-size: 11.5px; color: var(--text-2);
+  line-height: 1.65; margin: 10px 0 0; }
+.om-note svg { width: 13px; height: 13px; flex: 0 0 auto; margin-top: 2px; color: var(--amber, #B7791F); }
+
+/* ---------- מסך ההרשאה וההגדרות ---------- */
+.om-auth-l { font-size: 12.5px; color: var(--text-2); line-height: 1.65; margin: 2px 0 10px; }
+.om-scopes { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 11px; }
+.om-scopes span { font-size: 10.5px; font-family: ui-monospace, monospace; padding: 2px 8px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--text-2); }
+.om-warn { display: flex; align-items: flex-start; gap: 7px; font-size: 11px; color: var(--amber, #B7791F);
+  line-height: 1.6; margin: 10px 0 0; }
+.om-warn svg { width: 12px; height: 12px; flex: 0 0 auto; margin-top: 2px; }
+.om-cfg-b { display: flex; flex-direction: column; gap: 12px; max-height: 58vh; overflow-y: auto; padding-inline-end: 2px; }
+.om-f { display: flex; flex-direction: column; gap: 5px; }
+.om-f > span { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-2); }
+.om-f > span svg { width: 12px; height: 12px; }
+.om-f2 { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.om-f2 .om-f { flex: 0 0 130px; }
+.om-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.om-chip { font: inherit; font-size: 11.5px; cursor: pointer; padding: 5px 11px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
+.om-chip.on { border-color: var(--brand); color: var(--brand); font-weight: 600;
+  background: color-mix(in srgb, var(--brand) 9%, transparent); }
+.om-chips.days .om-chip { min-width: 34px; text-align: center; }
+.om-hours { display: flex; align-items: center; gap: 8px; }
+.om-hours input { flex: 0 0 120px; }
+.om-hours span { font-size: 11.5px; color: var(--text-2); }
+.om-sw { display: flex; align-items: center; gap: 7px; font-size: 12px; }
+
+/* ---------- חיווי ברשימת השיחות ---------- */
+.om-src { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 24px 4px;
+  font-size: 11.5px; color: var(--text-2); }
+.om-src > svg { width: 13px; height: 13px; }
+.om-src-c { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; padding: 2px 9px;
+  border-radius: 999px; color: var(--ch); background: color-mix(in srgb, var(--ch) 11%, transparent); }
+.om-src-c svg { width: 11px; height: 11px; }
+.om-src-n { font-style: italic; }
+
+@media (max-width: 640px) { .om-tabs { margin-inline-start: 0; } .om-grid { grid-template-columns: 1fr; } }
