@@ -18,13 +18,15 @@
    ============================================================ */
 (function () {
 
+  /* "לא יודע" הוא נקודת הפתיחה — רוב הפניות מגיעות בלי החלטה,
+     ולכן הוא ראשון ברשימה וגם ברירת המחדל. */
   const MODES = [
+    { key: 'unknown', label: 'הלקוח לא יודע מה הוא רוצה', icon: 'search',
+      desc: 'מבררים קודם, ואז מציגים רק מה שמתאים' },
     { key: 'known', label: 'הלקוח יודע מה הוא רוצה', icon: 'target',
       desc: 'בוחרים מוצר, ואז בודקים התאמה' },
-    { key: 'unknown', label: 'הלקוח לא יודע', icon: 'search',
-      desc: 'מבררים קודם, ואז מציגים רק מה שמתאים' },
   ];
-  const modeOf = r => r && r.flowMode ? r.flowMode : (r && (r.services || []).length ? 'known' : '');
+  const modeOf = r => r && r.flowMode ? r.flowMode : (r && (r.services || []).length ? 'known' : 'unknown');
   function setMode(r, m) { r.flowMode = m; }
 
   /* סדר השלבים לפי המסלול */
@@ -155,6 +157,18 @@
       requestAnimationFrame(go); setTimeout(go, 16);
     });
   }
+  /* כותרת אחת לשני המסכים — בחירת המסלול + רצועת השלבים.
+     כשעוברים לקריטריונים החלק העליון נשאר, ולא "נעלם" באמצע. */
+  function headerHTML(r, cur) {
+    const mode = modeOf(r);
+    return `<div class="fl-gate">
+      <div class="fl-mode-h">${ic('bolt')} <b>מה הלקוח יודע?</b>
+        <small>זה קובע את סדר הבירור — ולכן גם מה מוצג לו.</small></div>
+      <div class="fl-modes">${MODES.map(m => `<button class="fl-mode ${mode === m.key ? 'on' : ''}" data-flmode="${m.key}">
+        ${ic(m.icon)}<b>${m.label}</b><small>${m.desc}</small></button>`).join('')}</div>
+      ${stripHTML(r, cur)}
+    </div>`;
+  }
   function stripHTML(r, cur) {
     if (jumpTo1) { const s = stepsOf(r)[0]; if (s) cur = s.key; }
     const st = stepsOf(r); if (!modeOf(r)) return '';
@@ -165,6 +179,25 @@
       return `<button class="fl-st ${cls}" data-flgo="${s.key}"><span class="fl-si">${done[s.key] && s.key !== cur ? ic('check') : ic(s.icon)}</span>
         <b>${s.label}</b><small>שלב ${i + 1}</small></button>`;
     }).join('<span class="fl-arr">' + ic('chevronL') + '</span>')}</div>`;
+  }
+  /* החלפת מסלול — אנימציה, ואז מעבר לשלב 1 החדש */
+  function bindModes(host, r, cur, rerender) {
+    $$('[data-flmode]', host).forEach(b => b.addEventListener('click', () => {
+      if (modeOf(r) === b.dataset.flmode) return;
+      const before = stripRects(host);
+      setMode(r, b.dataset.flmode);
+      jumpTo1 = true;
+      if (typeof rerender === 'function') rerender();
+      flipStrip(document.querySelector('#modal .needs-body') || document.querySelector('#modal .svc-sel'), before);
+      const first = stepsOf(r)[0];
+      setTimeout(() => {
+        jumpTo1 = false;
+        if (first && first.key === cur) return;                    // כבר במסך הנכון
+        if (first && first.key === 'crit') { const bf = snapshot(r);
+          if (typeof openNeedsClarify === 'function') openNeedsClarify(r, () => checkAfterCritChange(r, bf)); }
+        else if (first && first.key === 'svc') { if (typeof openServiceSelect === 'function') openServiceSelect(r); }
+      }, 360);
+    }));
   }
   function bindStrip(host, r, after) {
     $$('[data-flgo]', host).forEach(b => b.addEventListener('click', () => {
@@ -187,13 +220,7 @@
     const mode = modeOf(r), miss = reqMissing(r);
     const sel = (typeof svcSelState !== 'undefined' && svcSelState) ? svcSelState.sel : (r.services || []);
     const rd = sel.length ? readiness(Object.assign({}, r, { services: sel })) : null;
-    return `<div class="fl-gate">
-      <div class="fl-mode-h">${ic('bolt')} <b>מה הלקוח יודע?</b>
-        <small>זה קובע את סדר הבירור — ולכן גם מה מוצג לו.</small></div>
-      <div class="fl-modes">${MODES.map(m => `<button class="fl-mode ${mode === m.key ? 'on' : ''}" data-flmode="${m.key}">
-        ${ic(m.icon)}<b>${m.label}</b><small>${m.desc}</small></button>`).join('')}</div>
-      ${stripHTML(r, 'svc')}
-
+    return `${headerHTML(r, 'svc')}<div class="fl-gate gate-body">
       ${mode === 'unknown' && miss.length ? `<div class="fl-step now">
         <span class="fl-n">1</span>
         <div><b>קודם מבררים</b>
@@ -318,7 +345,7 @@
           const body = document.querySelector('#modal .svc-sel');
           if (!rec || !body || body.querySelector('.fl-gate')) return r;
           const d = document.createElement('div'); d.innerHTML = gateHTML(rec);
-          body.insertBefore(d.firstElementChild, body.firstChild);
+          while (d.lastElementChild) body.insertBefore(d.lastElementChild, body.firstChild);
 
           /* לקוח שלא יודע — המוצרים ננעלים עד שהחובה נענתה */
           const mode = modeOf(rec), miss = reqMissing(rec);
@@ -337,23 +364,7 @@
 
           const rr = () => renderServiceSelect();
           bindStrip(body, rec, rr);
-          $$('[data-flmode]', body).forEach(b => b.addEventListener('click', () => {
-            if (modeOf(rec) === b.dataset.flmode) return;
-            const before = stripRects(body);
-            setMode(rec, b.dataset.flmode);
-            jumpTo1 = true;
-            rr();
-            const host = document.querySelector('#modal .svc-sel');
-            flipStrip(host, before);
-            /* תמיד מתחילים משלב 1 החדש */
-            const first = stepsOf(rec)[0];
-            if (first && first.key === 'crit') setTimeout(() => {
-              jumpTo1 = false;
-              const bf = snapshot(rec);
-              if (typeof openNeedsClarify === 'function') openNeedsClarify(rec, () => { rr(); checkAfterCritChange(rec, bf); });
-            }, 360);
-            else setTimeout(() => { jumpTo1 = false; }, 400);
-          }));
+          bindModes(body, rec, 'svc', rr);
           $$('[data-flcrit]', body).forEach(b => b.addEventListener('click', () => {
             const before = snapshot(rec);
             if (typeof openNeedsClarify === 'function') openNeedsClarify(rec, () => { rr(); checkAfterCritChange(rec, before); });
@@ -383,41 +394,107 @@
           if (!body || !rec || body.querySelector('.fl-strip')) return out;
           const rd = readiness(rec);
           const d = document.createElement('div');
-          d.innerHTML = stripHTML(rec, 'crit') + ((rec.services || []).length ? `<div class="fl-ready ${rd.ok ? 'ok' : 'bad'}">
+          d.innerHTML = headerHTML(rec, 'crit') + ((rec.services || []).length ? `<div class="fl-ready ${rd.ok ? 'ok' : 'bad'}">
             ${ic(rd.ok ? 'check' : 'alert')}
             <div><b>${rd.ok ? (rd.slots > 0 ? 'יש מועדים שמתאימים לצירוף הזה' : 'אין חסימה — אפשר להמשיך לתיאום')
               : (rd.blame === 'product' ? 'המוצר שנבחר אינו מתאים ללקוח' : 'אין מועד פנוי בצירוף הקריטריונים')}</b>
             <small>${rd.ok ? 'המשך יפתח את מסך התיאום עם מועדים אמיתיים.'
               : esc((rd.reasons || []).map(x => x.label + ' — ' + x.det).join(' · ') || (rd.bad || []).map(x => x.why).join(' · '))}</small></div>
             ${!rd.ok && rd.blame === 'product' ? `<button class="btn sm" id="flToSvc">${ic('layers')} לבחירת מוצר מקביל</button>` : ''}</div>` : '');
-          while (d.firstChild) body.insertBefore(d.firstChild, body.firstChild);
+          while (d.lastChild) body.insertBefore(d.lastChild, body.firstChild);
           bindStrip(body, rec, () => openNeedsClarify(rec, done));
+          bindModes(body, rec, 'crit', () => openNeedsClarify(rec, done));
           const ts = document.getElementById('flToSvc');
           if (ts) ts.addEventListener('click', () => { if (typeof openServiceSelect === 'function') openServiceSelect(rec); });
+
+          /* "שמור והמשך" ממשיך לשלב הבא לפי הסדר — ולא יוצא מהמהלך */
+          const sv = document.getElementById('needsSave');
+          if (sv && !sv.__fl) {
+            const fresh = sv.cloneNode(true); fresh.__fl = true;
+            const steps = stepsOf(rec), i = steps.findIndex(s => s.key === 'crit');
+            const nxt = steps[i + 1] || steps[steps.length - 1];
+            fresh.innerHTML = `${ic('check')} שמור והמשך ל${nxt.key === 'svc' ? 'בחירת שירות / מוצר' : nxt.key === 'cal' ? 'תיאום' : 'המשך'}`;
+            sv.parentNode.replaceChild(fresh, sv);
+            fresh.addEventListener('click', () => {
+              const nt = document.getElementById('needsNoteM'); if (nt) rec.needs.note = nt.value;
+              const miss = reqMissing(rec);
+              if (miss.length) { toast('חסר קריטריון חובה: ' + miss.join(' · ')); return; }
+              if (typeof closeModal === 'function') closeModal();
+              if (typeof done === 'function') done();
+              setTimeout(() => {
+                if (nxt.key === 'svc') { if (typeof openServiceSelect === 'function') openServiceSelect(rec); return; }
+                if (nxt.key === 'cal') {
+                  const rd2 = readiness(rec);
+                  if (!rd2.ok) { toast(rd2.blame === 'product' ? 'המוצר שנבחר אינו מתאים — יש לבחור חלופה' : 'אין מועד בקריטריונים שנבחרו');
+                    if (typeof openServiceSelect === 'function') openServiceSelect(rec); return; }
+                  if (typeof openProposedTimes === 'function') openProposedTimes(rec);
+                }
+              }, 60);
+            });
+          }
         } catch (e) { console.error('[flow] needs', e); }
         return out;
       });
 
-      /* שלב בירור הצורך בתוך הליד — כפתור שפותח את החלון, כמו בבחירת
-         השירות. הטופס המלא חי בחלון אחד בלבד, שם הוא מסונן מול היומן. */
+      /* בירור הצורך ובחירת השירות הם מהלך אחד — ולכן שלב אחד בליד:
+         "התאמת שירות / מוצר", עם כפתור יחיד שפותח את החלון. */
+      const MERGE_CRIT = ['qualify', 'need', 'needs', 'classify'];
+      const MERGE_SVC = ['service', 'svc', 'services'];
+      if (typeof computeStages === 'function') CBX.wrap('flow', 'computeStages', o => function (r) {
+        const list = o.apply(this, arguments);
+        try {
+          const ci = list.findIndex(s => MERGE_CRIT.indexOf(s.key) >= 0);
+          const si = list.findIndex(s => MERGE_SVC.indexOf(s.key) >= 0);
+          if (ci < 0 || si < 0) return list;
+          const c = list[ci], s = list[si];
+          const both = [c, s];
+          const state = both.every(x => x.state === 'done') ? 'done'
+            : both.some(x => x.state === 'overdue') ? 'overdue'
+            : both.some(x => x.state === 'active') ? 'active'
+            : both.some(x => x.state === 'done') ? 'active' : 'todo';
+          const parts = both.map(x => x.result).filter(Boolean);
+          const merged = Object.assign({}, ci < si ? c : s, {
+            key: c.key, title: 'התאמת שירות / מוצר', state: state,
+            result: parts.length ? parts.join(' · ') : null,
+            noContent: state === 'done' && !parts.length,
+            idx: Math.min(c.idx, s.idx),
+          });
+          const out = list.filter((x, i) => i !== ci && i !== si);
+          out.splice(Math.min(ci, si), 0, merged);
+          return out;
+        } catch (e) { console.error('[flow] merge', e); return list; }
+      });
+
       if (typeof accBody === 'function') CBX.wrap('flow', 'accBody', o => function (s, r) {
         const k = s && s.key;
-        if (['qualify', 'need', 'needs', 'classify'].indexOf(k) < 0) return o.apply(this, arguments);
+        if (MERGE_CRIT.indexOf(k) < 0) return o.apply(this, arguments);
         const sum = (typeof needsSummary === 'function') ? needsSummary(r) : [];
         const miss = reqMissing(r);
+        const svcs = (r.services || []).map(x => (typeof cTreat === 'function' && cTreat(x)) ? cTreat(x).label : x);
+        const mode = modeOf(r);
         return `<div class="stage-needs fl-critstage">
-          <p class="needs-hint">${ic('bolt')} הקריטריונים נשאלים בחלון אחד — כך הבחירה נבדקת מול היומן בזמן אמת ולא נפתחות אפשרויות שאין להן מועד.</p>
-          ${sum.length ? `<div class="fl-sum">${sum.map(x => `<span class="fl-sumc">${ic('check')} ${esc(x)}</span>`).join('')}</div>`
-            : `<p class="fl-none">${ic('alert')} טרם נענו קריטריונים</p>`}
+          <p class="needs-hint">${ic('bolt')} הבירור והבחירה הם מהלך אחד — הקריטריונים מסננים את הקטלוג ואת היומן בזמן אמת,
+            כדי שלא ייבחר משהו שאין לו מועד.</p>
+          <div class="fl-mini">
+            <div class="fl-mini-r ${svcs.length ? 'ok' : ''}"><span>${ic('layers')} שירות / מוצר</span>
+              <b>${svcs.length ? esc(svcs.join(' · ')) : 'טרם נבחר'}</b></div>
+            <div class="fl-mini-r ${sum.length ? 'ok' : ''}"><span>${ic('settings')} קריטריונים</span>
+              <b>${sum.length ? esc(sum.join(' · ')) : 'טרם נענו'}</b></div>
+          </div>
           ${miss.length ? `<p class="fl-none bad">${ic('lock')} חסר לפני תיאום: ${esc(miss.join(' · '))}</p>` : ''}
           <button class="btn primary fl-openbtn" data-flopencrit="${esc(String(r.id))}">
-            ${ic('settings')} ${sum.length ? 'עדכון הקריטריונים' : 'לבירור הצורך'} ${ic('chevronL')}</button>
+            ${ic('tasks')} בחר שירות / מוצר ${ic('chevronL')}</button>
+          <small class="fl-modehint">${mode === 'known' ? ic('target') + ' המסלול: הלקוח יודע — שירות ואז קריטריונים'
+            : ic('search') + ' המסלול: הלקוח לא יודע — קריטריונים ואז שירות'}</small>
         </div>`;
       });
+      /* הכפתור פותח את המהלך בשלב 1 של המסלול הנוכחי */
       CBX.delegate('flow', '[data-flopencrit]', el => {
         const r = (typeof RECORDS !== 'undefined') ? RECORDS.find(x => String(x.id) === el.dataset.flopencrit) : null;
         if (!r) return;
         const before = snapshot(r);
+        const first = stepsOf(r)[0];
+        if (first && first.key === 'svc') { if (typeof openServiceSelect === 'function') openServiceSelect(r); return; }
         if (typeof openNeedsClarify === 'function')
           openNeedsClarify(r, () => { if (typeof renderDrawerTab === 'function') renderDrawerTab(r); checkAfterCritChange(r, before); });
       });

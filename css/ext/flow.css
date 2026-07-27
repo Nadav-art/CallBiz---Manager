@@ -155,3 +155,18 @@
   margin-top: 2px; opacity: .95; text-decoration: none; }
 .cbx-critfx .needs-opt.blocked { flex-direction: column; align-items: flex-start; text-align: start; }
 .cbx-critfx .needs-opt.blocked::after { inset-inline: 9px; top: 12px; }
+
+/* ---------- השלב המאוחד: התאמת שירות / מוצר ---------- */
+.fl-mini { display: flex; flex-direction: column; gap: 6px; margin: 9px 0 11px; }
+.fl-mini-r { display: flex; align-items: flex-start; gap: 9px; flex-wrap: wrap;
+  padding: 8px 11px; border-radius: 11px; border: 1px dashed var(--line); background: var(--surface); }
+.fl-mini-r span { display: inline-flex; align-items: center; gap: 5px; flex: 0 0 118px;
+  font-size: 11.5px; color: var(--text-2); }
+.fl-mini-r span svg { width: 12px; height: 12px; }
+.fl-mini-r b { flex: 1 1 120px; min-width: 0; font-size: 12.5px; color: var(--text-2); font-weight: 500; }
+.fl-mini-r.ok { border-style: solid; border-color: color-mix(in srgb, var(--ok, #16a34a) 32%, transparent); }
+.fl-mini-r.ok b { color: var(--text); font-weight: 600; }
+.fl-modehint { display: flex; align-items: center; gap: 5px; margin-top: 8px;
+  font-size: 11px; color: var(--text-2); }
+.fl-modehint svg { width: 12px; height: 12px; color: var(--brand); }
+.fl-gate.gate-body:empty { display: none; }
