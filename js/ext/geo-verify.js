@@ -31,12 +31,22 @@
       .replace(/["'״׳`]/g, '').replace(/[-–—]/g, ' ')
       .replace(/\s+/g, ' ')
       .replace(/^קרית /, 'קריית ')
+      /* כתיב מלא/חסר — "תקוה" ו"תקווה" הם אותו יישוב */
+      .replace(/וו/g, 'ו').replace(/יי/g, 'י')
       .toLowerCase();
   }
 
   function registry() {
-    const base = (typeof IL_CITIES !== 'undefined' ? IL_CITIES : []).map(c => ({
-      name: c.name, official: ALIAS[c.name] || c.name, region: c.region || '' }));
+    /* המרשם המורחב קודם — הוא נושא את הכתיב הרשמי; רשימת הדמו
+       מוסיפה רק את מה שאינו קיים בו. */
+    const base = (window.IL_CITIES_EXT || []).map(c => ({
+      name: c.name, official: c.official, region: c.region || '' }));
+    const seen = {}; base.forEach(c => { seen[norm(c.official)] = 1; });
+    (typeof IL_CITIES !== 'undefined' ? IL_CITIES : []).forEach(c => {
+      const off = ALIAS[c.name] || c.name;
+      if (seen[norm(off)]) return; seen[norm(off)] = 1;
+      base.push({ name: c.name, official: off, region: c.region || '' });
+    });
     /* כינויים שאינם ברשימה עצמה — כדי שהקלדה "ת״א" תמצא */
     Object.keys(ALIAS).forEach(k => {
       if (!base.some(x => norm(x.name) === norm(k))) base.push({ name: k, official: ALIAS[k], region: '', alias: true });
@@ -103,7 +113,8 @@
         if (b) b.addEventListener('click', () => { setVal(v.official); });
         return; }
       wrap.classList.add('warn');
-      flag.innerHTML = `${ic('alert')} לא נמצא במרשם — יישמר בדיוק כפי שהוקלד`;
+      flag.innerHTML = `${ic('alert')} לא נמצא ב${provider ? 'מקור החיצוני' : 'מרשם המקומי'}
+        (${registry().length} יישובים) — יישמר בדיוק כפי שהוקלד`;
     };
     const setVal = val => {
       inp.value = val; close(); paintFlag();

@@ -6075,6 +6075,15 @@ body:has(.cbc-wrap) { overflow: hidden; }
   .wf-meta { flex: 1 1 100%; }
 }
 
+/* בורר העובד יושב בשורת הלשוניות ולא תופס שורה משלו */
+.set-subs { align-items: center; }
+.set-subs .set-emp-bar { margin-inline-start: auto; margin-top: 0;
+  padding-top: 0; border-top: 0; }
+@media (max-width: 900px) {
+  .set-subs .set-emp-bar { margin-inline-start: 0; flex: 1 1 100%;
+    margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
+}
+
 </style>
   <style>
 /* ============================================================
@@ -7286,6 +7295,21 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 </style>
   <style>
 /* ============================================================
+   טוקנים חסרים — תיקון שורש
+   ------------------------------------------------------------
+   כל עיצוב ההרחבות נכתב מול --line / --ok / --danger, אבל הם לא
+   הוגדרו מעולם בערכת הצבעים. כשמשתנה CSS אינו קיים, ההצהרה כולה
+   נופלת — ולכן `border: 1px solid var(--line)` פשוט נעלם, וכל
+   הכרטיסים נראו "חיוורים" בלי מסגרות. כאן הם מוגדרים פעם אחת
+   כאליאס לטוקנים האמיתיים של המערכת.
+   ============================================================ */
+:root {
+  --line: var(--border);
+  --ok: #16A34A;
+  --danger: #DC2626;
+}
+
+/* ============================================================
    הרחבות זרימת התיאום — flow · critfx · coordx
    קובץ נפרד כדי שיהיה ניתן להסרה בלי לגעת בעיצוב הליבה.
    ============================================================ */
@@ -7458,6 +7482,63 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 #modal.fl-modal .modal-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
 #modal.fl-modal .modal-head, #modal.fl-modal .modal-foot { flex: 0 0 auto; }
 
+/* ---------- סימן שאלה על אפשרות נעולה + פופ-אפ ההסבר ---------- */
+.cbx-critfx .needs-opt.blocked { position: relative; padding-inline-end: 26px; }
+.cfx-q { position: absolute; inset-inline-end: 7px; top: 7px;
+  width: 15px; height: 15px; border-radius: 50%; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; line-height: 1;
+  color: var(--text-2); background: var(--surface); border: 1px solid var(--line); }
+.cfx-q:hover { color: var(--brand); border-color: var(--brand); }
+
+.cfx-tip { position: fixed; z-index: 620; width: min(280px, calc(100vw - 24px));
+  padding: 11px 12px; border-radius: 12px; background: var(--surface);
+  border: 1px solid var(--line); box-shadow: var(--shadow-lg);
+  animation: cfxIn .14s ease; }
+@keyframes cfxIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.cfx-tip-h { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.cfx-tip-h svg { width: 13px; height: 13px; color: var(--amber, #d97706); }
+.cfx-tip-h b { flex: 1 1 auto; font-size: 12.5px; }
+.cfx-tip-x { display: inline-flex; padding: 2px; border: 0; background: transparent;
+  cursor: pointer; color: var(--text-2); border-radius: 6px; }
+.cfx-tip-x svg { width: 12px; height: 12px; }
+.cfx-tip-x:hover { background: var(--surface-2); }
+.cfx-tip p { margin: 0; font-size: 11.5px; line-height: 1.65; color: var(--text-2); }
+
+/* ---------- כותרת המהלך: ניגודיות ברורה יותר ---------- */
+.fl-mode-h b { font-size: 13.5px; }
+.fl-modes { gap: 10px; margin-bottom: 14px; }
+.fl-mode { position: relative; border: 1.5px solid var(--line); background: var(--surface);
+  padding: 12px 13px; transition: border-color .14s, background .14s, box-shadow .14s; }
+.fl-mode b { color: var(--text); font-size: 13px; font-weight: 700; }
+.fl-mode small { color: var(--text-2); }
+.fl-mode svg { width: 17px; height: 17px; color: var(--text-2); }
+.fl-mode:hover { border-color: color-mix(in srgb, var(--brand) 50%, transparent); background: var(--surface-2); }
+.fl-mode.on { border-color: var(--brand); border-width: 1.5px;
+  background: color-mix(in srgb, var(--brand) 10%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 13%, transparent); }
+.fl-mode.on b { color: var(--brand); font-weight: 800; }
+.fl-mode.on small { color: color-mix(in srgb, var(--brand) 55%, var(--text-2)); }
+.fl-mode.on::after { content: '✓'; position: absolute; inset-inline-end: 11px; top: 11px;
+  width: 17px; height: 17px; border-radius: 50%; background: var(--brand); color: #fff;
+  font-size: 10px; line-height: 17px; text-align: center; font-weight: 700; }
+
+/* ---------- רצועת השלבים: קווים ברורים, טקסט כהה ---------- */
+.fl-st { border: 1.5px solid var(--line); padding: 10px 8px; }
+.fl-st b { color: var(--text); font-size: 12.5px; font-weight: 700; }
+.fl-st small { color: var(--text-3, var(--text-2)); }
+.fl-si svg { width: 16px; height: 16px; color: var(--text-2); }
+.fl-st.todo { opacity: 1; }
+.fl-st.todo b { color: var(--text-2); font-weight: 600; }
+.fl-st.done { border-color: color-mix(in srgb, var(--ok, #16a34a) 40%, transparent);
+  background: color-mix(in srgb, var(--ok, #16a34a) 6%, transparent); }
+.fl-st.done b { color: color-mix(in srgb, var(--ok, #16a34a) 75%, var(--text)); }
+.fl-strip .fl-st.now { border-color: var(--brand); border-width: 1.5px;
+  background: color-mix(in srgb, var(--brand) 10%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 13%, transparent); }
+.fl-st.now b { color: var(--brand); font-weight: 800; }
+.fl-arr svg { width: 14px; height: 14px; }
+
 </style>
   <style>
 /* ============================================================
@@ -7525,9 +7606,14 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 .bm-ok svg, .bm-bad svg { width: 11px; height: 11px; }
 .bm-disc { display: flex; gap: 6px; }
 .bm-disc input { flex: 1 1 auto; min-width: 0; }
-.bm-seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
-.bm-seg button { font: inherit; font-size: 12px; cursor: pointer; padding: 0 11px;
-  border: 0; background: var(--surface); color: var(--text-2); }
+/* המתג לא מתכווץ — אחרת שדה הסכום דוחק אותו והכפתור השני נחתך
+   מתוך overflow:hidden ונראה כאילו "אין ₪" */
+.bm-seg { display: inline-flex; flex: 0 0 auto; border: 1px solid var(--line);
+  border-radius: 9px; overflow: hidden; }
+.bm-seg button { flex: 0 0 auto; min-width: 40px; height: 36px; font: inherit; font-size: 13px;
+  font-weight: 600; cursor: pointer; padding: 0 12px; border: 0;
+  background: var(--surface); color: var(--text-2); }
+.bm-seg button + button { border-inline-start: 1px solid var(--line); }
 .bm-seg button.on { background: var(--brand); color: #fff; font-weight: 600; }
 .bm-tot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px;
   padding-top: 9px; border-top: 1px dashed var(--line); font-size: 12px; color: var(--text-2); }
@@ -12204,10 +12290,10 @@ function settingsHeader() {
       ${grp.items.length > 1 ? `<div class="set-subs">
         ${grp.items.map(i => `<button class="set-sub ${i.m === mode ? 'on' : ''}" data-setmode="${i.m}">
           ${ic(i.icon)}<span class="ss-t"><b>${i.label}</b><small>${i.desc}</small></span></button>`).join('')}
-      </div>` : ''}
-      ${mode === 'emp' ? `<div class="set-emp-bar">
-        <div class="emp-select"><span>עובד:</span><select id="empSelect">${empOpts}</select></div>
-        <button class="btn sm" id="addEmp">${ic('plus')} הוסף עובד</button>
+        ${mode === 'emp' ? `<div class="set-emp-bar">
+          <div class="emp-select"><span>עובד:</span><select id="empSelect">${empOpts}</select></div>
+          <button class="btn sm primary" id="addEmp">${ic('plus')} הוסף עובד</button>
+        </div>` : ''}
       </div>` : ''}
     </div>`;
 }
@@ -12632,7 +12718,7 @@ function branchTableHTML(branches) {
 function catFacts(t) {
   const f = [t.kind, `${t.dur} ד׳`];
   if (t.price) f.push(`${t.price} ₪`);
-  if (t.deposit) f.push(`מקדמה ${t.deposit}₪`);
+  if (t.deposit) f.push(`מקדמה ${t.deposit} ₪`);
   return f;
 }
 let catFilter = 'all', catSort = 'name';
@@ -19417,7 +19503,7 @@ function renderServiceSelect() {
               ${t.isExtension ? `<span class="svc-tag ext">${ic('layers')} הרחבה</span>` : ''}
               ${t.requiresMeeting ? `<span class="svc-tag meet">${ic('calendar')} פגישה</span>` : ''}
               ${t.requiresBilling ? `<span class="svc-tag bill">₪ סליקה</span>` : `<span class="svc-tag free">ללא סליקה</span>`}
-              ${t.deposit ? `<span class="svc-tag dep">מקדמה ${t.deposit}₪</span>` : ''}
+              ${t.deposit ? `<span class="svc-tag dep">מקדמה ${t.deposit} ₪</span>` : ''}
             </span>
             <button class="svc-cfg" data-svccfg="${t.key}" title="הגדרות השירות" aria-label="הגדרות">${ic('settings')}</button>
           </button>`;
@@ -19425,7 +19511,7 @@ function renderServiceSelect() {
       </div>
       ${sel.length ? `<div class="svc-summary">
         <div class="ss-route">${ic('bolt')} ניתוב אוטומטי: <b>${ROUTE_LBL[route]}</b></div>
-        <div class="ss-totals"><span>${sel.length} פריטים</span><span>${tot.dur} ד׳</span><span>${tot.price} ₪</span>${tot.deposit ? `<span>מקדמה ${tot.deposit}₪</span>` : ''}</div>
+        <div class="ss-totals"><span>${sel.length} פריטים</span><span>${tot.dur} ד׳</span><span>${tot.price} ₪</span>${tot.deposit ? `<span>מקדמה ${tot.deposit} ₪</span>` : ''}</div>
       </div>` : `<div class="svc-empty-hint">${ic('alert')} בחר שירות/מוצר אחד או יותר — המערכת תחליט אוטומטית אם להמשיך לתיאום, רכישה או שניהם.</div>`}
     </div>
     <div class="modal-foot svc-foot">
@@ -30968,7 +31054,7 @@ function openExtPanel() {
       q.opts.forEach(o => {
         /* נחסם כבר ע״י כלל קיים — לא משנים את ההחלטה, רק מציגים את
            הסיבה גם על השורה עצמה ולא רק ב-tooltip */
-        if (o.blocked) { locked++; if (!o.hint && o.why) o.hint = o.why; return; }
+        if (o.blocked) { locked++; if (!o.hint) o.hint = shortWhy(o.why); return; }
         if (!o.v || o.v === '__near') return;        // "אין העדפה" תמיד פתוח
         if (typeof CRIT_OTHER !== 'undefined' && o.v === CRIT_OTHER) return;
         const test = Object.assign({}, base); test[q.key] = o.v;
@@ -30981,14 +31067,14 @@ function openExtPanel() {
         o.blocked = true; o.noAvail = true; locked++;
         if (!standalone) {
           o.why = structuralWhy(q.key, o.v);
-          o.hint = o.why;
+          o.hint = shortWhy(o.why);
           return;
         }
         const cul = culprits(r, pool, test).filter(k => k !== q.key);
         if (cul.length) {
           const names = cul.map(k => `${labelOf(k)}: ${valLabel(k, base[k])}`);
           o.why = 'אין מועד פנוי בצירוף הזה · ייפתח אם משנים ' + names.join(' או ');
-          o.hint = 'לא מתאים ל' + cul.map(k => labelOf(k)).join(' / ') + ' שנבחר';
+          o.hint = 'לא מתאים לקריטריונים שנבחרו';
           cul.forEach(k => { if (hints.indexOf(k) < 0) hints.push(k); });
         } else {
           o.why = 'אין מועד פנוי ביומן לאפשרות הזו';
@@ -31002,6 +31088,16 @@ function openExtPanel() {
     return { qs: qs, locked: locked, hints: hints, base: base, dropped: dropped };
   }
 
+  /* בשורה עצמה — משפט אחד קצר. הפירוט המלא נפתח בסימן השאלה. */
+  function shortWhy(full) {
+    const t = String(full || '');
+    if (/סגור|כבוי|יומן פעיל/.test(t)) return 'הסניף סגור';
+    if (/אינו מספק|מטפל מוסמך|אין בסניף/.test(t)) return 'לא מתאים לשירות שנבחר';
+    if (/מגדר|מטפלת|מטפל גבר/.test(t)) return 'אין מטפל/ת בהעדפה שנבחרה';
+    if (/אין מועד/.test(t)) return 'אין מועד פנוי';
+    return 'לא מתאים לקריטריונים שנבחרו';
+  }
+
   /* חסימה מבנית — לא באשמת מה שנבחר, ולכן מנוסחת אחרת */
   function structuralWhy(key, v) {
     if (key === 'branch') {
@@ -31013,6 +31109,42 @@ function openExtPanel() {
     if (key === 'timeOfDay') return 'אין משבצות בשעות האלה באף סניף';
     if (key === 'gender') return 'אין מטפל/ת בהעדפה הזו עם יומן פעיל';
     return 'אין מועד ביומן לאפשרות הזו';
+  }
+
+  /* ---------- סימן שאלה + פופ-אפ צף עם ההסבר המלא ---------- */
+  function closeTip() { const t = document.getElementById('cfxTip'); if (t) t.remove(); }
+  function openTip(anchor, text, title) {
+    closeTip();
+    const t = document.createElement('div'); t.className = 'cfx-tip'; t.id = 'cfxTip';
+    t.innerHTML = `<div class="cfx-tip-h">${ic('lock')} <b>${esc(title || 'למה האפשרות נעולה')}</b>
+      <button class="cfx-tip-x" aria-label="סגור">${ic('close')}</button></div>
+      <p>${esc(text)}</p>`;
+    document.body.appendChild(t);
+    const rc = anchor.getBoundingClientRect();
+    const tw = t.offsetWidth || 260, th = t.offsetHeight || 90;
+    let left = Math.min(window.innerWidth - tw - 8, Math.max(8, rc.left + rc.width / 2 - tw / 2));
+    let top = rc.bottom + 8;
+    if (top + th > window.innerHeight - 8) top = Math.max(8, rc.top - th - 8);
+    t.style.left = left + 'px'; t.style.top = top + 'px';
+    t.querySelector('.cfx-tip-x').addEventListener('click', closeTip);
+    setTimeout(() => document.addEventListener('mousedown', function out(e) {
+      if (!e.target.closest('#cfxTip') && !e.target.closest('.cfx-q')) { closeTip(); document.removeEventListener('mousedown', out); }
+    }), 0);
+  }
+  /* מוסיפים את הסימן לכל אפשרות נעולה אחרי הרינדור */
+  function addQMarks(root) {
+    (root || document).querySelectorAll('.needs-opt.blocked').forEach(b => {
+      if (b.querySelector('.cfx-q')) return;
+      const why = b.dataset.nwhy || b.getAttribute('title'); if (!why) return;
+      b.removeAttribute('title');
+      const q = document.createElement('span');
+      q.className = 'cfx-q'; q.textContent = '?'; q.setAttribute('role', 'button');
+      q.setAttribute('aria-label', 'למה נעול');
+      const label = (b.childNodes[0] && b.childNodes[0].textContent || '').trim();
+      q.addEventListener('click', e => { e.preventDefault(); e.stopPropagation();
+        openTip(q, why, label || 'האפשרות נעולה'); });
+      b.appendChild(q);
+    });
   }
 
   let lastMark = null;
@@ -31054,6 +31186,7 @@ function openExtPanel() {
         const out = o.apply(this, arguments);
         try {
           const body = document.querySelector('#modal .needs-body');
+          if (body) addQMarks(body);
           const html = barHTML();
           if (!body || !html) return out;
           const d = document.createElement('div'); d.innerHTML = html;
@@ -31071,6 +31204,7 @@ function openExtPanel() {
             el.querySelectorAll('[data-cfxrel]').forEach(b => b.addEventListener('click', () => clear(b.dataset.cfxrel)));
             el.querySelectorAll('[data-cfxdrop]').forEach(b => b.addEventListener('click', () => clear(b.dataset.cfxdrop)));
           });
+          addQMarks(body);
         } catch (e) { console.error('[critfx] bar', e); }
         return out;
       });
@@ -31619,6 +31753,58 @@ function openExtPanel() {
 </script>
   <script>
 /* ============================================================
+   מרשם יישובים מורחב  ·  נלווה ל-geoverify
+   ------------------------------------------------------------
+   IL_CITIES שבמערכת הוא רשימת דמו של 38 יישובים — ולכן כל הקלדה
+   של יישוב אמיתי אחר נראתה כ"לא נמצא". כאן מרוכזת רשימת היישובים
+   העיקריים בישראל (עיריות, מועצות מקומיות ויישובים גדולים) עם
+   המחוז, כדי שההשלמה תזהה גם את מה שאינו בדמו.
+
+   זה עדיין מרשם *מקומי*, לא שירות חי. חיבור למקור אמת (Google
+   Places / data.gov.il) נעשה בשורה אחת:
+       GEOV.setProvider(async q => [...])
+   ============================================================ */
+(function () {
+  const Z = {
+    n: 'צפון', h: 'חיפה והקריות', s: 'שרון', m: 'מרכז', t: 'תל אביב והמרכז',
+    j: 'ירושלים והסביבה', sh: 'שפלה', d: 'דרום', e: 'יהודה ושומרון',
+  };
+  /* שם · מחוז — לפי חלוקת האזורים של המערכת */
+  const MORE = [
+    ['קריית שמונה', 'n'], ['מטולה', 'n'], ['צפת', 'n'], ['חצור הגלילית', 'n'], ['ראש פינה', 'n'],
+    ['טבריה', 'n'], ['מגדל העמק', 'n'], ['נצרת', 'n'], ['נוף הגליל', 'n'], ['עפולה', 'n'],
+    ['בית שאן', 'n'], ['כרמיאל', 'n'], ['מעלות-תרשיחא', 'n'], ['שלומי', 'n'], ['נהריה', 'n'],
+    ['עכו', 'n'], ['כפר יסיף', 'n'], ['סחנין', 'n'], ['שפרעם', 'n'], ['טמרה', 'n'],
+    ['יקנעם עילית', 'n'], ['טירת הכרמל', 'h'], ['נשר', 'h'], ['חיפה', 'h'],
+    ['קריית ביאליק', 'h'], ['קריית מוצקין', 'h'], ['קריית ים', 'h'], ['קריית אתא', 'h'],
+    ['קריית טבעון', 'h'], ['רכסים', 'h'], ['חדרה', 'h'], ['אור עקיבא', 'h'], ['פרדס חנה-כרכור', 'h'],
+    ['זכרון יעקב', 'h'], ['בנימינה-גבעת עדה', 'h'], ['קיסריה', 'h'], ['עתלית', 'h'],
+    ['נתניה', 's'], ['כפר יונה', 's'], ['אבן יהודה', 's'], ['תל מונד', 's'], ['קדימה-צורן', 's'],
+    ['פרדסיה', 's'], ['רעננה', 's'], ['הרצליה', 's'], ['כפר סבא', 's'], ['הוד השרון', 's'],
+    ['רמת השרון', 's'], ['שוהם', 's'], ['ראש העין', 's'], ['אלעד', 's'], ['טירה', 's'],
+    ['טייבה', 's'], ['קלנסווה', 's'], ['ג׳לג׳וליה', 's'], ['כפר קאסם', 's'],
+    ['תל אביב-יפו', 't'], ['רמת גן', 't'], ['גבעתיים', 't'], ['בני ברק', 't'], ['חולון', 't'],
+    ['בת ים', 't'], ['אור יהודה', 't'], ['יהוד-מונוסון', 't'], ['קריית אונו', 't'], ['גני תקווה', 't'],
+    ['סביון', 't'], ['גבעת שמואל', 't'], ['פתח תקווה', 't'], ['ראשון לציון', 't'],
+    ['רמלה', 'sh'], ['לוד', 'sh'], ['נס ציונה', 'sh'], ['רחובות', 'sh'], ['יבנה', 'sh'],
+    ['גדרה', 'sh'], ['מזכרת בתיה', 'sh'], ['קריית עקרון', 'sh'], ['באר יעקב', 'sh'],
+    ['מודיעין-מכבים-רעות', 'm'], ['מודיעין עילית', 'm'], ['שערי תקווה', 'e'], ['אריאל', 'e'],
+    ['מעלה אדומים', 'e'], ['ביתר עילית', 'e'], ['אפרת', 'e'], ['קרני שומרון', 'e'], ['אלקנה', 'e'],
+    ['ירושלים', 'j'], ['מבשרת ציון', 'j'], ['בית שמש', 'j'], ['אבו גוש', 'j'], ['צור הדסה', 'j'],
+    ['קריית יערים', 'j'], ['גבעת זאב', 'j'],
+    ['אשדוד', 'd'], ['אשקלון', 'd'], ['קריית מלאכי', 'd'], ['קריית גת', 'd'], ['שדרות', 'd'],
+    ['נתיבות', 'd'], ['אופקים', 'd'], ['רהט', 'd'], ['באר שבע', 'd'], ['להבים', 'd'],
+    ['עומר', 'd'], ['מיתר', 'd'], ['ירוחם', 'd'], ['דימונה', 'd'], ['ערד', 'd'],
+    ['מצפה רמון', 'd'], ['אילת', 'd'], ['שגב שלום', 'd'], ['תל שבע', 'd'],
+  ];
+
+  window.IL_CITIES_EXT = MORE.map(x => ({ name: x[0], official: x[0], region: Z[x[1]] || '' }));
+
+})();
+
+</script>
+  <script>
+/* ============================================================
    הרחבה: אימות יישוב תוך כדי הקלדה  ·  key = 'geoverify'
    ------------------------------------------------------------
    רשימה נפתחת קבועה לא מתאימה — מקלידים, והמערכת מציעה ומאמתת
@@ -31651,12 +31837,22 @@ function openExtPanel() {
       .replace(/["'״׳`]/g, '').replace(/[-–—]/g, ' ')
       .replace(/\s+/g, ' ')
       .replace(/^קרית /, 'קריית ')
+      /* כתיב מלא/חסר — "תקוה" ו"תקווה" הם אותו יישוב */
+      .replace(/וו/g, 'ו').replace(/יי/g, 'י')
       .toLowerCase();
   }
 
   function registry() {
-    const base = (typeof IL_CITIES !== 'undefined' ? IL_CITIES : []).map(c => ({
-      name: c.name, official: ALIAS[c.name] || c.name, region: c.region || '' }));
+    /* המרשם המורחב קודם — הוא נושא את הכתיב הרשמי; רשימת הדמו
+       מוסיפה רק את מה שאינו קיים בו. */
+    const base = (window.IL_CITIES_EXT || []).map(c => ({
+      name: c.name, official: c.official, region: c.region || '' }));
+    const seen = {}; base.forEach(c => { seen[norm(c.official)] = 1; });
+    (typeof IL_CITIES !== 'undefined' ? IL_CITIES : []).forEach(c => {
+      const off = ALIAS[c.name] || c.name;
+      if (seen[norm(off)]) return; seen[norm(off)] = 1;
+      base.push({ name: c.name, official: off, region: c.region || '' });
+    });
     /* כינויים שאינם ברשימה עצמה — כדי שהקלדה "ת״א" תמצא */
     Object.keys(ALIAS).forEach(k => {
       if (!base.some(x => norm(x.name) === norm(k))) base.push({ name: k, official: ALIAS[k], region: '', alias: true });
@@ -31723,7 +31919,8 @@ function openExtPanel() {
         if (b) b.addEventListener('click', () => { setVal(v.official); });
         return; }
       wrap.classList.add('warn');
-      flag.innerHTML = `${ic('alert')} לא נמצא במרשם — יישמר בדיוק כפי שהוקלד`;
+      flag.innerHTML = `${ic('alert')} לא נמצא ב${provider ? 'מקור החיצוני' : 'מרשם המקומי'}
+        (${registry().length} יישובים) — יישמר בדיוק כפי שהוקלד`;
     };
     const setVal = val => {
       inp.value = val; close(); paintFlag();

@@ -107,7 +107,7 @@
       q.opts.forEach(o => {
         /* נחסם כבר ע״י כלל קיים — לא משנים את ההחלטה, רק מציגים את
            הסיבה גם על השורה עצמה ולא רק ב-tooltip */
-        if (o.blocked) { locked++; if (!o.hint && o.why) o.hint = o.why; return; }
+        if (o.blocked) { locked++; if (!o.hint) o.hint = shortWhy(o.why); return; }
         if (!o.v || o.v === '__near') return;        // "אין העדפה" תמיד פתוח
         if (typeof CRIT_OTHER !== 'undefined' && o.v === CRIT_OTHER) return;
         const test = Object.assign({}, base); test[q.key] = o.v;
@@ -120,14 +120,14 @@
         o.blocked = true; o.noAvail = true; locked++;
         if (!standalone) {
           o.why = structuralWhy(q.key, o.v);
-          o.hint = o.why;
+          o.hint = shortWhy(o.why);
           return;
         }
         const cul = culprits(r, pool, test).filter(k => k !== q.key);
         if (cul.length) {
           const names = cul.map(k => `${labelOf(k)}: ${valLabel(k, base[k])}`);
           o.why = 'אין מועד פנוי בצירוף הזה · ייפתח אם משנים ' + names.join(' או ');
-          o.hint = 'לא מתאים ל' + cul.map(k => labelOf(k)).join(' / ') + ' שנבחר';
+          o.hint = 'לא מתאים לקריטריונים שנבחרו';
           cul.forEach(k => { if (hints.indexOf(k) < 0) hints.push(k); });
         } else {
           o.why = 'אין מועד פנוי ביומן לאפשרות הזו';
@@ -141,6 +141,16 @@
     return { qs: qs, locked: locked, hints: hints, base: base, dropped: dropped };
   }
 
+  /* בשורה עצמה — משפט אחד קצר. הפירוט המלא נפתח בסימן השאלה. */
+  function shortWhy(full) {
+    const t = String(full || '');
+    if (/סגור|כבוי|יומן פעיל/.test(t)) return 'הסניף סגור';
+    if (/אינו מספק|מטפל מוסמך|אין בסניף/.test(t)) return 'לא מתאים לשירות שנבחר';
+    if (/מגדר|מטפלת|מטפל גבר/.test(t)) return 'אין מטפל/ת בהעדפה שנבחרה';
+    if (/אין מועד/.test(t)) return 'אין מועד פנוי';
+    return 'לא מתאים לקריטריונים שנבחרו';
+  }
+
   /* חסימה מבנית — לא באשמת מה שנבחר, ולכן מנוסחת אחרת */
   function structuralWhy(key, v) {
     if (key === 'branch') {
@@ -152,6 +162,42 @@
     if (key === 'timeOfDay') return 'אין משבצות בשעות האלה באף סניף';
     if (key === 'gender') return 'אין מטפל/ת בהעדפה הזו עם יומן פעיל';
     return 'אין מועד ביומן לאפשרות הזו';
+  }
+
+  /* ---------- סימן שאלה + פופ-אפ צף עם ההסבר המלא ---------- */
+  function closeTip() { const t = document.getElementById('cfxTip'); if (t) t.remove(); }
+  function openTip(anchor, text, title) {
+    closeTip();
+    const t = document.createElement('div'); t.className = 'cfx-tip'; t.id = 'cfxTip';
+    t.innerHTML = `<div class="cfx-tip-h">${ic('lock')} <b>${esc(title || 'למה האפשרות נעולה')}</b>
+      <button class="cfx-tip-x" aria-label="סגור">${ic('close')}</button></div>
+      <p>${esc(text)}</p>`;
+    document.body.appendChild(t);
+    const rc = anchor.getBoundingClientRect();
+    const tw = t.offsetWidth || 260, th = t.offsetHeight || 90;
+    let left = Math.min(window.innerWidth - tw - 8, Math.max(8, rc.left + rc.width / 2 - tw / 2));
+    let top = rc.bottom + 8;
+    if (top + th > window.innerHeight - 8) top = Math.max(8, rc.top - th - 8);
+    t.style.left = left + 'px'; t.style.top = top + 'px';
+    t.querySelector('.cfx-tip-x').addEventListener('click', closeTip);
+    setTimeout(() => document.addEventListener('mousedown', function out(e) {
+      if (!e.target.closest('#cfxTip') && !e.target.closest('.cfx-q')) { closeTip(); document.removeEventListener('mousedown', out); }
+    }), 0);
+  }
+  /* מוסיפים את הסימן לכל אפשרות נעולה אחרי הרינדור */
+  function addQMarks(root) {
+    (root || document).querySelectorAll('.needs-opt.blocked').forEach(b => {
+      if (b.querySelector('.cfx-q')) return;
+      const why = b.dataset.nwhy || b.getAttribute('title'); if (!why) return;
+      b.removeAttribute('title');
+      const q = document.createElement('span');
+      q.className = 'cfx-q'; q.textContent = '?'; q.setAttribute('role', 'button');
+      q.setAttribute('aria-label', 'למה נעול');
+      const label = (b.childNodes[0] && b.childNodes[0].textContent || '').trim();
+      q.addEventListener('click', e => { e.preventDefault(); e.stopPropagation();
+        openTip(q, why, label || 'האפשרות נעולה'); });
+      b.appendChild(q);
+    });
   }
 
   let lastMark = null;
@@ -193,6 +239,7 @@
         const out = o.apply(this, arguments);
         try {
           const body = document.querySelector('#modal .needs-body');
+          if (body) addQMarks(body);
           const html = barHTML();
           if (!body || !html) return out;
           const d = document.createElement('div'); d.innerHTML = html;
@@ -210,6 +257,7 @@
             el.querySelectorAll('[data-cfxrel]').forEach(b => b.addEventListener('click', () => clear(b.dataset.cfxrel)));
             el.querySelectorAll('[data-cfxdrop]').forEach(b => b.addEventListener('click', () => clear(b.dataset.cfxdrop)));
           });
+          addQMarks(body);
         } catch (e) { console.error('[critfx] bar', e); }
         return out;
       });

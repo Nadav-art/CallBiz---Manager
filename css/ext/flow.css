@@ -1,4 +1,19 @@
 /* ============================================================
+   טוקנים חסרים — תיקון שורש
+   ------------------------------------------------------------
+   כל עיצוב ההרחבות נכתב מול --line / --ok / --danger, אבל הם לא
+   הוגדרו מעולם בערכת הצבעים. כשמשתנה CSS אינו קיים, ההצהרה כולה
+   נופלת — ולכן `border: 1px solid var(--line)` פשוט נעלם, וכל
+   הכרטיסים נראו "חיוורים" בלי מסגרות. כאן הם מוגדרים פעם אחת
+   כאליאס לטוקנים האמיתיים של המערכת.
+   ============================================================ */
+:root {
+  --line: var(--border);
+  --ok: #16A34A;
+  --danger: #DC2626;
+}
+
+/* ============================================================
    הרחבות זרימת התיאום — flow · critfx · coordx
    קובץ נפרד כדי שיהיה ניתן להסרה בלי לגעת בעיצוב הליבה.
    ============================================================ */
@@ -170,3 +185,60 @@
 #modal.fl-modal { display: flex; flex-direction: column; }
 #modal.fl-modal .modal-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
 #modal.fl-modal .modal-head, #modal.fl-modal .modal-foot { flex: 0 0 auto; }
+
+/* ---------- סימן שאלה על אפשרות נעולה + פופ-אפ ההסבר ---------- */
+.cbx-critfx .needs-opt.blocked { position: relative; padding-inline-end: 26px; }
+.cfx-q { position: absolute; inset-inline-end: 7px; top: 7px;
+  width: 15px; height: 15px; border-radius: 50%; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; line-height: 1;
+  color: var(--text-2); background: var(--surface); border: 1px solid var(--line); }
+.cfx-q:hover { color: var(--brand); border-color: var(--brand); }
+
+.cfx-tip { position: fixed; z-index: 620; width: min(280px, calc(100vw - 24px));
+  padding: 11px 12px; border-radius: 12px; background: var(--surface);
+  border: 1px solid var(--line); box-shadow: var(--shadow-lg);
+  animation: cfxIn .14s ease; }
+@keyframes cfxIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.cfx-tip-h { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.cfx-tip-h svg { width: 13px; height: 13px; color: var(--amber, #d97706); }
+.cfx-tip-h b { flex: 1 1 auto; font-size: 12.5px; }
+.cfx-tip-x { display: inline-flex; padding: 2px; border: 0; background: transparent;
+  cursor: pointer; color: var(--text-2); border-radius: 6px; }
+.cfx-tip-x svg { width: 12px; height: 12px; }
+.cfx-tip-x:hover { background: var(--surface-2); }
+.cfx-tip p { margin: 0; font-size: 11.5px; line-height: 1.65; color: var(--text-2); }
+
+/* ---------- כותרת המהלך: ניגודיות ברורה יותר ---------- */
+.fl-mode-h b { font-size: 13.5px; }
+.fl-modes { gap: 10px; margin-bottom: 14px; }
+.fl-mode { position: relative; border: 1.5px solid var(--line); background: var(--surface);
+  padding: 12px 13px; transition: border-color .14s, background .14s, box-shadow .14s; }
+.fl-mode b { color: var(--text); font-size: 13px; font-weight: 700; }
+.fl-mode small { color: var(--text-2); }
+.fl-mode svg { width: 17px; height: 17px; color: var(--text-2); }
+.fl-mode:hover { border-color: color-mix(in srgb, var(--brand) 50%, transparent); background: var(--surface-2); }
+.fl-mode.on { border-color: var(--brand); border-width: 1.5px;
+  background: color-mix(in srgb, var(--brand) 10%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 13%, transparent); }
+.fl-mode.on b { color: var(--brand); font-weight: 800; }
+.fl-mode.on small { color: color-mix(in srgb, var(--brand) 55%, var(--text-2)); }
+.fl-mode.on::after { content: '✓'; position: absolute; inset-inline-end: 11px; top: 11px;
+  width: 17px; height: 17px; border-radius: 50%; background: var(--brand); color: #fff;
+  font-size: 10px; line-height: 17px; text-align: center; font-weight: 700; }
+
+/* ---------- רצועת השלבים: קווים ברורים, טקסט כהה ---------- */
+.fl-st { border: 1.5px solid var(--line); padding: 10px 8px; }
+.fl-st b { color: var(--text); font-size: 12.5px; font-weight: 700; }
+.fl-st small { color: var(--text-3, var(--text-2)); }
+.fl-si svg { width: 16px; height: 16px; color: var(--text-2); }
+.fl-st.todo { opacity: 1; }
+.fl-st.todo b { color: var(--text-2); font-weight: 600; }
+.fl-st.done { border-color: color-mix(in srgb, var(--ok, #16a34a) 40%, transparent);
+  background: color-mix(in srgb, var(--ok, #16a34a) 6%, transparent); }
+.fl-st.done b { color: color-mix(in srgb, var(--ok, #16a34a) 75%, var(--text)); }
+.fl-strip .fl-st.now { border-color: var(--brand); border-width: 1.5px;
+  background: color-mix(in srgb, var(--brand) 10%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 13%, transparent); }
+.fl-st.now b { color: var(--brand); font-weight: 800; }
+.fl-arr svg { width: 14px; height: 14px; }

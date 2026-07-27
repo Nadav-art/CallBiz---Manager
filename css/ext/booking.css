@@ -63,9 +63,14 @@
 .bm-ok svg, .bm-bad svg { width: 11px; height: 11px; }
 .bm-disc { display: flex; gap: 6px; }
 .bm-disc input { flex: 1 1 auto; min-width: 0; }
-.bm-seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
-.bm-seg button { font: inherit; font-size: 12px; cursor: pointer; padding: 0 11px;
-  border: 0; background: var(--surface); color: var(--text-2); }
+/* המתג לא מתכווץ — אחרת שדה הסכום דוחק אותו והכפתור השני נחתך
+   מתוך overflow:hidden ונראה כאילו "אין ₪" */
+.bm-seg { display: inline-flex; flex: 0 0 auto; border: 1px solid var(--line);
+  border-radius: 9px; overflow: hidden; }
+.bm-seg button { flex: 0 0 auto; min-width: 40px; height: 36px; font: inherit; font-size: 13px;
+  font-weight: 600; cursor: pointer; padding: 0 12px; border: 0;
+  background: var(--surface); color: var(--text-2); }
+.bm-seg button + button { border-inline-start: 1px solid var(--line); }
 .bm-seg button.on { background: var(--brand); color: #fff; font-weight: 600; }
 .bm-tot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px;
   padding-top: 9px; border-top: 1px dashed var(--line); font-size: 12px; color: var(--text-2); }

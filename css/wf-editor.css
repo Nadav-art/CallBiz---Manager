@@ -86,3 +86,12 @@
   .wf-stage { gap: 7px; }
   .wf-meta { flex: 1 1 100%; }
 }
+
+/* בורר העובד יושב בשורת הלשוניות ולא תופס שורה משלו */
+.set-subs { align-items: center; }
+.set-subs .set-emp-bar { margin-inline-start: auto; margin-top: 0;
+  padding-top: 0; border-top: 0; }
+@media (max-width: 900px) {
+  .set-subs .set-emp-bar { margin-inline-start: 0; flex: 1 1 100%;
+    margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
+}

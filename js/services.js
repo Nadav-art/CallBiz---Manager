@@ -163,7 +163,7 @@ function renderServiceSelect() {
               ${t.isExtension ? `<span class="svc-tag ext">${ic('layers')} הרחבה</span>` : ''}
               ${t.requiresMeeting ? `<span class="svc-tag meet">${ic('calendar')} פגישה</span>` : ''}
               ${t.requiresBilling ? `<span class="svc-tag bill">₪ סליקה</span>` : `<span class="svc-tag free">ללא סליקה</span>`}
-              ${t.deposit ? `<span class="svc-tag dep">מקדמה ${t.deposit}₪</span>` : ''}
+              ${t.deposit ? `<span class="svc-tag dep">מקדמה ${t.deposit} ₪</span>` : ''}
             </span>
             <button class="svc-cfg" data-svccfg="${t.key}" title="הגדרות השירות" aria-label="הגדרות">${ic('settings')}</button>
           </button>`;
@@ -171,7 +171,7 @@ function renderServiceSelect() {
       </div>
       ${sel.length ? `<div class="svc-summary">
         <div class="ss-route">${ic('bolt')} ניתוב אוטומטי: <b>${ROUTE_LBL[route]}</b></div>
-        <div class="ss-totals"><span>${sel.length} פריטים</span><span>${tot.dur} ד׳</span><span>${tot.price} ₪</span>${tot.deposit ? `<span>מקדמה ${tot.deposit}₪</span>` : ''}</div>
+        <div class="ss-totals"><span>${sel.length} פריטים</span><span>${tot.dur} ד׳</span><span>${tot.price} ₪</span>${tot.deposit ? `<span>מקדמה ${tot.deposit} ₪</span>` : ''}</div>
       </div>` : `<div class="svc-empty-hint">${ic('alert')} בחר שירות/מוצר אחד או יותר — המערכת תחליט אוטומטית אם להמשיך לתיאום, רכישה או שניהם.</div>`}
     </div>
     <div class="modal-foot svc-foot">

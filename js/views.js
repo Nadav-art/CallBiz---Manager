@@ -369,10 +369,10 @@ function settingsHeader() {
       ${grp.items.length > 1 ? `<div class="set-subs">
         ${grp.items.map(i => `<button class="set-sub ${i.m === mode ? 'on' : ''}" data-setmode="${i.m}">
           ${ic(i.icon)}<span class="ss-t"><b>${i.label}</b><small>${i.desc}</small></span></button>`).join('')}
-      </div>` : ''}
-      ${mode === 'emp' ? `<div class="set-emp-bar">
-        <div class="emp-select"><span>עובד:</span><select id="empSelect">${empOpts}</select></div>
-        <button class="btn sm" id="addEmp">${ic('plus')} הוסף עובד</button>
+        ${mode === 'emp' ? `<div class="set-emp-bar">
+          <div class="emp-select"><span>עובד:</span><select id="empSelect">${empOpts}</select></div>
+          <button class="btn sm primary" id="addEmp">${ic('plus')} הוסף עובד</button>
+        </div>` : ''}
       </div>` : ''}
     </div>`;
 }
@@ -797,7 +797,7 @@ function branchTableHTML(branches) {
 function catFacts(t) {
   const f = [t.kind, `${t.dur} ד׳`];
   if (t.price) f.push(`${t.price} ₪`);
-  if (t.deposit) f.push(`מקדמה ${t.deposit}₪`);
+  if (t.deposit) f.push(`מקדמה ${t.deposit} ₪`);
   return f;
 }
 let catFilter = 'all', catSort = 'name';
