@@ -39,10 +39,16 @@ function ctTermScope(t) {
 /* התנאים שחלים על ליד מסוים (ואם ידוע — גם על סוג ההסכם) */
 function ctSvcTermsFor(lead, contract) {
   const svcs = (lead && lead.services) || [];
-  const type = contract && contract.type;
+  const type = contract && contract.type, cid = contract && contract.id;
   return CT_SVC_TERMS.filter(t => t.on !== false)
+    /* היקף לפי תבניות ספציפיות — ריק = כל התבניות */
+    .filter(t => !(t.ctIds || []).length || !cid || t.ctIds.indexOf(cid) >= 0)
     .filter(t => !(t.types || []).length || !type || t.types.indexOf(type) >= 0)
     .filter(t => !(t.svcs || []).length || t.svcs.some(k => svcs.indexOf(k) >= 0));
+}
+/* התנאים שחלים על תבנית מסוימת, בלי קשר לליד */
+function ctTermsOfContract(cid) {
+  return CT_SVC_TERMS.filter(t => !(t.ctIds || []).length || t.ctIds.indexOf(cid) >= 0);
 }
 /* בפורמט שמערכת הסעיפים יודעת לצרוך (src פנימי · def כותרת ללקוח · text נוסח) */
 function ctSvcTermsRaw(lead, contract) {
@@ -56,7 +62,12 @@ function ctSvcTermsRaw(lead, contract) {
 /* ---------------- ניהול הספרייה ---------------- */
 let ctTermEdit = null;   // התנאי שנמצא בעריכה, או null
 
-function openSvcTermsPanel(onDone) {
+function openSvcTermsPanel(onDone, ctx) {
+  /* ctx.contractId — נפתח מתוך תבנית מסוימת: מה שנוסף נשמר לה בלבד.
+     בלי ctx — נפתח מהמסך הראשי: אפשר לבחור על אילו תבניות זה חל. */
+  const CTX = ctx || {};
+  const CT = (typeof CONTRACT_TEMPLATES !== 'undefined') ? CONTRACT_TEMPLATES : [];
+  const inCt = CTX.contractId ? (CT.find(c => c.id === CTX.contractId) || null) : null;
   const old = document.getElementById('svcTermsPanel'); if (old) old.remove();
   const w = document.createElement('div'); w.className = 'cbc-wrap'; w.id = 'svcTermsPanel';
   const treats = (typeof COORD_TREATMENTS !== 'undefined') ? COORD_TREATMENTS : [];
@@ -66,14 +77,29 @@ function openSvcTermsPanel(onDone) {
     const e = ctTermEdit;
     w.innerHTML = `<div class="cbc-box st-box">
       <div class="cbc-head"><span class="cbc-ic">${ic('docs')}</span>
-        <b>תנאים קבועים בהסכם</b></div>
-      <p class="st-lead">התנאים הקצרים שחייבים להופיע בכל הסכם — ביטול, אחריות, איחור, תוקף מחיר.
-        מגדירים אותם פעם אחת כאן והם נכנסים לכל הסכם אוטומטית.
+        <b>סעיפים, תנאים והערות להסכם</b>
+        ${inCt ? `<span class="st-scope-tag">${esc(inCt.name)}</span>` : '<span class="st-scope-tag all">כל התבניות</span>'}</div>
+      <p class="st-lead">${inCt
+        ? 'מה שתוסיפו כאן יישמר <b>לתבנית הזו בלבד</b>, באופן קבוע, ויופיע בכל הסכם שיופק ממנה.'
+        : 'מה שתוסיפו כאן חל על <b>כל התבניות</b> — או רק על אלה שתבחרו.'}
         <b>תנאי נעול</b> לא ניתן לשינוי או להסרה בעסקה בודדת מחלון הצעת המחיר.
-        הנוסח המשפטי המלא נשאר בתבנית ההסכם; מה שהסניף והשירות מוסיפים ממשיך להתווסף בנפרד.</p>
+        הנוסח המשפטי המלא נשאר בתבנית ההסכם.</p>
+
+      ${(function () {
+        /* מה שהמערכת אוספת לבד — שירות, סניף, הכנה. תצוגה בלבד. */
+        const lead = (typeof RECORDS !== 'undefined') ? RECORDS[0] : null;
+        const auto = (typeof ctCollectedTerms === 'function') ? ctCollectedTerms(lead, false)
+          .filter(x => !/^svcterm/.test(x.key)) : [];
+        if (!auto.length) return '';
+        return `<details class="st-auto"><summary>${ic('bolt')} <b>נאסף אוטומטית מהמערכת</b>
+          <small>${auto.length} סעיפים — משירות, מסניף ומהנחיות. מתעדכנים לבד.</small></summary>
+          <div class="st-auto-l">${auto.map(x => `<div class="st-auto-i">
+            <b>${esc(x.title)}</b><span>${esc(x.text)}</span><i>${esc(x.src)}</i></div>`).join('')}</div>
+        </details>`;
+      })()}
 
       <div class="st-list">
-        ${CT_SVC_TERMS.length ? CT_SVC_TERMS.map(t => { const sc = ctTermScope(t); return `
+        ${(function () { const LIST = inCt ? ctTermsOfContract(inCt.id) : CT_SVC_TERMS; return LIST.length ? LIST.map(t => { const sc = ctTermScope(t); return `
           <div class="st-item ${t.on === false ? 'off' : ''}">
             <div class="st-item-top">
               <b>${esc(t.title)}</b>
@@ -89,7 +115,7 @@ function openSvcTermsPanel(onDone) {
             <div class="st-scope"><span class="st-tag">${ic('layers')} ${esc(sc.svc)}</span>
               <span class="st-tag dim">${ic('docs')} ${esc(sc.type)}</span></div>
           </div>`; }).join('')
-        : `<p class="st-empty">${ic('alert')} עדיין לא הוגדרו תנאים נלווים.</p>`}
+        : `<p class="st-empty">${ic('alert')} עדיין לא הוגדרו תנאים${inCt ? ' לתבנית הזו' : ''}.</p>`; })()}
       </div>
 
       <div class="st-form">
@@ -105,6 +131,12 @@ function openSvcTermsPanel(onDone) {
             ${treats.map(t => `<button class="st-chip ${(((e && e.svcs) || []).indexOf(t.key) >= 0) ? 'on' : ''}" data-stsvc="${t.key}">${esc(t.label)}</button>`).join('')}
           </div></div>
 
+        ${inCt ? `<div class="st-inct">${ic('lock')} התנאי יישמר ל<b>${esc(inCt.name)}</b> בלבד</div>`
+          : `<div class="st-f"><span>על אילו תבניות חוזה?</span>
+            <div class="st-chips">
+              <button class="st-chip ${!((e && e.ctIds) || []).length ? 'on' : ''}" data-stct="">כל התבניות</button>
+              ${CT.map(c => `<button class="st-chip ${(((e && e.ctIds) || []).indexOf(c.id) >= 0) ? 'on' : ''}" data-stct="${esc(String(c.id))}">${esc(c.name)}</button>`).join('')}
+            </div></div>`}
         <div class="st-f"><span>על אילו סוגי הסכם?</span>
           <div class="st-chips">
             <button class="st-chip ${!((e && e.types) || []).length ? 'on' : ''}" data-sttype="">כל סוגי ההסכם</button>
@@ -125,7 +157,8 @@ function openSvcTermsPanel(onDone) {
 
     /* ------- קישורים ------- */
     const draft = () => {
-      if (!ctTermEdit) ctTermEdit = { id: '', title: '', text: '', svcs: [], types: [], on: true };
+      if (!ctTermEdit) ctTermEdit = { id: '', title: '', text: '', svcs: [], types: [], on: true,
+        ctIds: inCt ? [inCt.id] : [] };
       const ti = $('#stTitle', w), tx = $('#stText', w), lk = $('#stLock', w);
       if (ti) ctTermEdit.title = ti.value; if (tx) ctTermEdit.text = tx.value;
       if (lk) ctTermEdit.locked = lk.checked;
@@ -134,6 +167,12 @@ function openSvcTermsPanel(onDone) {
     $$('[data-stsvc]', w).forEach(b => b.addEventListener('click', () => {
       const d = draft(), k = b.dataset.stsvc;
       if (!k) d.svcs = []; else { const i = d.svcs.indexOf(k); if (i >= 0) d.svcs.splice(i, 1); else d.svcs.push(k); }
+      render();
+    }));
+    $$('[data-stct]', w).forEach(b => b.addEventListener('click', () => {
+      const d = draft(), k = b.dataset.stct;
+      d.ctIds = d.ctIds || [];
+      if (!k) d.ctIds = []; else { const i2 = d.ctIds.indexOf(k); if (i2 >= 0) d.ctIds.splice(i2, 1); else d.ctIds.push(k); }
       render();
     }));
     $$('[data-sttype]', w).forEach(b => b.addEventListener('click', () => {
@@ -163,10 +202,12 @@ function openSvcTermsPanel(onDone) {
       if (!(d.title || '').trim() || !(d.text || '').trim()) { toast('נא למלא כותרת ונוסח'); return; }
       if (d.id) {
         const t = CT_SVC_TERMS.find(x => x.id === d.id);
-        if (t) Object.assign(t, { title: d.title.trim(), text: d.text.trim(), svcs: d.svcs, types: d.types, locked: d.locked !== false });
+        if (t) Object.assign(t, { title: d.title.trim(), text: d.text.trim(), svcs: d.svcs, types: d.types,
+          ctIds: inCt ? [inCt.id] : (d.ctIds || []), locked: d.locked !== false });
         toast('התנאי עודכן ✓');
       } else {
-        CT_SVC_TERMS.push({ id: 'ct' + (Date.parse('2024-05-23') + CT_SVC_TERMS.length * 7 + CT_SVC_TERMS.length), title: d.title.trim(), text: d.text.trim(), svcs: d.svcs, types: d.types, on: true, locked: d.locked !== false });
+        CT_SVC_TERMS.push({ id: 'ct' + (Date.parse('2024-05-23') + CT_SVC_TERMS.length * 7 + CT_SVC_TERMS.length), title: d.title.trim(), text: d.text.trim(), svcs: d.svcs, types: d.types, ctIds: inCt ? [inCt.id] : (d.ctIds || []),
+          on: true, locked: d.locked !== false });
         toast('התנאי נוסף ✓');
       }
       ctSvcTermsSave(); ctTermEdit = null; render();
@@ -193,9 +234,15 @@ function openSvcTermsPanel(onDone) {
   if (window.__ctTermsBound) return; window.__ctTermsBound = true;
   document.addEventListener('click', e => {
     const t = e.target; if (!t || !t.closest) return;
-    if (t.closest('#ctSvcTerms') || t.closest('#ctOpenTerms')) {
+    if (t.closest('#ctSvcTerms')) {                 /* מהמסך הראשי — כל התבניות */
       e.preventDefault(); e.stopPropagation();
       if (typeof openSvcTermsPanel === 'function') openSvcTermsPanel();
+      return;
+    }
+    if (t.closest('#ctOpenTerms')) {                 /* מתוך תבנית — לתבנית הזו בלבד */
+      e.preventDefault(); e.stopPropagation();
+      const cid = (typeof contractDraft !== 'undefined' && contractDraft) ? contractDraft.id : null;
+      if (typeof openSvcTermsPanel === 'function') openSvcTermsPanel(null, { contractId: cid });
     }
   });
 })();

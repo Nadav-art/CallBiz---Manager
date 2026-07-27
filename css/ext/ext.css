@@ -1096,3 +1096,31 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 .sc-enf b { display: block; font-size: 12.5px; }
 .sc-enf small { display: block; font-size: 11px; color: var(--text-2); margin-top: 2px; }
 .cb-mobile .rp-in-b { grid-template-columns: 1fr; }
+
+/* טבלת מלאי — שורה לחיצה וסניפים שלא מתפוצצים */
+.inv-viewbar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 11px;
+  padding: 9px 12px; border-radius: 11px; background: var(--surface-2); }
+.inv-vb-l { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-2); }
+.inv-vb-l svg { width: 13px; height: 13px; }
+.inv-vb-n { width: auto; min-width: 108px; }
+.inv-vb-note { font-size: 11px; color: var(--text-3); margin-inline-start: auto; }
+.inv-rows tbody tr.inv-row { cursor: pointer; }
+.inv-rows tbody tr.inv-row:hover { background: color-mix(in srgb, var(--brand) 5%, transparent); }
+.inv-rows tbody tr.inv-row.open { background: color-mix(in srgb, var(--brand) 7%, transparent); }
+.inv-br-cell { white-space: nowrap; }
+.inv-bq { display: inline-flex; align-items: baseline; gap: 5px; font-size: 11.5px; padding: 2px 9px;
+  border-radius: 999px; background: var(--surface-2); color: var(--text-2); margin-inline-end: 4px; }
+.inv-bq b { font-size: 12.5px; color: var(--text); }
+.inv-bq.low { background: color-mix(in srgb, #e5a13d 16%, transparent); color: #9c6a14; }
+.inv-bq.low b { color: #9c6a14; }
+.inv-more { font: inherit; font-size: 11px; padding: 2px 9px; border-radius: 999px; cursor: pointer;
+  border: 1px dashed var(--line); background: none; color: var(--brand); }
+.inv-expand td { background: var(--surface-2); }
+.inv-exp-h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; margin-bottom: 8px; }
+.inv-exp-h span { font-size: 11px; color: var(--text-2); }
+.inv-exp-l { display: flex; gap: 5px; flex-wrap: wrap; max-height: 132px; overflow-y: auto;
+  -webkit-overflow-scrolling: touch; padding: 2px; }
+.inv-acts .btn { white-space: nowrap; }
+.inv-switch .inv-back { margin-inline-start: auto; }
+.cb-mobile .inv-viewbar { flex-direction: column; align-items: stretch; }
+.cb-mobile .inv-vb-note { margin-inline-start: 0; }

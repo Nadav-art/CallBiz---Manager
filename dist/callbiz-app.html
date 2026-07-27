@@ -4416,6 +4416,21 @@ html:not(.cb-mobile) #proposePanel.open {
 .clause-ro b { display: block; font-size: 12.5px; margin-bottom: 3px; }
 .clause-ro span { font-size: 12px; color: var(--text-2); line-height: 1.55; }
 
+.st-scope-tag { font-size: 10.5px; font-weight: 700; padding: 2px 9px; border-radius: 999px;
+  background: color-mix(in srgb, var(--brand) 13%, transparent); color: var(--brand); margin-inline-start: 8px; }
+.st-scope-tag.all { background: var(--surface-2); color: var(--text-2); }
+.st-auto { margin: 0 0 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+.st-auto summary { padding: 11px 13px; cursor: pointer; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-size: 12.5px; }
+.st-auto summary small { flex: 1 1 100%; font-size: 11px; color: var(--text-2); font-weight: 400; }
+.st-auto-l { padding: 0 13px 12px; display: flex; flex-direction: column; gap: 8px; }
+.st-auto-i { padding: 9px 11px; border-radius: 10px; background: var(--surface); }
+.st-auto-i b { display: block; font-size: 12.5px; }
+.st-auto-i span { display: block; font-size: 11.5px; color: var(--text-2); line-height: 1.55; margin-top: 2px; }
+.st-auto-i i { display: block; font-style: normal; font-size: 10.5px; color: var(--text-3); margin-top: 4px; }
+.st-inct { display: flex; align-items: center; gap: 6px; padding: 9px 11px; border-radius: 10px;
+  background: color-mix(in srgb, var(--brand) 8%, transparent); font-size: 12px; }
+.st-inct svg { width: 13px; height: 13px; color: var(--brand); }
+
 </style>
   <style>
 /* ===== קריטריונים: היקף וכללים (criteria-rules.js) ===== */
@@ -6977,6 +6992,75 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 .cb-mobile .terr-deliv { grid-template-columns: 1fr; }
 .cb-mobile .terr-dv-b { grid-template-columns: 1fr; }
 .cb-mobile .terr-modes { grid-template-columns: 1fr; }
+
+/* תדירות רכישה — בתוך כרטיס הפריט */
+.rp-inline { margin-top: 14px; padding: 12px; border: 1px dashed var(--line); border-radius: 12px; background: var(--surface-2); }
+.rp-inline.on { border-style: solid; border-color: color-mix(in srgb, var(--brand) 30%, transparent);
+  background: color-mix(in srgb, var(--brand) 5%, var(--surface)); }
+.rp-in-h { display: flex; align-items: flex-start; gap: 9px; cursor: pointer; }
+.rp-in-h > span { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.rp-in-h svg { width: 15px; height: 15px; color: var(--brand); }
+.rp-in-h b { font-size: 12.5px; }
+.rp-in-h small { flex: 1 1 100%; font-size: 11px; color: var(--text-2); line-height: 1.55; }
+.rp-in-b { display: grid; grid-template-columns: 130px 1fr; gap: 9px; margin-top: 11px; padding-top: 10px;
+  border-top: 1px solid var(--line); }
+.rp-in-note { grid-column: 1 / -1; display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--text-3); }
+.rp-in-note svg { width: 12px; height: 12px; }
+
+/* היקף אחריות */
+.sc-card { margin-top: 16px; }
+.sc-ro { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 3px 10px; border-radius: 999px;
+  background: var(--surface-2); color: var(--text-2); }
+.sc-ro svg { width: 12px; height: 12px; }
+.sc-axis { margin-bottom: 16px; }
+.sc-a-h { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-size: 12.5px; margin-bottom: 8px; }
+.sc-a-h svg { width: 14px; height: 14px; color: var(--text-3); }
+.sc-a-h small { flex: 1 1 100%; font-size: 11px; color: var(--text-2); font-weight: 400; line-height: 1.5; }
+.sc-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+  background: color-mix(in srgb, var(--brand) 13%, transparent); color: var(--brand); }
+.sc-chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.sc-chips .fx-chip:disabled { cursor: default; opacity: .8; }
+.sc-all { font-size: 11px; color: var(--text-3); }
+.sc-effect { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 13px; border-radius: 12px;
+  background: var(--surface-2); margin-top: 6px; }
+.sc-effect.on { background: color-mix(in srgb, #e5a13d 8%, transparent); }
+.sc-effect svg { width: 15px; height: 15px; color: var(--text-2); }
+.sc-effect.on svg { color: #b9761c; }
+.sc-effect b { font-size: 12.5px; }
+.sc-effect small { flex: 1 1 100%; font-size: 11px; color: var(--text-2); }
+.sc-enf { display: flex; align-items: flex-start; gap: 9px; margin-top: 12px; padding: 11px 12px;
+  border: 1px solid var(--line); border-radius: 11px; cursor: pointer; }
+.sc-enf b { display: block; font-size: 12.5px; }
+.sc-enf small { display: block; font-size: 11px; color: var(--text-2); margin-top: 2px; }
+.cb-mobile .rp-in-b { grid-template-columns: 1fr; }
+
+/* טבלת מלאי — שורה לחיצה וסניפים שלא מתפוצצים */
+.inv-viewbar { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 11px;
+  padding: 9px 12px; border-radius: 11px; background: var(--surface-2); }
+.inv-vb-l { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-2); }
+.inv-vb-l svg { width: 13px; height: 13px; }
+.inv-vb-n { width: auto; min-width: 108px; }
+.inv-vb-note { font-size: 11px; color: var(--text-3); margin-inline-start: auto; }
+.inv-rows tbody tr.inv-row { cursor: pointer; }
+.inv-rows tbody tr.inv-row:hover { background: color-mix(in srgb, var(--brand) 5%, transparent); }
+.inv-rows tbody tr.inv-row.open { background: color-mix(in srgb, var(--brand) 7%, transparent); }
+.inv-br-cell { white-space: nowrap; }
+.inv-bq { display: inline-flex; align-items: baseline; gap: 5px; font-size: 11.5px; padding: 2px 9px;
+  border-radius: 999px; background: var(--surface-2); color: var(--text-2); margin-inline-end: 4px; }
+.inv-bq b { font-size: 12.5px; color: var(--text); }
+.inv-bq.low { background: color-mix(in srgb, #e5a13d 16%, transparent); color: #9c6a14; }
+.inv-bq.low b { color: #9c6a14; }
+.inv-more { font: inherit; font-size: 11px; padding: 2px 9px; border-radius: 999px; cursor: pointer;
+  border: 1px dashed var(--line); background: none; color: var(--brand); }
+.inv-expand td { background: var(--surface-2); }
+.inv-exp-h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; margin-bottom: 8px; }
+.inv-exp-h span { font-size: 11px; color: var(--text-2); }
+.inv-exp-l { display: flex; gap: 5px; flex-wrap: wrap; max-height: 132px; overflow-y: auto;
+  -webkit-overflow-scrolling: touch; padding: 2px; }
+.inv-acts .btn { white-space: nowrap; }
+.inv-switch .inv-back { margin-inline-start: auto; }
+.cb-mobile .inv-viewbar { flex-direction: column; align-items: stretch; }
+.cb-mobile .inv-vb-note { margin-inline-start: 0; }
 
 </style>
 </head>
@@ -15245,10 +15329,16 @@ function ctTermScope(t) {
 /* התנאים שחלים על ליד מסוים (ואם ידוע — גם על סוג ההסכם) */
 function ctSvcTermsFor(lead, contract) {
   const svcs = (lead && lead.services) || [];
-  const type = contract && contract.type;
+  const type = contract && contract.type, cid = contract && contract.id;
   return CT_SVC_TERMS.filter(t => t.on !== false)
+    /* היקף לפי תבניות ספציפיות — ריק = כל התבניות */
+    .filter(t => !(t.ctIds || []).length || !cid || t.ctIds.indexOf(cid) >= 0)
     .filter(t => !(t.types || []).length || !type || t.types.indexOf(type) >= 0)
     .filter(t => !(t.svcs || []).length || t.svcs.some(k => svcs.indexOf(k) >= 0));
+}
+/* התנאים שחלים על תבנית מסוימת, בלי קשר לליד */
+function ctTermsOfContract(cid) {
+  return CT_SVC_TERMS.filter(t => !(t.ctIds || []).length || t.ctIds.indexOf(cid) >= 0);
 }
 /* בפורמט שמערכת הסעיפים יודעת לצרוך (src פנימי · def כותרת ללקוח · text נוסח) */
 function ctSvcTermsRaw(lead, contract) {
@@ -15262,7 +15352,12 @@ function ctSvcTermsRaw(lead, contract) {
 /* ---------------- ניהול הספרייה ---------------- */
 let ctTermEdit = null;   // התנאי שנמצא בעריכה, או null
 
-function openSvcTermsPanel(onDone) {
+function openSvcTermsPanel(onDone, ctx) {
+  /* ctx.contractId — נפתח מתוך תבנית מסוימת: מה שנוסף נשמר לה בלבד.
+     בלי ctx — נפתח מהמסך הראשי: אפשר לבחור על אילו תבניות זה חל. */
+  const CTX = ctx || {};
+  const CT = (typeof CONTRACT_TEMPLATES !== 'undefined') ? CONTRACT_TEMPLATES : [];
+  const inCt = CTX.contractId ? (CT.find(c => c.id === CTX.contractId) || null) : null;
   const old = document.getElementById('svcTermsPanel'); if (old) old.remove();
   const w = document.createElement('div'); w.className = 'cbc-wrap'; w.id = 'svcTermsPanel';
   const treats = (typeof COORD_TREATMENTS !== 'undefined') ? COORD_TREATMENTS : [];
@@ -15272,14 +15367,29 @@ function openSvcTermsPanel(onDone) {
     const e = ctTermEdit;
     w.innerHTML = `<div class="cbc-box st-box">
       <div class="cbc-head"><span class="cbc-ic">${ic('docs')}</span>
-        <b>תנאים קבועים בהסכם</b></div>
-      <p class="st-lead">התנאים הקצרים שחייבים להופיע בכל הסכם — ביטול, אחריות, איחור, תוקף מחיר.
-        מגדירים אותם פעם אחת כאן והם נכנסים לכל הסכם אוטומטית.
+        <b>סעיפים, תנאים והערות להסכם</b>
+        ${inCt ? `<span class="st-scope-tag">${esc(inCt.name)}</span>` : '<span class="st-scope-tag all">כל התבניות</span>'}</div>
+      <p class="st-lead">${inCt
+        ? 'מה שתוסיפו כאן יישמר <b>לתבנית הזו בלבד</b>, באופן קבוע, ויופיע בכל הסכם שיופק ממנה.'
+        : 'מה שתוסיפו כאן חל על <b>כל התבניות</b> — או רק על אלה שתבחרו.'}
         <b>תנאי נעול</b> לא ניתן לשינוי או להסרה בעסקה בודדת מחלון הצעת המחיר.
-        הנוסח המשפטי המלא נשאר בתבנית ההסכם; מה שהסניף והשירות מוסיפים ממשיך להתווסף בנפרד.</p>
+        הנוסח המשפטי המלא נשאר בתבנית ההסכם.</p>
+
+      ${(function () {
+        /* מה שהמערכת אוספת לבד — שירות, סניף, הכנה. תצוגה בלבד. */
+        const lead = (typeof RECORDS !== 'undefined') ? RECORDS[0] : null;
+        const auto = (typeof ctCollectedTerms === 'function') ? ctCollectedTerms(lead, false)
+          .filter(x => !/^svcterm/.test(x.key)) : [];
+        if (!auto.length) return '';
+        return `<details class="st-auto"><summary>${ic('bolt')} <b>נאסף אוטומטית מהמערכת</b>
+          <small>${auto.length} סעיפים — משירות, מסניף ומהנחיות. מתעדכנים לבד.</small></summary>
+          <div class="st-auto-l">${auto.map(x => `<div class="st-auto-i">
+            <b>${esc(x.title)}</b><span>${esc(x.text)}</span><i>${esc(x.src)}</i></div>`).join('')}</div>
+        </details>`;
+      })()}
 
       <div class="st-list">
-        ${CT_SVC_TERMS.length ? CT_SVC_TERMS.map(t => { const sc = ctTermScope(t); return `
+        ${(function () { const LIST = inCt ? ctTermsOfContract(inCt.id) : CT_SVC_TERMS; return LIST.length ? LIST.map(t => { const sc = ctTermScope(t); return `
           <div class="st-item ${t.on === false ? 'off' : ''}">
             <div class="st-item-top">
               <b>${esc(t.title)}</b>
@@ -15295,7 +15405,7 @@ function openSvcTermsPanel(onDone) {
             <div class="st-scope"><span class="st-tag">${ic('layers')} ${esc(sc.svc)}</span>
               <span class="st-tag dim">${ic('docs')} ${esc(sc.type)}</span></div>
           </div>`; }).join('')
-        : `<p class="st-empty">${ic('alert')} עדיין לא הוגדרו תנאים נלווים.</p>`}
+        : `<p class="st-empty">${ic('alert')} עדיין לא הוגדרו תנאים${inCt ? ' לתבנית הזו' : ''}.</p>`; })()}
       </div>
 
       <div class="st-form">
@@ -15311,6 +15421,12 @@ function openSvcTermsPanel(onDone) {
             ${treats.map(t => `<button class="st-chip ${(((e && e.svcs) || []).indexOf(t.key) >= 0) ? 'on' : ''}" data-stsvc="${t.key}">${esc(t.label)}</button>`).join('')}
           </div></div>
 
+        ${inCt ? `<div class="st-inct">${ic('lock')} התנאי יישמר ל<b>${esc(inCt.name)}</b> בלבד</div>`
+          : `<div class="st-f"><span>על אילו תבניות חוזה?</span>
+            <div class="st-chips">
+              <button class="st-chip ${!((e && e.ctIds) || []).length ? 'on' : ''}" data-stct="">כל התבניות</button>
+              ${CT.map(c => `<button class="st-chip ${(((e && e.ctIds) || []).indexOf(c.id) >= 0) ? 'on' : ''}" data-stct="${esc(String(c.id))}">${esc(c.name)}</button>`).join('')}
+            </div></div>`}
         <div class="st-f"><span>על אילו סוגי הסכם?</span>
           <div class="st-chips">
             <button class="st-chip ${!((e && e.types) || []).length ? 'on' : ''}" data-sttype="">כל סוגי ההסכם</button>
@@ -15331,7 +15447,8 @@ function openSvcTermsPanel(onDone) {
 
     /* ------- קישורים ------- */
     const draft = () => {
-      if (!ctTermEdit) ctTermEdit = { id: '', title: '', text: '', svcs: [], types: [], on: true };
+      if (!ctTermEdit) ctTermEdit = { id: '', title: '', text: '', svcs: [], types: [], on: true,
+        ctIds: inCt ? [inCt.id] : [] };
       const ti = $('#stTitle', w), tx = $('#stText', w), lk = $('#stLock', w);
       if (ti) ctTermEdit.title = ti.value; if (tx) ctTermEdit.text = tx.value;
       if (lk) ctTermEdit.locked = lk.checked;
@@ -15340,6 +15457,12 @@ function openSvcTermsPanel(onDone) {
     $$('[data-stsvc]', w).forEach(b => b.addEventListener('click', () => {
       const d = draft(), k = b.dataset.stsvc;
       if (!k) d.svcs = []; else { const i = d.svcs.indexOf(k); if (i >= 0) d.svcs.splice(i, 1); else d.svcs.push(k); }
+      render();
+    }));
+    $$('[data-stct]', w).forEach(b => b.addEventListener('click', () => {
+      const d = draft(), k = b.dataset.stct;
+      d.ctIds = d.ctIds || [];
+      if (!k) d.ctIds = []; else { const i2 = d.ctIds.indexOf(k); if (i2 >= 0) d.ctIds.splice(i2, 1); else d.ctIds.push(k); }
       render();
     }));
     $$('[data-sttype]', w).forEach(b => b.addEventListener('click', () => {
@@ -15369,10 +15492,12 @@ function openSvcTermsPanel(onDone) {
       if (!(d.title || '').trim() || !(d.text || '').trim()) { toast('נא למלא כותרת ונוסח'); return; }
       if (d.id) {
         const t = CT_SVC_TERMS.find(x => x.id === d.id);
-        if (t) Object.assign(t, { title: d.title.trim(), text: d.text.trim(), svcs: d.svcs, types: d.types, locked: d.locked !== false });
+        if (t) Object.assign(t, { title: d.title.trim(), text: d.text.trim(), svcs: d.svcs, types: d.types,
+          ctIds: inCt ? [inCt.id] : (d.ctIds || []), locked: d.locked !== false });
         toast('התנאי עודכן ✓');
       } else {
-        CT_SVC_TERMS.push({ id: 'ct' + (Date.parse('2024-05-23') + CT_SVC_TERMS.length * 7 + CT_SVC_TERMS.length), title: d.title.trim(), text: d.text.trim(), svcs: d.svcs, types: d.types, on: true, locked: d.locked !== false });
+        CT_SVC_TERMS.push({ id: 'ct' + (Date.parse('2024-05-23') + CT_SVC_TERMS.length * 7 + CT_SVC_TERMS.length), title: d.title.trim(), text: d.text.trim(), svcs: d.svcs, types: d.types, ctIds: inCt ? [inCt.id] : (d.ctIds || []),
+          on: true, locked: d.locked !== false });
         toast('התנאי נוסף ✓');
       }
       ctSvcTermsSave(); ctTermEdit = null; render();
@@ -15399,9 +15524,15 @@ function openSvcTermsPanel(onDone) {
   if (window.__ctTermsBound) return; window.__ctTermsBound = true;
   document.addEventListener('click', e => {
     const t = e.target; if (!t || !t.closest) return;
-    if (t.closest('#ctSvcTerms') || t.closest('#ctOpenTerms')) {
+    if (t.closest('#ctSvcTerms')) {                 /* מהמסך הראשי — כל התבניות */
       e.preventDefault(); e.stopPropagation();
       if (typeof openSvcTermsPanel === 'function') openSvcTermsPanel();
+      return;
+    }
+    if (t.closest('#ctOpenTerms')) {                 /* מתוך תבנית — לתבנית הזו בלבד */
+      e.preventDefault(); e.stopPropagation();
+      const cid = (typeof contractDraft !== 'undefined' && contractDraft) ? contractDraft.id : null;
+      if (typeof openSvcTermsPanel === 'function') openSvcTermsPanel(null, { contractId: cid });
     }
   });
 })();
@@ -23163,33 +23294,56 @@ function openExtPanel() {
   };
 })();
 
-/* כניסה לפאנל — נוספת לתחתית מסך ההגדרות, בלי לגעת בקוד ההגדרות */
-document.addEventListener('click', e => {
-  const t = e.target; if (!t || !t.closest) return;
-  if (t.closest('#cbxOpen')) { e.preventDefault(); openExtPanel(); return; }
-  /* רשת ביטחון לכרטיסי הקטלוג: המאזין המקורי קורא ל-stopPropagation,
-     ולכן אם הוא פעל — השורה הזו לא תרוץ כלל. היא נכנסת לפעולה רק
-     כשהצומת הוחלף והמאזין אבד, מצב שקורה במגע. */
-  const card = t.closest('[data-catcfg]');
-  if (card && typeof openCatalogItemEditor === 'function') openCatalogItemEditor(card.dataset.catcfg);
-});
+/* ============================================================
+   כניסה למסך ההרחבות — מקום אחד בלבד, בקבוצת "הגדרות מנהל".
+   הכרטיס הקודם נדבק לתחתית כל מסך הגדרות והיה רק רעש.
+   ============================================================ */
 (function () {
-  if (typeof renderSettingsView !== 'function') return;
-  const orig = renderSettingsView;
-  window.renderSettingsView = function () {
-    const r = orig.apply(this, arguments);
-    const host = document.getElementById('viewHost');
-    if (host && !host.querySelector('.cbx-entry')) {
-      const d = document.createElement('div'); d.className = 'cbx-entry';
-      /* הכרטיס כולו לחיץ — במסך צר הכפתור נדחק לשורה שנייה ונחתך,
-         ואז נראה כאילו "לא נפתח". */
-      d.setAttribute('role', 'button'); d.setAttribute('tabindex', '0'); d.id = 'cbxOpen';
-      d.innerHTML = `${ic('layers')} <b>הרחבות המערכת</b>
-        <small>${CBX.mods.filter(m => CBX.isOn(m.key)).length} מתוך ${CBX.mods.length} פעילות</small>
-        <span class="btn sm cbx-go">${ic('chevronL')} נהל</span>`;
-      host.appendChild(d);
-    }
-    return r;
+  if (typeof SET_GROUPS === 'undefined' || typeof applySetMode !== 'function') return;
+  let extMode = false;
+  const g = SET_GROUPS.find(x => x.key === 'manage');
+  if (g && !g.items.some(i2 => i2.m === 'cbxExt'))
+    g.items.push({ m: 'cbxExt', label: 'הרחבות המערכת', icon: 'layers', desc: 'הפעלה וכיבוי של מודולים' });
+  const origApply = applySetMode;
+  window.applySetMode = function (m) { extMode = m === 'cbxExt'; return origApply.apply(this, arguments); };
+  if (typeof currentSetModeKey === 'function') {
+    const origCur = currentSetModeKey;
+    window.currentSetModeKey = function () { return extMode ? 'cbxExt' : origCur.apply(this, arguments); };
+  }
+  if (typeof renderSettingsView === 'function') {
+    const origRender = renderSettingsView;
+    window.renderSettingsView = function () {
+      if (!extMode) return origRender.apply(this, arguments);
+      document.getElementById('viewHost').innerHTML =
+        (typeof settingsHeader === 'function' ? settingsHeader() : '') + extScreenHTML();
+      if (typeof bindSettingsHeader === 'function') bindSettingsHeader();
+      extScreenBind();
+    };
+  }
+  window.extScreenHTML = function () {
+    const on = CBX.mods.filter(m => CBX.isOn(m.key)).length;
+    return `<div class="bill-wrap">
+      <div class="inv-kpis">
+        <div class="inv-kpi"><b>${on}</b><small>הרחבות פעילות</small></div>
+        <div class="inv-kpi"><b>${CBX.mods.length - on}</b><small>כבויות</small></div>
+        <div class="inv-kpi"><b>${CBX.mods.length}</b><small>סה״כ מודולים</small></div>
+      </div>
+      <p class="cbx-lead">כל הרחבה היא מודול עצמאי שלא נוגע בקוד הליבה. כיבוי מחזיר את המערכת
+        בדיוק למצב שלפניה — הנתונים נשמרים ושום מסך אחר לא מושפע.</p>
+      <div class="cbx-list">${CBX.mods.map(m => `
+        <div class="cbx-item ${CBX.isOn(m.key) ? 'on' : ''}">
+          <span class="cbx-ic">${ic(m.icon || 'layers')}</span>
+          <span class="cbx-t"><b>${esc(m.label)}</b><small>${esc(m.desc || '')}</small>
+            ${(m.files || []).length ? `<span class="cbx-files">${esc(m.files.join(' · '))}</span>` : ''}</span>
+          <label class="cbx-sw"><input type="checkbox" data-cbx="${m.key}" ${CBX.isOn(m.key) ? 'checked' : ''}><span></span></label>
+        </div>`).join('')}</div>
+    </div>`;
+  };
+  window.extScreenBind = function () {
+    $$('[data-cbx]').forEach(c => c.addEventListener('change', () => {
+      CBX.setOn(c.dataset.cbx, c.checked);
+      if (typeof renderSettingsView === 'function') renderSettingsView();
+    }));
   };
 })();
 
@@ -23310,7 +23464,11 @@ document.addEventListener('click', e => {
   function invSupplier(id) { return INV_SUPPLIERS.find(s => s.id === id) || null; }
 
   /* ---------------- מסך המלאי ---------------- */
-  let invTab = 'items', invBr = 'all', invQ = '';
+  let invTab = 'items', invBr = 'all', invQ = '', invOpen = null;
+  /* כמה סניפים להציג בשורה, ולפי איזה קצה. עמודה לכל סניף לא מתאימה
+     לרשת עם עשרות או מאות סניפים. */
+  let invView = CBX.load('inv_view', { edge: 'low', n: 3 });
+  const saveView = () => CBX.store('inv_view', invView);
 
   const INV_TABS = [
     { key: 'items', label: 'מוצרים ומלאי', icon: 'tasks' },
@@ -23337,33 +23495,55 @@ document.addEventListener('click', e => {
   function invItemsHTML(brs) {
     const q = invQ.toLowerCase();
     const list = INV_ITEMS.filter(i => !q || (i.name + ' ' + i.sku + ' ' + (i.barcode || '')).toLowerCase().includes(q));
+    /* הסניפים שמחזיקים את הפריט, ממוינים לפי הקצה שנבחר */
+    const held = i => brs.filter(b => i.stock && i.stock[b.key] !== undefined)
+      .map(b => ({ b, q: invStock(i.sku, b.key), low: invStock(i.sku, b.key) <= (+i.reorder || 0) }))
+      .sort((x, y) => invView.edge === 'low' ? x.q - y.q : y.q - x.q);
     return `<div class="inv-bar">
         <input class="cc-inp sm" id="invQ" placeholder="חיפוש מוצר / מק״ט / ברקוד…" value="${esc(invQ)}">
-        <select class="cc-inp sm" id="invBr">
-          <option value="all" ${invBr === 'all' ? 'selected' : ''}>כל הסניפים</option>
-          ${brs.map(b => `<option value="${b.key}" ${invBr === b.key ? 'selected' : ''}>${esc(b.label)}</option>`).join('')}
-        </select>
         <button class="btn sm primary" id="invAdd">${ic('plus')} מוצר חדש</button>
       </div>
-      <div class="inv-table-wrap"><table class="inv-table">
+      <div class="inv-viewbar">
+        <span class="inv-vb-l">${ic('org')} הצג בשורה</span>
+        <span class="terr-freq">
+          <button class="fx-chip ${invView.edge === 'low' ? 'on' : ''}" data-invedge="low">הסניפים עם הכי מעט</button>
+          <button class="fx-chip ${invView.edge === 'high' ? 'on' : ''}" data-invedge="high">הסניפים עם הכי הרבה</button>
+        </span>
+        <select class="cc-inp sm inv-vb-n" id="invN">
+          ${[1, 2, 3, 5].map(n => `<option value="${n}" ${invView.n === n ? 'selected' : ''}>${n} סניפים</option>`).join('')}
+        </select>
+        <span class="inv-vb-note">${brs.length} סניפים בסך הכול · השאר נפתח בלחיצה</span>
+      </div>
+      <div class="inv-table-wrap"><table class="inv-table inv-rows">
         <thead><tr><th>מוצר</th><th>מק״ט</th><th>קטגוריה</th>
-          ${invBr === 'all' ? brs.map(b => `<th>${esc(b.label)}</th>`).join('') : '<th>מלאי</th>'}
+          <th>${invView.edge === 'low' ? 'הכי מעט' : 'הכי הרבה'}</th>
           <th>סה״כ</th><th>עלות</th><th>מחיר</th><th></th></tr></thead>
         <tbody>${list.map(i => {
-          const tot = invStock(i.sku);
-          const lowAll = invBranches().some(b => invStock(i.sku, b.key) <= (+i.reorder || 0));
-          return `<tr class="${lowAll ? 'low' : ''}">
+          const h = held(i), tot = invStock(i.sku);
+          const lowAny = h.some(x => x.low);
+          const shown = h.slice(0, invView.n), rest = h.slice(invView.n);
+          const open = invOpen === i.sku;
+          return `<tr class="inv-row ${lowAny ? 'low' : ''} ${open ? 'open' : ''}" data-invrow="${esc(i.sku)}">
             <td><b>${esc(i.name)}</b>${i.sell ? '<span class="inv-chip sell">נמכר</span>' : ''}${i.expiry ? '<span class="inv-chip">תוקף</span>' : ''}</td>
             <td class="mono">${esc(i.sku)}</td><td>${esc(i.cat)}</td>
-            ${(invBr === 'all' ? brs : brs.filter(b => b.key === invBr)).map(b => {
-              const has = i.stock && i.stock[b.key] !== undefined, q2 = invStock(i.sku, b.key);
-              return `<td class="${has && q2 <= (+i.reorder || 0) ? 'q-low' : ''}">${has ? q2 : '<span class="q-na">—</span>'}</td>`; }).join('')}
+            <td class="inv-br-cell">
+              ${shown.map(x => `<span class="inv-bq ${x.low ? 'low' : ''}">${esc(x.b.label)} <b>${x.q}</b></span>`).join('')
+                || '<span class="q-na">לא מוחזק</span>'}
+              ${rest.length ? `<button class="inv-more" data-invmore="${esc(i.sku)}">
+                ${open ? 'הסתר' : '+' + rest.length + ' סניפים'}</button>` : ''}
+            </td>
             <td><b>${tot}</b> <small>${esc(i.unit)}</small></td>
             <td>${CBX.money(i.cost)}</td><td>${i.sell ? CBX.money(i.price) : '—'}</td>
             <td class="inv-acts">
               <button class="btn xs" data-invmv="${esc(i.sku)}">${ic('sync')} תנועה</button>
-              <button class="btn xs" data-invedit="${esc(i.sku)}">${ic('settings')}</button>
-            </td></tr>`; }).join('') || `<tr><td colspan="9" class="inv-empty">אין מוצרים תואמים</td></tr>`}
+              <button class="btn xs" data-invedit="${esc(i.sku)}">${ic('settings')} פתח</button>
+            </td></tr>
+            ${open && rest.length ? `<tr class="inv-expand"><td colspan="8">
+              <div class="inv-exp-h">${ic('org')} <b>כל הסניפים · ${esc(i.name)}</b>
+                <span>${h.length} סניפים מחזיקים · סה״כ ${tot} ${esc(i.unit)}</span></div>
+              <div class="inv-exp-l">${h.map(x => `<span class="inv-bq ${x.low ? 'low' : ''}">
+                ${esc(x.b.label)} <b>${x.q}</b></span>`).join('')}</div>
+            </td></tr>` : ''}`; }).join('') || `<tr><td colspan="8" class="inv-empty">אין מוצרים תואמים</td></tr>`}
         </tbody></table></div>
       <p class="cr-hint">${ic('alert')} שורה מסומנת = לפחות סניף אחד מתחת לנקודת ההזמנה. האוטומציה "מלאי נמוך" שולחת על כך התראה.</p>`;
   }
@@ -23434,8 +23614,16 @@ document.addEventListener('click', e => {
       const n = $('#invQ'); if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); } });
     const br = $('#invBr'); if (br) br.addEventListener('change', () => { invBr = br.value; RR(); });
     const ad = $('#invAdd'); if (ad) ad.addEventListener('click', () => openInvItem(null, RR));
-    $$('[data-invedit]').forEach(b => b.addEventListener('click', () => openInvItem(b.dataset.invedit, RR)));
-    $$('[data-invmv]').forEach(b => b.addEventListener('click', () => openInvMove(b.dataset.invmv, RR)));
+    $$('[data-invedit]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); openInvItem(b.dataset.invedit, RR); }));
+    /* השורה כולה פותחת את המוצר — יעד לחיצה של אייקון 24px הוא לא שמיש */
+    $$('[data-invrow]').forEach(tr => tr.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      openInvItem(tr.dataset.invrow, RR); }));
+    $$('[data-invmore]').forEach(b => b.addEventListener('click', e => { e.stopPropagation();
+      invOpen = invOpen === b.dataset.invmore ? null : b.dataset.invmore; RR(); }));
+    $$('[data-invedge]').forEach(b => b.addEventListener('click', () => { invView.edge = b.dataset.invedge; saveView(); RR(); }));
+    const vn = $('#invN'); if (vn) vn.addEventListener('change', () => { invView.n = +vn.value || 3; saveView(); RR(); });
+    $$('[data-invmv]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); openInvMove(b.dataset.invmv, RR); }));
     // מרשם צריכה
     $$('[data-bomqty]').forEach(i => i.addEventListener('change', () => {
       const [k, ix] = i.dataset.bomqty.split('|'); INV_BOM[k][+ix].qty = +i.value || 0; saveBom(); RR(); }));
@@ -23591,7 +23779,7 @@ document.addEventListener('click', e => {
         if (!window.__invMode) return orig.apply(this, arguments);
         const host = document.getElementById('viewHost');
         host.innerHTML = (typeof settingsHeader === 'function' ? settingsHeader() : '')
-          + '<div class="inv-switch"><button class="btn sm" id="invBack">' + ic('chevronR') + ' חזרה לשירותים</button></div>'
+          + '<div class="inv-switch"><button class="btn sm inv-back" id="invBack">' + ic('chevronR') + ' חזרה לשירותים</button></div>'
           + invViewHTML();
         if (typeof bindSettingsHeader === 'function') bindSettingsHeader();
         const b = document.getElementById('invBack');
@@ -26427,7 +26615,8 @@ document.addEventListener('click', e => {
     const p = personOf(rec); if (!p || isDone(p.key)) return '';
     const others = p.recs.filter(r => r !== rec && !r.mergedInto);
     const tk = p.tickets || [], od = p.orders || [];
-    if (!others.length && !tk.length && !od.length) return '';
+    /* אין פניות קודמות = אין מה לאחד. הצגת "0 פניות קודמות" היא רעש. */
+    if (!others.length) return '';
     const groups = byTopic(others);
     const same = groups.find(g => g.topic === topicOf(rec));
     return `<div class="ps-prior pop">
@@ -28922,37 +29111,42 @@ document.addEventListener('click', e => {
     return rec;
   }
 
-  /* ---------------- ממשק: תדירות לפי פריט ---------------- */
-  function itemsHTML() {
-    const cat = catalog();
-    const on = cat.filter(c => isTracked(c.key)).length;
-    return `<section class="card set-card wide rp-card">
-      <div class="card-head"><div class="title">${ic('sync')} המלצת תדירות רכישה</div></div>
-      <div class="set-body">
-        <p class="inv-lead">כל כמה זמן נכון לחזור על כל שירות או מוצר. כשמתקרב המועד המערכת פותחת
-          פנייה אחת ללקוח שמרכזת את <b>כל</b> הפריטים שהגיע זמנם — לא פנייה לכל פריט.</p>
-        <div class="terr-tools"><span class="terr-tools-n">${on} מתוך ${cat.length} פריטים עם תדירות</span></div>
-        <div class="rp-items">${cat.map(c => { const i = itemOf(c.key) || {};
-          return `<div class="rp-item ${i.on ? 'on' : ''}">
-            <label class="rp-i-h"><input type="checkbox" data-rpon="${esc(c.key)}" ${i.on ? 'checked' : ''}>
-              <span><b>${esc(c.label)}</b><small>${esc(c.kind)}</small></span></label>
-            ${i.on ? `<div class="rp-i-b">
-              <label class="inv-f"><span>כל כמה ימים</span>
-                <input class="cc-inp sm" type="number" min="1" max="730" value="${+i.days || 30}" data-rpd="${esc(c.key)}"></label>
-              <label class="inv-f"><span>הסבר</span>
-                <input class="cc-inp sm" value="${esc(i.note || '')}" data-rpn="${esc(c.key)}"></label>
-            </div>` : ''}
-          </div>`; }).join('')}</div>
-      </div></section>`;
+  /* ---------------- ההגדרה יושבת בתוך כרטיס הפריט ---------------- */
+  function oneHTML(key, kind) {
+    const i2 = itemOf(key) || {};
+    return `<div class="rp-inline ${i2.on ? 'on' : ''}">
+      <label class="rp-in-h"><input type="checkbox" data-rpon="${esc(key)}" ${i2.on ? 'checked' : ''}>
+        <span>${ic('sync')}<b>המלצת תדירות רכישה</b>
+          <small>כל כמה זמן נכון לחזור על ${kind === 'product' ? 'המוצר' : 'השירות'} הזה.
+            כשמתקרב המועד נפתחת פנייה להרחבת פעילות.</small></span></label>
+      ${i2.on ? `<div class="rp-in-b">
+        <label class="inv-f"><span>כל כמה ימים</span>
+          <input class="cc-inp sm" type="number" min="1" max="730" value="${+i2.days || 30}" data-rpd="${esc(key)}"></label>
+        <label class="inv-f"><span>הסבר לנציג</span>
+          <input class="cc-inp sm" value="${esc(i2.note || '')}" data-rpn="${esc(key)}"></label>
+        <small class="rp-in-note">${ic('bolt')} חל רק אם הפריט נבחר גם באוטומציה "הרחבת פעילות לפי תדירות".</small>
+      </div>` : ''}
+    </div>`;
   }
-  function itemsBind(RR) {
-    $$('[data-rpon]').forEach(c => c.addEventListener('change', () => {
+  function oneBind(root, redraw) {
+    const q = sel => [...(root || document).querySelectorAll(sel)];
+    q('[data-rpon]').forEach(c => c.addEventListener('change', () => {
       const k = c.dataset.rpon; ITEMS[k] = ITEMS[k] || { days: 30, note: '' };
-      ITEMS[k].on = c.checked; saveItems(); RR(); }));
-    $$('[data-rpd]').forEach(i => i.addEventListener('change', () => {
-      ITEMS[i.dataset.rpd].days = +i.value || 30; saveItems(); }));
-    $$('[data-rpn]').forEach(i => i.addEventListener('change', () => {
-      ITEMS[i.dataset.rpn].note = i.value; saveItems(); }));
+      ITEMS[k].on = c.checked; saveItems(); if (redraw) redraw();
+    }));
+    q('[data-rpd]').forEach(i3 => i3.addEventListener('change', () => {
+      ITEMS[i3.dataset.rpd].days = +i3.value || 30; saveItems(); }));
+    q('[data-rpn]').forEach(i3 => i3.addEventListener('change', () => {
+      ITEMS[i3.dataset.rpn].note = i3.value; saveItems(); }));
+  }
+  /* החלפה במקום, כדי שהפאנל לא ייסגר בכל סימון */
+  function mount(host, key, kind) {
+    if (!host) return;
+    const old = host.querySelector('.rp-inline');
+    const d = document.createElement('div'); d.innerHTML = oneHTML(key, kind);
+    const el = d.firstElementChild;
+    if (old) old.replaceWith(el); else host.appendChild(el);
+    oneBind(el.parentNode, () => mount(host, key, kind));
   }
 
   /* ---------------- הגדרות האוטומציה ---------------- */
@@ -29009,18 +29203,17 @@ document.addEventListener('click', e => {
     desc: 'כל כמה זמן נכון לחזור על כל שירות ומוצר. כשמתקרב המועד נפתחת פנייה אחת ללקוח שמרכזת את כל הפריטים שהגיע זמנם, לפי הפריטים והזמן מראש שנבחרו באוטומציה.',
     files: ['js/ext/repurchase.js'],
     install() {
-      /* מסך הקטלוג — הגדרת התדירות לכל פריט */
-      CBX.wrap('rep2', 'renderCatalogView', o => function () {
+      /* בתוך כרטיס השירות בקטלוג */
+      if (typeof openCatalogItemEditor === 'function') CBX.wrap('rep2', 'openCatalogItemEditor', o => function (key) {
         const r = o.apply(this, arguments);
-        if (window.__invMode || window.__shopMode || window.__pkgMode) return r;
-        const host = document.getElementById('viewHost');
-        if (host && !host.querySelector('.rp-card')) {
-          const d = document.createElement('div'); d.innerHTML = itemsHTML();
-          host.appendChild(d.firstElementChild);
-          itemsBind(() => renderCatalogView());
-        }
+        /* מיידי ולא ב-setTimeout: הגוף כבר מלא כשהמקורית חוזרת */
+        try { if (key) mount(document.querySelector('#modal .modal-body') || document.querySelector('#modal'), key, 'service'); }
+        catch (e) { console.error('[rep2]', e); }
         return r;
       });
+      /* ובתוך כרטיס המוצר במלאי */
+      CBX.on('rep2', 'inv:editor', ev => {
+        if (ev.item && ev.item.sku) mount(ev.host, ev.item.sku, 'product'); });
       /* האוטומציה */
       if (typeof AUTOMATIONS !== 'undefined') CBX.push('rep2', AUTOMATIONS,
         [{ key: 'x_repurchase', trigger: 'הגיע זמן לחזור על רכישה', title: 'הרחבת פעילות לפי תדירות',
@@ -29060,6 +29253,186 @@ document.addEventListener('click', e => {
   });
 
   window.REP2 = { due, items: () => ITEMS, cfg: () => CFG, catalog, openLead, purchases };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: היקף אחריות של עובד  ·  key = 'scope'
+   ------------------------------------------------------------
+   "תחומי אחריות" ערבב שלושה צירים שונים באותה שורה: אזורים
+   גיאוגרפיים, נושאי טיפול ופלחי לקוחות. הם לא מאותו סוג ולכן
+   לא יכולים להיבחר יחד.
+   כאן הם מופרדים לשלושה צירים — ומה שנבחר קובע בפועל מה העובד
+   רואה במסך הלידים. עובד שמוגדר רק על מכירות לא יראה פניות
+   שסווגו כשירות.
+   העריכה נעשית במסך המנהל; לעובד ללא הרשאת עריכה זו תצוגה בלבד.
+   ============================================================ */
+(function () {
+
+  /* ---------------- שלושת הצירים ---------------- */
+  function AXES() {
+    return [
+      { key: 'journeys', label: 'מסלולי טיפול', icon: 'layers',
+        desc: 'אילו סוגי פניות העובד מטפל בהם. מה שלא נבחר — לא יופיע לו במסך הלידים.',
+        opts: () => Object.keys(typeof JOURNEY_TYPES !== 'undefined' ? JOURNEY_TYPES : {})
+          .map(k => ({ key: k, label: JOURNEY_TYPES[k].label })) },
+      { key: 'segments', label: 'פלחי לקוחות', icon: 'clients',
+        desc: 'קהלים שהעובד אחראי עליהם. משמש לניתוב ולסינון, לא לחסימה.',
+        opts: () => ['לידים חדשים', 'לקוחות VIP', 'לקוחות קיימים', 'לקוחות עסקיים'].map(x => ({ key: x, label: x })) },
+      { key: 'zones', label: 'אזורים גיאוגרפיים', icon: 'target',
+        desc: 'אזורי פעילות. כשהרחבת השטח פעילה — אלה אותם אזורים.',
+        opts: () => (window.TERR && CBX.isOn('terr'))
+          ? window.TERR.zones().map(z => ({ key: z.key, label: z.label }))
+          : ['אזור צפון', 'אזור מרכז', 'אזור דרום'].map(x => ({ key: x, label: x })) },
+    ];
+  }
+  const axis = k => AXES().find(a => a.key === k);
+
+  let SCOPE = CBX.load('scope_map', {});   /* empId -> { journeys:[], segments:[], zones:[] } */
+  const save = () => CBX.store('scope_map', SCOPE);
+
+  /* המרה חד-פעמית מהשדה הישן, כדי שלא יתחיל ריק */
+  const LEGACY = { 'חידושים': ['renewal'], 'תלונות': ['support'], 'גבייה': ['billing'],
+    'שימור': ['retention'], 'התקנות': ['installation'], 'הדרכות': ['training'] };
+  function scopeOf(emp) {
+    if (!emp) return { journeys: [], segments: [], zones: [] };
+    let s = SCOPE[emp.id];
+    if (!s) {
+      s = { journeys: [], segments: [], zones: [] };
+      (emp.resp || []).concat(emp.occ || []).forEach(x => {
+        if (LEGACY[x]) LEGACY[x].forEach(j => { if (s.journeys.indexOf(j) < 0) s.journeys.push(j); });
+        else if (/אזור/.test(x)) s.zones.push(x);
+        else if (/לידים|VIP|לקוח/.test(x)) s.segments.push(x);
+      });
+      SCOPE[emp.id] = s; save();
+    }
+    return s;
+  }
+  const empBy = name => (typeof STAFF !== 'undefined') ? STAFF.find(s => s.name === name) : null;
+  const canEdit = emp => {
+    const me = empBy(typeof CURRENT_USER !== 'undefined' ? CURRENT_USER : '');
+    if (!me) return true;
+    if (typeof effectivePerm === 'function') return effectivePerm(me, 'ניהול הרשאות') || effectivePerm(me, 'עריכה') && /מנהל/.test(me.perm || '');
+    return /מנהל/.test(me.perm || '');
+  };
+
+  /* ---------------- הסינון בפועל ---------------- */
+  const CFG_DEF = { enforce: true };
+  let CFG = Object.assign({}, CFG_DEF, CBX.load('scope_cfg', {}));
+  const saveCfg = () => CBX.store('scope_cfg', CFG);
+  /* מנהל רואה הכל. עובד רואה רק את מסלולי הטיפול שהוגדרו לו. */
+  function visibleTo(emp, r) {
+    if (!CFG.enforce || !emp) return true;
+    if (/מנהל/.test(emp.perm || '')) return true;
+    const s = scopeOf(emp);
+    if (!s.journeys.length) return true;          /* לא הוגדר — רואה הכל */
+    return s.journeys.indexOf(r.journey) >= 0;
+  }
+  function hiddenCount(emp, list) { return list.filter(r => !visibleTo(emp, r)).length; }
+
+  /* ---------------- ממשק ---------------- */
+  function scopeHTML(emp) {
+    const s = scopeOf(emp), edit = canEdit(emp);
+    const recs = (typeof RECORDS !== 'undefined') ? RECORDS.filter(r => !r.mergedInto) : [];
+    const hid = hiddenCount(emp, recs);
+    return `<section class="card emp-profile sc-card">
+      <div class="card-head"><div class="title">${ic('lock')} היקף אחריות · ${esc(emp.name)}</div>
+        ${edit ? '' : `<span class="sc-ro">${ic('eye')} תצוגה בלבד</span>`}</div>
+      <div class="set-body">
+        <p class="inv-lead">שלושה צירים נפרדים. <b>מסלולי הטיפול</b> הם היחידים שמסננים בפועל —
+          מה שלא נבחר לא יופיע לעובד במסך הלידים.</p>
+        ${AXES().map(a => `<div class="sc-axis">
+          <div class="sc-a-h">${ic(a.icon)} <b>${a.label}</b>
+            ${a.key === 'journeys' ? '<span class="sc-tag">מסנן בפועל</span>' : ''}
+            <small>${a.desc}</small></div>
+          <div class="sc-chips">${a.opts().map(o => `<button class="fx-chip ${(s[a.key] || []).indexOf(o.key) >= 0 ? 'on' : ''}"
+            data-sc="${esc(String(emp.id))}|${a.key}|${esc(o.key)}" ${edit ? '' : 'disabled'}>${esc(o.label)}</button>`).join('')}
+            ${!(s[a.key] || []).length ? '<span class="sc-all">לא נבחר — ללא הגבלה</span>' : ''}</div>
+        </div>`).join('')}
+        <div class="sc-effect ${hid ? 'on' : ''}">${ic(hid ? 'lock' : 'eye')}
+          <b>${hid ? esc(emp.name) + ' לא רואה ' + (hid === 1 ? 'פנייה אחת' : hid + ' פניות')
+            : esc(emp.name) + ' רואה את כל הפניות'}</b>
+          <small>${(s.journeys || []).length
+            ? 'מוגדר על: ' + s.journeys.map(j => (JOURNEY_TYPES[j] || {}).label || j).join(' · ')
+            : 'לא הוגדרו מסלולי טיפול — אין הגבלה'}</small></div>
+        ${edit ? `<label class="sc-enf"><input type="checkbox" id="scEnf" ${CFG.enforce ? 'checked' : ''}>
+          <span><b>לאכוף את ההיקף במסכים</b><small>כשכבוי — ההגדרה נשמרת אבל כולם רואים הכל. שימושי בהרצה.</small></span></label>` : ''}
+      </div></section>`;
+  }
+  function scopeBind(RR) {
+    $$('[data-sc]').forEach(b => b.addEventListener('click', () => {
+      const [id, ax, val] = b.dataset.sc.split('|');
+      const s = SCOPE[id] = SCOPE[id] || { journeys: [], segments: [], zones: [] };
+      s[ax] = s[ax] || []; const i = s[ax].indexOf(val);
+      if (i >= 0) s[ax].splice(i, 1); else s[ax].push(val);
+      save(); RR();
+      if (window.AUDIT && CBX.isOn('audit')) window.AUDIT.rec('lead', 'שינוי היקף אחריות', id + ' · ' + ax); }));
+    const e = $('#scEnf'); if (e) e.addEventListener('change', () => { CFG.enforce = e.checked; saveCfg(); RR(); });
+  }
+
+  /* ---------------- רישום ---------------- */
+  CBX.register({
+    key: 'scope', label: 'היקף אחריות של עובד', icon: 'lock',
+    desc: 'מפריד את "תחומי האחריות" לשלושה צירים — מסלולי טיפול, פלחי לקוחות ואזורים — ומסנן בפועל את מסך הלידים לפי מסלולי הטיפול שהוגדרו לעובד.',
+    files: ['js/ext/scope.js'],
+    install() {
+      /* מחליף את שורת "תחומי אחריות" המעורבת */
+      /* מחליפים את השורה המעורבת כבר ברמת ה-HTML — כך אין הבהוב
+         ואין תלות בתזמון הרינדור */
+      if (typeof empDetailsCard === 'function') CBX.wrap('scope', 'empDetailsCard', o => function (emp) {
+        let html = o.apply(this, arguments);
+        try {
+          html = html.replace(/<div class="tag-group"><span class="tag-lbl">תחומי אחריות<\/span>[\s\S]*?<\/div><\/div>/, '');
+          html += scopeHTML(emp);
+        } catch (e) { console.error('[scope]', e); }
+        return html;
+      });
+      const rebind = () => { try { scopeBind(() => {
+        if (typeof renderStaffFileView === 'function') renderStaffFileView();
+        else if (typeof renderSettingsView === 'function') renderSettingsView(); }); } catch (e) {} };
+      /* תיק העובד המלא בונה את המסך בעצמו — מוסיפים גם שם */
+      if (typeof renderStaffFileView === 'function') CBX.wrap('scope', 'renderStaffFileView', o => function () {
+        const r = o.apply(this, arguments);
+        try {
+          const emp = (typeof STAFF !== 'undefined' && typeof mgrEmpOpen !== 'undefined')
+            ? STAFF.find(x => String(x.id) === String(mgrEmpOpen)) : null;
+          const host = document.getElementById('viewHost');
+          if (emp && host && !host.querySelector('.sc-card')) {
+            const d = document.createElement('div'); d.innerHTML = scopeHTML(emp);
+            host.appendChild(d.firstElementChild);
+          }
+        } catch (e) { console.error('[scope] file', e); }
+        rebind(); return r; });
+      if (typeof renderSettingsView === 'function') CBX.wrap('scope', 'renderSettingsView', o => function () {
+        const r = o.apply(this, arguments); if (document.querySelector('.sc-card')) rebind(); return r; });
+      /* הסינון בפועל במסך הלידים */
+      if (typeof filteredRecords === 'function') CBX.wrap('scope', 'filteredRecords', o => function () {
+        const rows = o.apply(this, arguments);
+        try {
+          const me = empBy(typeof CURRENT_USER !== 'undefined' ? CURRENT_USER : '');
+          if (!me) return rows;
+          return rows.filter(r => visibleTo(me, r));
+        } catch (e) { return rows; }
+      });
+      /* חיווי כמה הוסתר — כדי שלא ייראה כאילו נעלמו רשומות */
+      if (typeof renderList === 'function') CBX.wrap('scope', 'renderList', o => function () {
+        const r = o.apply(this, arguments);
+        try {
+          const me = empBy(typeof CURRENT_USER !== 'undefined' ? CURRENT_USER : '');
+          const cnt = document.getElementById('listCount');
+          if (!me || !cnt || !CFG.enforce || /מנהל/.test(me.perm || '')) return r;
+          const s = scopeOf(me); if (!s.journeys.length) return r;
+          const all = (typeof RECORDS !== 'undefined') ? RECORDS.filter(x => !x.mergedInto) : [];
+          const hid = hiddenCount(me, all);
+          if (hid) cnt.textContent += ' · ' + hid + ' מחוץ להיקף שלי';
+        } catch (e) {}
+        return r;
+      });
+    },
+  });
+
+  window.SCOPE = { of: scopeOf, visible: visibleTo, axes: AXES, cfg: () => CFG, map: () => SCOPE };
 })();
 
 </script>

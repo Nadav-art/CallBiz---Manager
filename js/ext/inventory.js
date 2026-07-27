@@ -113,7 +113,11 @@
   function invSupplier(id) { return INV_SUPPLIERS.find(s => s.id === id) || null; }
 
   /* ---------------- מסך המלאי ---------------- */
-  let invTab = 'items', invBr = 'all', invQ = '';
+  let invTab = 'items', invBr = 'all', invQ = '', invOpen = null;
+  /* כמה סניפים להציג בשורה, ולפי איזה קצה. עמודה לכל סניף לא מתאימה
+     לרשת עם עשרות או מאות סניפים. */
+  let invView = CBX.load('inv_view', { edge: 'low', n: 3 });
+  const saveView = () => CBX.store('inv_view', invView);
 
   const INV_TABS = [
     { key: 'items', label: 'מוצרים ומלאי', icon: 'tasks' },
@@ -140,33 +144,55 @@
   function invItemsHTML(brs) {
     const q = invQ.toLowerCase();
     const list = INV_ITEMS.filter(i => !q || (i.name + ' ' + i.sku + ' ' + (i.barcode || '')).toLowerCase().includes(q));
+    /* הסניפים שמחזיקים את הפריט, ממוינים לפי הקצה שנבחר */
+    const held = i => brs.filter(b => i.stock && i.stock[b.key] !== undefined)
+      .map(b => ({ b, q: invStock(i.sku, b.key), low: invStock(i.sku, b.key) <= (+i.reorder || 0) }))
+      .sort((x, y) => invView.edge === 'low' ? x.q - y.q : y.q - x.q);
     return `<div class="inv-bar">
         <input class="cc-inp sm" id="invQ" placeholder="חיפוש מוצר / מק״ט / ברקוד…" value="${esc(invQ)}">
-        <select class="cc-inp sm" id="invBr">
-          <option value="all" ${invBr === 'all' ? 'selected' : ''}>כל הסניפים</option>
-          ${brs.map(b => `<option value="${b.key}" ${invBr === b.key ? 'selected' : ''}>${esc(b.label)}</option>`).join('')}
-        </select>
         <button class="btn sm primary" id="invAdd">${ic('plus')} מוצר חדש</button>
       </div>
-      <div class="inv-table-wrap"><table class="inv-table">
+      <div class="inv-viewbar">
+        <span class="inv-vb-l">${ic('org')} הצג בשורה</span>
+        <span class="terr-freq">
+          <button class="fx-chip ${invView.edge === 'low' ? 'on' : ''}" data-invedge="low">הסניפים עם הכי מעט</button>
+          <button class="fx-chip ${invView.edge === 'high' ? 'on' : ''}" data-invedge="high">הסניפים עם הכי הרבה</button>
+        </span>
+        <select class="cc-inp sm inv-vb-n" id="invN">
+          ${[1, 2, 3, 5].map(n => `<option value="${n}" ${invView.n === n ? 'selected' : ''}>${n} סניפים</option>`).join('')}
+        </select>
+        <span class="inv-vb-note">${brs.length} סניפים בסך הכול · השאר נפתח בלחיצה</span>
+      </div>
+      <div class="inv-table-wrap"><table class="inv-table inv-rows">
         <thead><tr><th>מוצר</th><th>מק״ט</th><th>קטגוריה</th>
-          ${invBr === 'all' ? brs.map(b => `<th>${esc(b.label)}</th>`).join('') : '<th>מלאי</th>'}
+          <th>${invView.edge === 'low' ? 'הכי מעט' : 'הכי הרבה'}</th>
           <th>סה״כ</th><th>עלות</th><th>מחיר</th><th></th></tr></thead>
         <tbody>${list.map(i => {
-          const tot = invStock(i.sku);
-          const lowAll = invBranches().some(b => invStock(i.sku, b.key) <= (+i.reorder || 0));
-          return `<tr class="${lowAll ? 'low' : ''}">
+          const h = held(i), tot = invStock(i.sku);
+          const lowAny = h.some(x => x.low);
+          const shown = h.slice(0, invView.n), rest = h.slice(invView.n);
+          const open = invOpen === i.sku;
+          return `<tr class="inv-row ${lowAny ? 'low' : ''} ${open ? 'open' : ''}" data-invrow="${esc(i.sku)}">
             <td><b>${esc(i.name)}</b>${i.sell ? '<span class="inv-chip sell">נמכר</span>' : ''}${i.expiry ? '<span class="inv-chip">תוקף</span>' : ''}</td>
             <td class="mono">${esc(i.sku)}</td><td>${esc(i.cat)}</td>
-            ${(invBr === 'all' ? brs : brs.filter(b => b.key === invBr)).map(b => {
-              const has = i.stock && i.stock[b.key] !== undefined, q2 = invStock(i.sku, b.key);
-              return `<td class="${has && q2 <= (+i.reorder || 0) ? 'q-low' : ''}">${has ? q2 : '<span class="q-na">—</span>'}</td>`; }).join('')}
+            <td class="inv-br-cell">
+              ${shown.map(x => `<span class="inv-bq ${x.low ? 'low' : ''}">${esc(x.b.label)} <b>${x.q}</b></span>`).join('')
+                || '<span class="q-na">לא מוחזק</span>'}
+              ${rest.length ? `<button class="inv-more" data-invmore="${esc(i.sku)}">
+                ${open ? 'הסתר' : '+' + rest.length + ' סניפים'}</button>` : ''}
+            </td>
             <td><b>${tot}</b> <small>${esc(i.unit)}</small></td>
             <td>${CBX.money(i.cost)}</td><td>${i.sell ? CBX.money(i.price) : '—'}</td>
             <td class="inv-acts">
               <button class="btn xs" data-invmv="${esc(i.sku)}">${ic('sync')} תנועה</button>
-              <button class="btn xs" data-invedit="${esc(i.sku)}">${ic('settings')}</button>
-            </td></tr>`; }).join('') || `<tr><td colspan="9" class="inv-empty">אין מוצרים תואמים</td></tr>`}
+              <button class="btn xs" data-invedit="${esc(i.sku)}">${ic('settings')} פתח</button>
+            </td></tr>
+            ${open && rest.length ? `<tr class="inv-expand"><td colspan="8">
+              <div class="inv-exp-h">${ic('org')} <b>כל הסניפים · ${esc(i.name)}</b>
+                <span>${h.length} סניפים מחזיקים · סה״כ ${tot} ${esc(i.unit)}</span></div>
+              <div class="inv-exp-l">${h.map(x => `<span class="inv-bq ${x.low ? 'low' : ''}">
+                ${esc(x.b.label)} <b>${x.q}</b></span>`).join('')}</div>
+            </td></tr>` : ''}`; }).join('') || `<tr><td colspan="8" class="inv-empty">אין מוצרים תואמים</td></tr>`}
         </tbody></table></div>
       <p class="cr-hint">${ic('alert')} שורה מסומנת = לפחות סניף אחד מתחת לנקודת ההזמנה. האוטומציה "מלאי נמוך" שולחת על כך התראה.</p>`;
   }
@@ -237,8 +263,16 @@
       const n = $('#invQ'); if (n) { n.focus(); n.setSelectionRange(n.value.length, n.value.length); } });
     const br = $('#invBr'); if (br) br.addEventListener('change', () => { invBr = br.value; RR(); });
     const ad = $('#invAdd'); if (ad) ad.addEventListener('click', () => openInvItem(null, RR));
-    $$('[data-invedit]').forEach(b => b.addEventListener('click', () => openInvItem(b.dataset.invedit, RR)));
-    $$('[data-invmv]').forEach(b => b.addEventListener('click', () => openInvMove(b.dataset.invmv, RR)));
+    $$('[data-invedit]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); openInvItem(b.dataset.invedit, RR); }));
+    /* השורה כולה פותחת את המוצר — יעד לחיצה של אייקון 24px הוא לא שמיש */
+    $$('[data-invrow]').forEach(tr => tr.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      openInvItem(tr.dataset.invrow, RR); }));
+    $$('[data-invmore]').forEach(b => b.addEventListener('click', e => { e.stopPropagation();
+      invOpen = invOpen === b.dataset.invmore ? null : b.dataset.invmore; RR(); }));
+    $$('[data-invedge]').forEach(b => b.addEventListener('click', () => { invView.edge = b.dataset.invedge; saveView(); RR(); }));
+    const vn = $('#invN'); if (vn) vn.addEventListener('change', () => { invView.n = +vn.value || 3; saveView(); RR(); });
+    $$('[data-invmv]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); openInvMove(b.dataset.invmv, RR); }));
     // מרשם צריכה
     $$('[data-bomqty]').forEach(i => i.addEventListener('change', () => {
       const [k, ix] = i.dataset.bomqty.split('|'); INV_BOM[k][+ix].qty = +i.value || 0; saveBom(); RR(); }));
@@ -394,7 +428,7 @@
         if (!window.__invMode) return orig.apply(this, arguments);
         const host = document.getElementById('viewHost');
         host.innerHTML = (typeof settingsHeader === 'function' ? settingsHeader() : '')
-          + '<div class="inv-switch"><button class="btn sm" id="invBack">' + ic('chevronR') + ' חזרה לשירותים</button></div>'
+          + '<div class="inv-switch"><button class="btn sm inv-back" id="invBack">' + ic('chevronR') + ' חזרה לשירותים</button></div>'
           + invViewHTML();
         if (typeof bindSettingsHeader === 'function') bindSettingsHeader();
         const b = document.getElementById('invBack');

@@ -81,7 +81,8 @@
     const p = personOf(rec); if (!p || isDone(p.key)) return '';
     const others = p.recs.filter(r => r !== rec && !r.mergedInto);
     const tk = p.tickets || [], od = p.orders || [];
-    if (!others.length && !tk.length && !od.length) return '';
+    /* אין פניות קודמות = אין מה לאחד. הצגת "0 פניות קודמות" היא רעש. */
+    if (!others.length) return '';
     const groups = byTopic(others);
     const same = groups.find(g => g.topic === topicOf(rec));
     return `<div class="ps-prior pop">
