@@ -7419,6 +7419,52 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
   border-color: color-mix(in srgb, var(--amber, #d97706) 45%, transparent); }
 
 </style>
+  <style>
+/* ============================================================
+   ציר הטיפול מרוכז בקטגוריות (stgroup)
+   ============================================================ */
+.sg-group { border: 1px solid var(--line); border-radius: 13px; background: var(--surface);
+  margin-bottom: 8px; overflow: hidden; }
+.sg-group[open] { border-color: color-mix(in srgb, var(--brand) 30%, transparent); }
+.sg-group.st-active, .sg-group.st-overdue { border-color: var(--brand); }
+.sg-group.st-done { background: var(--surface-2); }
+.sg-group.st-done .sg-ic svg { color: var(--ok, #16a34a); }
+.sg-group.st-overdue { border-color: var(--danger, #dc2626); }
+
+.sg-head { display: flex; align-items: center; gap: 10px; padding: 11px 13px; cursor: pointer;
+  list-style: none; user-select: none; }
+.sg-head::-webkit-details-marker { display: none; }
+.sg-head:hover { background: var(--surface-2); }
+.sg-ic { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 9px; background: var(--surface-2); }
+.sg-ic svg { width: 15px; height: 15px; color: var(--brand); }
+.sg-t { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.sg-t b { font-size: 13.5px; }
+.sg-now { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-2);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sg-now svg { width: 11px; height: 11px; flex: 0 0 auto; }
+.sg-group.st-done .sg-now svg { color: var(--ok, #16a34a); }
+.sg-mode { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start;
+  font-size: 10.5px; padding: 1px 8px; border-radius: 999px; margin-top: 2px;
+  color: var(--brand); background: color-mix(in srgb, var(--brand) 10%, transparent); }
+.sg-mode svg { width: 10px; height: 10px; }
+.sg-mode.none { color: var(--amber, #d97706); background: color-mix(in srgb, var(--amber, #d97706) 12%, transparent); }
+.sg-prog { flex: 0 0 auto; font-size: 11px; font-weight: 600; color: var(--text-2);
+  padding: 2px 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
+.sg-chev { flex: 0 0 auto; display: inline-flex; color: var(--text-2); transition: transform .16s; }
+.sg-chev svg { width: 14px; height: 14px; }
+.sg-group[open] .sg-chev { transform: rotate(180deg); }
+
+.sg-body { padding: 0 9px 9px; display: flex; flex-direction: column; gap: 6px; }
+.sg-body .acc-item { border-radius: 11px; }
+
+@media (max-width: 640px) {
+  .sg-head { gap: 8px; padding: 10px; flex-wrap: wrap; }
+  .sg-t { flex: 1 1 60%; }
+  .sg-now { white-space: normal; }
+}
+
+</style>
 </head>
 <body>
   <script>
@@ -19171,7 +19217,7 @@ function openNeedsClarify(r, after) {
       })()}
       ${qs.filter(q => !q.inline).map(q => `<div class="needs-q"><label class="needs-lbl">${q.label}${q.required ? ' <span class="needs-req">חובה</span>' : ''}</label>
         ${q.src ? `<small class="needs-src">${ic('docs')} מקור: ${esc(q.src)}${q.detail ? ' · ' + esc(q.detail) : ''}</small>` : ''}
-        <div class="needs-opts">${q.opts.map(o => `<button class="needs-opt ${((r.needs[q.key] || '') === o.v) ? 'on' : ''} ${o.blocked ? 'blocked' : ''} ${o.other ? 'other' : ''}" data-nq="${q.key}" data-nv="${esc(o.v)}" ${o.blocked ? `data-nwhy="${esc(o.why)}" title="${esc(o.why)}"` : ''}>${o.t}${o.blocked ? ' ' + ic('lock') : ''}${o.hint ? `<small class="nopt-hint">${esc(o.hint)}</small>` : ''}</button>`).join('')}</div></div>`).join('')}
+        <div class="needs-opts">${q.opts.map(o => `<button class="needs-opt ${(typeof needsAnswered === 'function' ? needsAnswered(r, q.key) : true) && (r.needs[q.key] || '') === o.v ? 'on' : ''} ${o.blocked ? 'blocked' : ''} ${o.other ? 'other' : ''}" data-nq="${q.key}" data-nv="${esc(o.v)}" ${o.blocked ? `data-nwhy="${esc(o.why)}" title="${esc(o.why)}"` : ''}>${o.t}${o.blocked ? ' ' + ic('lock') : ''}${o.hint ? `<small class="nopt-hint">${esc(o.hint)}</small>` : ''}</button>`).join('')}</div></div>`).join('')}
       ${typeof critDerivedHTML === 'function' ? critDerivedHTML(r) : ''}
       ${typeof critOverrideBarHTML === 'function' ? critOverrideBarHTML(r) : ''}
       ${typeof critEffectsBarHTML === 'function' ? critEffectsBarHTML(r) : ''}
@@ -22957,16 +23003,23 @@ function needsQuestions(r) {
   });
   return qs;
 }
-function needsMissingRequired(r) {
+/* "אין העדפה" / "גמיש" הן תשובות לכל דבר — ולכן קריטריון נחשב שנענה
+   לפי **קיום המפתח** ולא לפי ערך אמיתי. אחרת בירור שמולא במלואו
+   בהעדפות "גמיש" נראה כאילו לא נגעו בו. */
+function needsAnswered(r, key) {
   const n = (r && r.needs) || {};
-  return needsQuestions(r).filter(q => q.required && !n[q.key]).map(q => q.label.replace(/\s*\*$/, ''));
+  return Object.prototype.hasOwnProperty.call(n, key);
+}
+function needsMissingRequired(r) {
+  return needsQuestions(r).filter(q => q.required && !needsAnswered(r, q.key)).map(q => q.label.replace(/\s*\*$/, ''));
 }
 function needsSummary(r) {
   const n = (r && r.needs) || {}, out = [];
   needsQuestions(r).forEach(q => {
-    const v = n[q.key]; if (!v) return;
+    if (!needsAnswered(r, q.key)) return;
+    const v = n[q.key];
     const o = (q.opts || []).find(x => x.v === v);
-    out.push(q.label.replace(/\s*\*$/, '') + ': ' + (o ? o.t : v));
+    out.push(q.label.replace(/\s*\*$/, '') + ': ' + (o ? o.t : (v || 'ללא העדפה')));
   });
   if (n.note) out.push('הערה: ' + String(n.note).slice(0, 40));
   return out;
@@ -30958,6 +31011,149 @@ function openExtPanel() {
   });
 
   window.DOCSIGN = { audience: AUD, seed: SEED, pending: undefinedBits };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: ציר הטיפול מרוכז בקטגוריות  ·  key = 'stgroup'
+   ------------------------------------------------------------
+   במקום רשימה ארוכה של שלבים בודדים, השלבים מתקבצים לקטגוריות
+   (תהליך-העל שכבר מוגדר במערכת: קליטה · יצירת קשר · טיפול ותיאום ·
+   ביצוע · סיכום · סגירה). בחוץ רואים רק את מה שחשוב — מה מצב כל
+   קטגוריה ומה השלב הפעיל בתוכה. מי שרוצה לרדת לפרטים פותח.
+
+   הקטגוריה של הטיפול והתיאום מכבדת את המבנה החדש: כשהלקוח יודע
+   מה הוא רוצה מוצג קודם השירות ואז הקריטריונים, וכשלא — הפוך.
+   ============================================================ */
+(function () {
+
+  const metaTitle = k => ((typeof META_STAGES !== 'undefined' ? META_STAGES : []).find(m => m.key === k) || {}).title || k;
+  const metaIcon = k => ((typeof META_STAGES !== 'undefined' ? META_STAGES : []).find(m => m.key === k) || {}).icon || 'layers';
+  const CRIT_KEYS = ['qualify', 'need', 'needs', 'classify', 'diagnose'];
+  const SVC_KEYS = ['service', 'svc', 'services'];
+
+  /* סדר פנימי לפי המסלול שנבחר בליד */
+  function orderIn(items, rec) {
+    const mode = rec && rec.flowMode ? rec.flowMode : ((rec && (rec.services || []).length) ? 'known' : '');
+    if (!mode) return items;
+    const rank = el => {
+      const k = el.getAttribute('data-key');
+      if (CRIT_KEYS.indexOf(k) >= 0) return mode === 'known' ? 1 : 0;
+      if (SVC_KEYS.indexOf(k) >= 0) return mode === 'known' ? 0 : 1;
+      return 2;
+    };
+    return items.slice().sort((a, b) => rank(a) - rank(b));
+  }
+
+  function groupState(items) {
+    const cls = items.map(el => el.className);
+    if (cls.some(c => /st-overdue/.test(c))) return { k: 'overdue', label: 'באיחור', color: 'red' };
+    if (cls.some(c => /st-active/.test(c))) return { k: 'active', label: 'פעיל עכשיו', color: 'brand' };
+    if (cls.every(c => /st-done/.test(c))) return { k: 'done', label: 'הושלם', color: 'green' };
+    if (cls.every(c => /st-todo/.test(c))) return { k: 'todo', label: 'ממתין', color: 'gray' };
+    return { k: 'part', label: 'חלקי', color: 'amber' };
+  }
+
+  /* השורה שרואים בחוץ: מה פעיל, ואם הכל הושלם — מה התוצאה */
+  function headline(items) {
+    const act = items.find(el => /st-active|st-overdue/.test(el.className)) || null;
+    const pick = act || items.slice().reverse().find(el => /st-done/.test(el.className));
+    if (!pick) return { title: '', sum: '' };
+    const lbl = pick.querySelector('.label');
+    const sum = pick.querySelector('.acc-summary');
+    return { title: lbl ? lbl.textContent.trim() : '', sum: sum ? sum.textContent.replace(/^\s*/, '').trim() : '' };
+  }
+
+  function modeTag(rec, metaKey, items) {
+    const hasBoth = items.some(el => CRIT_KEYS.indexOf(el.getAttribute('data-key')) >= 0)
+      && items.some(el => SVC_KEYS.indexOf(el.getAttribute('data-key')) >= 0);
+    if (!hasBoth || !rec) return '';
+    const mode = rec.flowMode || ((rec.services || []).length ? 'known' : '');
+    if (!mode) return `<span class="sg-mode none">${ic('alert')} טרם נקבע אם הלקוח יודע מה הוא רוצה</span>`;
+    return mode === 'known'
+      ? `<span class="sg-mode">${ic('target')} הלקוח יודע — שירות ואז קריטריונים</span>`
+      : `<span class="sg-mode">${ic('search')} הלקוח לא יודע — קריטריונים ואז שירות</span>`;
+  }
+
+  function regroup(html, rec) {
+    const t = document.createElement('div');
+    t.innerHTML = html;
+    const acc = t.querySelector('#accordion'); if (!acc) return html;
+
+    /* מבטלים את מכולת "שלבים שהושלמו" — הקיבוץ מחליף אותה */
+    acc.querySelectorAll('.flow-done-wrap').forEach(d => {
+      d.querySelectorAll('.acc-item').forEach(it => acc.appendChild(it));
+      d.remove();
+    });
+
+    let items = Array.prototype.slice.call(acc.querySelectorAll('.acc-item'));
+    if (items.length < 3) return html;
+
+    /* סדר אמיתי לפי המסלול — שלבים שהוצאו מ"שלבים שהושלמו" איבדו את מקומם */
+    const seq = {};
+    try { (computeStages(rec) || []).forEach((s, i) => { seq[s.key] = i; }); } catch (e) {}
+    items = items.slice().sort((a, b) => {
+      const ia = seq[a.getAttribute('data-key')], ib = seq[b.getAttribute('data-key')];
+      return (ia === undefined ? 999 : ia) - (ib === undefined ? 999 : ib);
+    });
+
+    /* קיבוץ לפי תהליך-העל. חריג: בירור צורך, בחירת שירות והתיאום הם
+       שלושת הצעדים של אותו מהלך ולכן יושבים תמיד באותה קטגוריה. */
+    const metaFor = k => {
+      if (CRIT_KEYS.indexOf(k) >= 0 || SVC_KEYS.indexOf(k) >= 0) return 'handle';
+      return (typeof metaOf === 'function') ? metaOf(k) : 'handle';
+    };
+    const order = [], byMeta = {};
+    items.forEach(el => {
+      const k = metaFor(el.getAttribute('data-key'));
+      if (!byMeta[k]) { byMeta[k] = []; order.push(k); }
+      byMeta[k].push(el);
+    });
+
+    acc.innerHTML = '';
+    order.forEach(mk => {
+      const list = orderIn(byMeta[mk], rec);
+      const st = groupState(list);
+      const hl = headline(list);
+      const doneN = list.filter(el => /st-done/.test(el.className)).length;
+      const open = st.k === 'active' || st.k === 'overdue';
+
+      const g = document.createElement('details');
+      g.className = 'sg-group st-' + st.k;
+      if (open) g.open = true;
+      const s = document.createElement('summary');
+      s.className = 'sg-head';
+      s.innerHTML = `<span class="sg-ic">${ic(metaIcon(mk))}</span>
+        <span class="sg-t"><b>${esc(metaTitle(mk))}</b>
+          ${hl.title ? `<small class="sg-now">${st.k === 'done' ? ic('check') : ic('chevronL')} ${esc(hl.title)}${hl.sum ? ' · ' + esc(hl.sum) : ''}</small>` : ''}
+          ${modeTag(rec, mk, list)}</span>
+        <span class="sg-prog">${doneN}/${list.length}</span>
+        <span class="badge ${st.color} sm">${st.label}</span>
+        <span class="sg-chev">${ic('chevron')}</span>`;
+      g.appendChild(s);
+      const body = document.createElement('div');
+      body.className = 'sg-body';
+      list.forEach(el => body.appendChild(el));
+      g.appendChild(body);
+      acc.appendChild(g);
+    });
+    return t.innerHTML;
+  }
+
+  CBX.register({
+    key: 'stgroup', label: 'ציר הטיפול מרוכז בקטגוריות', icon: 'layers',
+    desc: 'השלבים מתקבצים לקטגוריות תהליך-העל. בחוץ מוצג מצב הקטגוריה והשלב הפעיל בלבד, והקטגוריה הפעילה נפתחת לבד. סדר הקריטריונים והשירות בתוך קטגוריית הטיפול נקבע לפי המסלול — הלקוח יודע או לא יודע.',
+    files: ['js/ext/stage-groups.js', 'css/ext/stage-groups.css'],
+    install() {
+      if (typeof flowHTML === 'function') CBX.wrap('stgroup', 'flowHTML', o => function (r) {
+        const html = o.apply(this, arguments);
+        try { return regroup(html, r); } catch (e) { console.error('[stgroup]', e); return html; }
+      });
+    },
+  });
+
+  window.STGROUP = { regroup };
 })();
 
 </script>

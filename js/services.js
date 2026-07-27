@@ -98,7 +98,7 @@ function openNeedsClarify(r, after) {
       })()}
       ${qs.filter(q => !q.inline).map(q => `<div class="needs-q"><label class="needs-lbl">${q.label}${q.required ? ' <span class="needs-req">חובה</span>' : ''}</label>
         ${q.src ? `<small class="needs-src">${ic('docs')} מקור: ${esc(q.src)}${q.detail ? ' · ' + esc(q.detail) : ''}</small>` : ''}
-        <div class="needs-opts">${q.opts.map(o => `<button class="needs-opt ${((r.needs[q.key] || '') === o.v) ? 'on' : ''} ${o.blocked ? 'blocked' : ''} ${o.other ? 'other' : ''}" data-nq="${q.key}" data-nv="${esc(o.v)}" ${o.blocked ? `data-nwhy="${esc(o.why)}" title="${esc(o.why)}"` : ''}>${o.t}${o.blocked ? ' ' + ic('lock') : ''}${o.hint ? `<small class="nopt-hint">${esc(o.hint)}</small>` : ''}</button>`).join('')}</div></div>`).join('')}
+        <div class="needs-opts">${q.opts.map(o => `<button class="needs-opt ${(typeof needsAnswered === 'function' ? needsAnswered(r, q.key) : true) && (r.needs[q.key] || '') === o.v ? 'on' : ''} ${o.blocked ? 'blocked' : ''} ${o.other ? 'other' : ''}" data-nq="${q.key}" data-nv="${esc(o.v)}" ${o.blocked ? `data-nwhy="${esc(o.why)}" title="${esc(o.why)}"` : ''}>${o.t}${o.blocked ? ' ' + ic('lock') : ''}${o.hint ? `<small class="nopt-hint">${esc(o.hint)}</small>` : ''}</button>`).join('')}</div></div>`).join('')}
       ${typeof critDerivedHTML === 'function' ? critDerivedHTML(r) : ''}
       ${typeof critOverrideBarHTML === 'function' ? critOverrideBarHTML(r) : ''}
       ${typeof critEffectsBarHTML === 'function' ? critEffectsBarHTML(r) : ''}

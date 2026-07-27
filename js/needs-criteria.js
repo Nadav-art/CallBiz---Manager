@@ -198,16 +198,23 @@ function needsQuestions(r) {
   });
   return qs;
 }
-function needsMissingRequired(r) {
+/* "אין העדפה" / "גמיש" הן תשובות לכל דבר — ולכן קריטריון נחשב שנענה
+   לפי **קיום המפתח** ולא לפי ערך אמיתי. אחרת בירור שמולא במלואו
+   בהעדפות "גמיש" נראה כאילו לא נגעו בו. */
+function needsAnswered(r, key) {
   const n = (r && r.needs) || {};
-  return needsQuestions(r).filter(q => q.required && !n[q.key]).map(q => q.label.replace(/\s*\*$/, ''));
+  return Object.prototype.hasOwnProperty.call(n, key);
+}
+function needsMissingRequired(r) {
+  return needsQuestions(r).filter(q => q.required && !needsAnswered(r, q.key)).map(q => q.label.replace(/\s*\*$/, ''));
 }
 function needsSummary(r) {
   const n = (r && r.needs) || {}, out = [];
   needsQuestions(r).forEach(q => {
-    const v = n[q.key]; if (!v) return;
+    if (!needsAnswered(r, q.key)) return;
+    const v = n[q.key];
     const o = (q.opts || []).find(x => x.v === v);
-    out.push(q.label.replace(/\s*\*$/, '') + ': ' + (o ? o.t : v));
+    out.push(q.label.replace(/\s*\*$/, '') + ': ' + (o ? o.t : (v || 'ללא העדפה')));
   });
   if (n.note) out.push('הערה: ' + String(n.note).slice(0, 40));
   return out;
