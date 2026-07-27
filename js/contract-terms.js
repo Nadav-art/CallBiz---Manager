@@ -103,7 +103,10 @@ function openSvcTermsPanel(onDone, ctx) {
     </div>`;
   };
 
-  const render = () => {
+  /* draw בונה מחדש את הפאנל; render עוטף אותו בשמירת גלילה —
+     בחירה בתוך הפאנל לא זורקת לראש. */
+  const render = () => (typeof ksKeep === 'function') ? ksKeep(draw) : draw();
+  const draw = () => {
     const e = ctTermEdit;
     w.innerHTML = `<div class="cbc-box st-box">
       <div class="cbc-head"><span class="cbc-ic">${ic('docs')}</span>
@@ -164,10 +167,18 @@ function openSvcTermsPanel(onDone, ctx) {
           : pick('ctIds', 'על אילו תבניות?', 'כל התבניות ב' + AUD_LBL, 'stct',
               CT.map(c => ({ v: String(c.id), t: c.name, icon: 'docs', sub: c.type })), ((e && e.ctIds) || []))}
 
-        ${pick('types', 'על אילו סוגי הסכם?', 'כל סוגי ההסכם ב' + AUD_LBL, 'sttype',
-          types.map(t => ({ v: t, t: t, icon: 'flag',
-            sub: (function () { const n = CT.filter(c => c.type === t).length; return n === 1 ? 'תבנית אחת' : n + ' תבניות'; })() })),
-          ((e && e.types) || []))}
+        ${(function () {
+          /* "סוג הסכם" מוסיף ערך רק כשיש סוג עם יותר מתבנית אחת — אחרת
+             הוא בחירה זהה ל"תבניות" בשם אחר, ולכן לא מוצג. */
+          const multi = types.filter(t => CT.filter(c => c.type === t).length > 1);
+          if (!multi.length && !((e && e.types) || []).length) return '';
+          return pick('types', 'על אילו סוגי הסכם?', 'כל סוגי ההסכם ב' + AUD_LBL, 'sttype',
+            types.map(t => { const n = CT.filter(c => c.type === t).length;
+              return { v: t, t: t, icon: 'flag', sub: n === 1 ? 'תבנית אחת' : n + ' תבניות' }; }),
+            ((e && e.types) || [])) +
+            `<p class="st-why">${ic('bolt')} <b>סוג</b> תופס גם תבניות עתידיות שייווצרו באותו סוג;
+              <b>תבנית</b> נועל למסמך מסוים.</p>`;
+        })()}
 
         <label class="st-lockrow"><input type="checkbox" id="stLock" ${(!e || e.locked !== false) ? 'checked' : ''}>
           <span><b>תנאי קבוע — נעול</b><small>יופיע בכל הסכם תואם, ולא ניתן להסיר או לערוך אותו בעסקה בודדת.</small></span></label>

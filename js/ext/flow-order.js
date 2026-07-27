@@ -134,8 +134,29 @@
     return { key, label, det };
   }
 
-  /* ---------------- רצועת השלבים ---------------- */
+  /* ---------------- רצועת השלבים ----------------
+     החלפת מסלול משנה את סדר השלבים — ולכן הרצועה מונפשת (FLIP)
+     והמיקוד חוזר לשלב 1 החדש. */
+  let jumpTo1 = false;
+  function stripRects(host) {
+    const m = {};
+    (host ? host.querySelectorAll('[data-flgo]') : []).forEach(el => { m[el.dataset.flgo] = el.getBoundingClientRect().left; });
+    return m;
+  }
+  function flipStrip(host, before) {
+    if (!host) return;
+    host.querySelectorAll('[data-flgo]').forEach(el => {
+      const b = before[el.dataset.flgo]; if (b === undefined) return;
+      const dx = b - el.getBoundingClientRect().left;
+      if (Math.abs(dx) < 2) return;
+      el.style.transition = 'none';
+      el.style.transform = `translateX(${dx}px)`;
+      const go = () => { el.style.transition = 'transform .34s cubic-bezier(.2,.9,.3,1)'; el.style.transform = ''; };
+      requestAnimationFrame(go); setTimeout(go, 16);
+    });
+  }
   function stripHTML(r, cur) {
+    if (jumpTo1) { const s = stepsOf(r)[0]; if (s) cur = s.key; }
     const st = stepsOf(r); if (!modeOf(r)) return '';
     const done = { crit: !reqMissing(r).length && Object.keys(r.needs || {}).some(k => r.needs[k] && k !== 'note'),
       svc: !!(r.services || []).length, cal: !!r.meeting };
@@ -316,7 +337,23 @@
 
           const rr = () => renderServiceSelect();
           bindStrip(body, rec, rr);
-          $$('[data-flmode]', body).forEach(b => b.addEventListener('click', () => { setMode(rec, b.dataset.flmode); rr(); }));
+          $$('[data-flmode]', body).forEach(b => b.addEventListener('click', () => {
+            if (modeOf(rec) === b.dataset.flmode) return;
+            const before = stripRects(body);
+            setMode(rec, b.dataset.flmode);
+            jumpTo1 = true;
+            rr();
+            const host = document.querySelector('#modal .svc-sel');
+            flipStrip(host, before);
+            /* תמיד מתחילים משלב 1 החדש */
+            const first = stepsOf(rec)[0];
+            if (first && first.key === 'crit') setTimeout(() => {
+              jumpTo1 = false;
+              const bf = snapshot(rec);
+              if (typeof openNeedsClarify === 'function') openNeedsClarify(rec, () => { rr(); checkAfterCritChange(rec, bf); });
+            }, 360);
+            else setTimeout(() => { jumpTo1 = false; }, 400);
+          }));
           $$('[data-flcrit]', body).forEach(b => b.addEventListener('click', () => {
             const before = snapshot(rec);
             if (typeof openNeedsClarify === 'function') openNeedsClarify(rec, () => { rr(); checkAfterCritChange(rec, before); });
@@ -359,6 +396,30 @@
           if (ts) ts.addEventListener('click', () => { if (typeof openServiceSelect === 'function') openServiceSelect(rec); });
         } catch (e) { console.error('[flow] needs', e); }
         return out;
+      });
+
+      /* שלב בירור הצורך בתוך הליד — כפתור שפותח את החלון, כמו בבחירת
+         השירות. הטופס המלא חי בחלון אחד בלבד, שם הוא מסונן מול היומן. */
+      if (typeof accBody === 'function') CBX.wrap('flow', 'accBody', o => function (s, r) {
+        const k = s && s.key;
+        if (['qualify', 'need', 'needs', 'classify'].indexOf(k) < 0) return o.apply(this, arguments);
+        const sum = (typeof needsSummary === 'function') ? needsSummary(r) : [];
+        const miss = reqMissing(r);
+        return `<div class="stage-needs fl-critstage">
+          <p class="needs-hint">${ic('bolt')} הקריטריונים נשאלים בחלון אחד — כך הבחירה נבדקת מול היומן בזמן אמת ולא נפתחות אפשרויות שאין להן מועד.</p>
+          ${sum.length ? `<div class="fl-sum">${sum.map(x => `<span class="fl-sumc">${ic('check')} ${esc(x)}</span>`).join('')}</div>`
+            : `<p class="fl-none">${ic('alert')} טרם נענו קריטריונים</p>`}
+          ${miss.length ? `<p class="fl-none bad">${ic('lock')} חסר לפני תיאום: ${esc(miss.join(' · '))}</p>` : ''}
+          <button class="btn primary fl-openbtn" data-flopencrit="${esc(String(r.id))}">
+            ${ic('settings')} ${sum.length ? 'עדכון הקריטריונים' : 'לבירור הצורך'} ${ic('chevronL')}</button>
+        </div>`;
+      });
+      CBX.delegate('flow', '[data-flopencrit]', el => {
+        const r = (typeof RECORDS !== 'undefined') ? RECORDS.find(x => String(x.id) === el.dataset.flopencrit) : null;
+        if (!r) return;
+        const before = snapshot(r);
+        if (typeof openNeedsClarify === 'function')
+          openNeedsClarify(r, () => { if (typeof renderDrawerTab === 'function') renderDrawerTab(r); checkAfterCritChange(r, before); });
       });
 
       /* ממסך התיאום — חזרה לשירותים או לקריטריונים */

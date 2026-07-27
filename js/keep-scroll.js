@@ -10,6 +10,9 @@ const KS_SCROLLERS = [
   '.workspace', '#viewHost', '.cr-body', '.cbc-box', '.cd-box-m', '.auto-log',
   '.drawer-body', '.modal-body', '.set-body', '.table-wrap', '.mgr-main',
   '.hr-body', '.pt-list', '.auto-main', '.whs-body', '.cr-box',
+  /* מיכלים נגללים בתוך פאנלים — בחירה בתוכם לא אמורה לזרוק לראש */
+  '.st-scroll', '.st-pick-list', '.needs-body', '.svc-sel', '.ps-side-b',
+  '.acc-panel-inner', '.inv-exp-l', '.bm-info-l',
 ];
 function ksSnapshot() {
   const snap = { win: window.scrollY || document.documentElement.scrollTop || 0, els: [] };

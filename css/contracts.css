@@ -254,3 +254,7 @@
 .st-tile-ck svg { width: 10px; height: 10px; }
 .st-row-empty { grid-column: 1 / -1; margin: 0; padding: 14px; text-align: center;
   font-size: 12px; color: var(--text-2); }
+.st-why { display: flex; align-items: flex-start; gap: 6px; margin: 4px 0 0;
+  font-size: 11px; color: var(--text-2); line-height: 1.6; }
+.st-why svg { width: 12px; height: 12px; flex: 0 0 auto; margin-top: 2px; color: var(--brand); }
+.st-why b { color: var(--text); }

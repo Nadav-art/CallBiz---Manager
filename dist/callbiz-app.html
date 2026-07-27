@@ -4477,6 +4477,10 @@ html:not(.cb-mobile) #proposePanel.open {
 .st-tile-ck svg { width: 10px; height: 10px; }
 .st-row-empty { grid-column: 1 / -1; margin: 0; padding: 14px; text-align: center;
   font-size: 12px; color: var(--text-2); }
+.st-why { display: flex; align-items: flex-start; gap: 6px; margin: 4px 0 0;
+  font-size: 11px; color: var(--text-2); line-height: 1.6; }
+.st-why svg { width: 12px; height: 12px; flex: 0 0 auto; margin-top: 2px; color: var(--brand); }
+.st-why b { color: var(--text); }
 
 </style>
   <style>
@@ -7418,51 +7422,98 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 .dsg-chip.todo { border-style: dashed; color: var(--amber, #d97706);
   border-color: color-mix(in srgb, var(--amber, #d97706) 45%, transparent); }
 
+/* הרצועה מונפשת בהחלפת מסלול */
+.fl-st { will-change: transform; }
+.fl-strip .fl-st.now { box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 12%, transparent); }
+
+/* ---------- שלב בירור הצורך בתוך הליד ---------- */
+.fl-critstage .fl-sum { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 10px; }
+.fl-sumc { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px;
+  padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+.fl-sumc svg { width: 11px; height: 11px; color: var(--ok, #16a34a); }
+.fl-none { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); margin: 8px 0 10px; }
+.fl-none svg { width: 13px; height: 13px; }
+.fl-none.bad { color: var(--danger, #dc2626); }
+.fl-openbtn { width: 100%; justify-content: center; }
+.fl-openbtn svg { width: 14px; height: 14px; }
+
 </style>
   <style>
 /* ============================================================
-   ציר הטיפול מרוכז בקטגוריות (stgroup)
+   מסלולי סגירה — מוצר · פגישה · סליקה (bookmode)
    ============================================================ */
-.sg-group { border: 1px solid var(--line); border-radius: 13px; background: var(--surface);
-  margin-bottom: 8px; overflow: hidden; }
-.sg-group[open] { border-color: color-mix(in srgb, var(--brand) 30%, transparent); }
-.sg-group.st-active, .sg-group.st-overdue { border-color: var(--brand); }
-.sg-group.st-done { background: var(--surface-2); }
-.sg-group.st-done .sg-ic svg { color: var(--ok, #16a34a); }
-.sg-group.st-overdue { border-color: var(--danger, #dc2626); }
+.bm-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 11px 13px; border-radius: 13px; margin: 10px 0 4px;
+  border: 1px solid var(--line); background: var(--surface-2); }
+.bm-bar > svg { width: 16px; height: 16px; flex: 0 0 auto; color: var(--brand); }
+.bm-bar > div { flex: 1 1 190px; min-width: 0; }
+.bm-bar b { display: block; font-size: 13px; }
+.bm-bar small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
 
-.sg-head { display: flex; align-items: center; gap: 10px; padding: 11px 13px; cursor: pointer;
-  list-style: none; user-select: none; }
-.sg-head::-webkit-details-marker { display: none; }
-.sg-head:hover { background: var(--surface-2); }
-.sg-ic { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center;
-  width: 30px; height: 30px; border-radius: 9px; background: var(--surface-2); }
-.sg-ic svg { width: 15px; height: 15px; color: var(--brand); }
-.sg-t { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.sg-t b { font-size: 13.5px; }
-.sg-now { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-2);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sg-now svg { width: 11px; height: 11px; flex: 0 0 auto; }
-.sg-group.st-done .sg-now svg { color: var(--ok, #16a34a); }
-.sg-mode { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start;
-  font-size: 10.5px; padding: 1px 8px; border-radius: 999px; margin-top: 2px;
-  color: var(--brand); background: color-mix(in srgb, var(--brand) 10%, transparent); }
-.sg-mode svg { width: 10px; height: 10px; }
-.sg-mode.none { color: var(--amber, #d97706); background: color-mix(in srgb, var(--amber, #d97706) 12%, transparent); }
-.sg-prog { flex: 0 0 auto; font-size: 11px; font-weight: 600; color: var(--text-2);
-  padding: 2px 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
-.sg-chev { flex: 0 0 auto; display: inline-flex; color: var(--text-2); transition: transform .16s; }
-.sg-chev svg { width: 14px; height: 14px; }
-.sg-group[open] .sg-chev { transform: rotate(180deg); }
+.bm-bar.ok { border-color: color-mix(in srgb, var(--ok, #16a34a) 40%, transparent);
+  background: color-mix(in srgb, var(--ok, #16a34a) 6%, transparent); }
+.bm-bar.ok > svg { color: var(--ok, #16a34a); }
+.bm-bar.pay { border-color: color-mix(in srgb, var(--brand) 35%, transparent); }
+.bm-bar.product > svg { color: var(--text-2); }
 
-.sg-body { padding: 0 9px 9px; display: flex; flex-direction: column; gap: 6px; }
-.sg-body .acc-item { border-radius: 11px; }
+/* שיריון זמני — כתום עם אזהרה ושעון יורד */
+.bm-bar.hold { border-color: var(--amber, #d97706); border-width: 1.5px;
+  background: color-mix(in srgb, var(--amber, #d97706) 9%, transparent); }
+.bm-bar.hold > svg { color: var(--amber, #d97706); }
+.bm-bar.hold b { color: color-mix(in srgb, var(--amber, #d97706) 80%, var(--text)); }
+.bm-clock { flex: 0 0 auto; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 15px;
+  letter-spacing: .5px; padding: 5px 11px; border-radius: 10px;
+  color: var(--amber, #d97706); background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--amber, #d97706) 45%, transparent); }
+.bm-bar.hold.urgent { border-color: var(--danger, #dc2626);
+  background: color-mix(in srgb, var(--danger, #dc2626) 8%, transparent);
+  animation: bmPulse 1s ease-in-out infinite; }
+.bm-bar.hold.urgent > svg, .bm-bar.hold.urgent b { color: var(--danger, #dc2626); }
+.bm-bar.hold.urgent .bm-clock { color: var(--danger, #dc2626);
+  border-color: color-mix(in srgb, var(--danger, #dc2626) 50%, transparent); }
+@keyframes bmPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,.22); } 50% { box-shadow: 0 0 0 6px rgba(220,38,38,0); } }
 
-@media (max-width: 640px) {
-  .sg-head { gap: 8px; padding: 10px; flex-wrap: wrap; }
-  .sg-t { flex: 1 1 60%; }
-  .sg-now { white-space: normal; }
-}
+/* ---------- הנחיות ומידע ---------- */
+.bm-when { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 10px 12px; border-radius: 11px; margin-bottom: 12px;
+  border: 1px solid var(--line); background: var(--surface-2); font-size: 12.5px; }
+.bm-when svg { width: 14px; height: 14px; color: var(--brand); }
+.bm-when span { color: var(--text-2); font-size: 11.5px; }
+.bm-info-l { display: flex; flex-direction: column; gap: 9px; max-height: 46vh; overflow-y: auto; }
+.bm-info-i { border: 1px solid var(--line); border-radius: 11px; padding: 10px 12px; }
+.bm-info-i > b { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin-bottom: 6px; }
+.bm-info-i > b svg { width: 13px; height: 13px; color: var(--brand); }
+.bm-info-r { display: flex; gap: 8px; font-size: 12px; line-height: 1.6; margin-top: 4px; }
+.bm-info-r span { flex: 0 0 44px; font-size: 10.5px; color: var(--text-2); padding-top: 2px; }
+.bm-info-r p { margin: 0; color: var(--text-2); }
+.bm-info-r.none { color: var(--text-2); font-size: 11.5px; }
+
+/* ---------- תוקף · קופון · הנחה ---------- */
+.bm-offer { border: 1px solid var(--line); border-radius: 13px; padding: 12px; margin: 0 0 12px;
+  background: var(--surface); }
+.bm-offer-h { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 10px; }
+.bm-offer-h svg { width: 14px; height: 14px; color: var(--brand); }
+.bm-offer-h b { font-size: 13px; }
+.bm-offer-h small { font-size: 11px; color: var(--text-2); }
+.bm-offer-g { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 9px; }
+.bm-f { display: flex; flex-direction: column; gap: 4px; }
+.bm-f > span { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-2); }
+.bm-f > span svg { width: 12px; height: 12px; }
+.bm-ok { font-size: 10.5px; color: var(--ok, #16a34a); display: flex; align-items: center; gap: 4px; }
+.bm-bad { font-size: 10.5px; color: var(--danger, #dc2626); display: flex; align-items: center; gap: 4px; }
+.bm-ok svg, .bm-bad svg { width: 11px; height: 11px; }
+.bm-disc { display: flex; gap: 6px; }
+.bm-disc input { flex: 1 1 auto; min-width: 0; }
+.bm-seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+.bm-seg button { font: inherit; font-size: 12px; cursor: pointer; padding: 0 11px;
+  border: 0; background: var(--surface); color: var(--text-2); }
+.bm-seg button.on { background: var(--brand); color: #fff; font-weight: 600; }
+.bm-tot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px;
+  padding-top: 9px; border-top: 1px dashed var(--line); font-size: 12px; color: var(--text-2); }
+.bm-tot b { color: var(--text); }
+.bm-off b { color: var(--ok, #16a34a); }
+.bm-fin { margin-inline-start: auto; font-size: 13px; }
+.bm-fin b { color: var(--brand); font-size: 15px; }
 
 </style>
 </head>
@@ -15872,7 +15923,10 @@ function openSvcTermsPanel(onDone, ctx) {
     </div>`;
   };
 
-  const render = () => {
+  /* draw בונה מחדש את הפאנל; render עוטף אותו בשמירת גלילה —
+     בחירה בתוך הפאנל לא זורקת לראש. */
+  const render = () => (typeof ksKeep === 'function') ? ksKeep(draw) : draw();
+  const draw = () => {
     const e = ctTermEdit;
     w.innerHTML = `<div class="cbc-box st-box">
       <div class="cbc-head"><span class="cbc-ic">${ic('docs')}</span>
@@ -15933,10 +15987,18 @@ function openSvcTermsPanel(onDone, ctx) {
           : pick('ctIds', 'על אילו תבניות?', 'כל התבניות ב' + AUD_LBL, 'stct',
               CT.map(c => ({ v: String(c.id), t: c.name, icon: 'docs', sub: c.type })), ((e && e.ctIds) || []))}
 
-        ${pick('types', 'על אילו סוגי הסכם?', 'כל סוגי ההסכם ב' + AUD_LBL, 'sttype',
-          types.map(t => ({ v: t, t: t, icon: 'flag',
-            sub: (function () { const n = CT.filter(c => c.type === t).length; return n === 1 ? 'תבנית אחת' : n + ' תבניות'; })() })),
-          ((e && e.types) || []))}
+        ${(function () {
+          /* "סוג הסכם" מוסיף ערך רק כשיש סוג עם יותר מתבנית אחת — אחרת
+             הוא בחירה זהה ל"תבניות" בשם אחר, ולכן לא מוצג. */
+          const multi = types.filter(t => CT.filter(c => c.type === t).length > 1);
+          if (!multi.length && !((e && e.types) || []).length) return '';
+          return pick('types', 'על אילו סוגי הסכם?', 'כל סוגי ההסכם ב' + AUD_LBL, 'sttype',
+            types.map(t => { const n = CT.filter(c => c.type === t).length;
+              return { v: t, t: t, icon: 'flag', sub: n === 1 ? 'תבנית אחת' : n + ' תבניות' }; }),
+            ((e && e.types) || [])) +
+            `<p class="st-why">${ic('bolt')} <b>סוג</b> תופס גם תבניות עתידיות שייווצרו באותו סוג;
+              <b>תבנית</b> נועל למסמך מסוים.</p>`;
+        })()}
 
         <label class="st-lockrow"><input type="checkbox" id="stLock" ${(!e || e.locked !== false) ? 'checked' : ''}>
           <span><b>תנאי קבוע — נעול</b><small>יופיע בכל הסכם תואם, ולא ניתן להסיר או לערוך אותו בעסקה בודדת.</small></span></label>
@@ -23561,6 +23623,9 @@ const KS_SCROLLERS = [
   '.workspace', '#viewHost', '.cr-body', '.cbc-box', '.cd-box-m', '.auto-log',
   '.drawer-body', '.modal-body', '.set-body', '.table-wrap', '.mgr-main',
   '.hr-body', '.pt-list', '.auto-main', '.whs-body', '.cr-box',
+  /* מיכלים נגללים בתוך פאנלים — בחירה בתוכם לא אמורה לזרוק לראש */
+  '.st-scroll', '.st-pick-list', '.needs-body', '.svc-sel', '.ps-side-b',
+  '.acc-panel-inner', '.inv-exp-l', '.bm-info-l',
 ];
 function ksSnapshot() {
   const snap = { win: window.scrollY || document.documentElement.scrollTop || 0, els: [] };
@@ -30146,8 +30211,29 @@ function openExtPanel() {
     return { key, label, det };
   }
 
-  /* ---------------- רצועת השלבים ---------------- */
+  /* ---------------- רצועת השלבים ----------------
+     החלפת מסלול משנה את סדר השלבים — ולכן הרצועה מונפשת (FLIP)
+     והמיקוד חוזר לשלב 1 החדש. */
+  let jumpTo1 = false;
+  function stripRects(host) {
+    const m = {};
+    (host ? host.querySelectorAll('[data-flgo]') : []).forEach(el => { m[el.dataset.flgo] = el.getBoundingClientRect().left; });
+    return m;
+  }
+  function flipStrip(host, before) {
+    if (!host) return;
+    host.querySelectorAll('[data-flgo]').forEach(el => {
+      const b = before[el.dataset.flgo]; if (b === undefined) return;
+      const dx = b - el.getBoundingClientRect().left;
+      if (Math.abs(dx) < 2) return;
+      el.style.transition = 'none';
+      el.style.transform = `translateX(${dx}px)`;
+      const go = () => { el.style.transition = 'transform .34s cubic-bezier(.2,.9,.3,1)'; el.style.transform = ''; };
+      requestAnimationFrame(go); setTimeout(go, 16);
+    });
+  }
   function stripHTML(r, cur) {
+    if (jumpTo1) { const s = stepsOf(r)[0]; if (s) cur = s.key; }
     const st = stepsOf(r); if (!modeOf(r)) return '';
     const done = { crit: !reqMissing(r).length && Object.keys(r.needs || {}).some(k => r.needs[k] && k !== 'note'),
       svc: !!(r.services || []).length, cal: !!r.meeting };
@@ -30328,7 +30414,23 @@ function openExtPanel() {
 
           const rr = () => renderServiceSelect();
           bindStrip(body, rec, rr);
-          $$('[data-flmode]', body).forEach(b => b.addEventListener('click', () => { setMode(rec, b.dataset.flmode); rr(); }));
+          $$('[data-flmode]', body).forEach(b => b.addEventListener('click', () => {
+            if (modeOf(rec) === b.dataset.flmode) return;
+            const before = stripRects(body);
+            setMode(rec, b.dataset.flmode);
+            jumpTo1 = true;
+            rr();
+            const host = document.querySelector('#modal .svc-sel');
+            flipStrip(host, before);
+            /* תמיד מתחילים משלב 1 החדש */
+            const first = stepsOf(rec)[0];
+            if (first && first.key === 'crit') setTimeout(() => {
+              jumpTo1 = false;
+              const bf = snapshot(rec);
+              if (typeof openNeedsClarify === 'function') openNeedsClarify(rec, () => { rr(); checkAfterCritChange(rec, bf); });
+            }, 360);
+            else setTimeout(() => { jumpTo1 = false; }, 400);
+          }));
           $$('[data-flcrit]', body).forEach(b => b.addEventListener('click', () => {
             const before = snapshot(rec);
             if (typeof openNeedsClarify === 'function') openNeedsClarify(rec, () => { rr(); checkAfterCritChange(rec, before); });
@@ -30371,6 +30473,30 @@ function openExtPanel() {
           if (ts) ts.addEventListener('click', () => { if (typeof openServiceSelect === 'function') openServiceSelect(rec); });
         } catch (e) { console.error('[flow] needs', e); }
         return out;
+      });
+
+      /* שלב בירור הצורך בתוך הליד — כפתור שפותח את החלון, כמו בבחירת
+         השירות. הטופס המלא חי בחלון אחד בלבד, שם הוא מסונן מול היומן. */
+      if (typeof accBody === 'function') CBX.wrap('flow', 'accBody', o => function (s, r) {
+        const k = s && s.key;
+        if (['qualify', 'need', 'needs', 'classify'].indexOf(k) < 0) return o.apply(this, arguments);
+        const sum = (typeof needsSummary === 'function') ? needsSummary(r) : [];
+        const miss = reqMissing(r);
+        return `<div class="stage-needs fl-critstage">
+          <p class="needs-hint">${ic('bolt')} הקריטריונים נשאלים בחלון אחד — כך הבחירה נבדקת מול היומן בזמן אמת ולא נפתחות אפשרויות שאין להן מועד.</p>
+          ${sum.length ? `<div class="fl-sum">${sum.map(x => `<span class="fl-sumc">${ic('check')} ${esc(x)}</span>`).join('')}</div>`
+            : `<p class="fl-none">${ic('alert')} טרם נענו קריטריונים</p>`}
+          ${miss.length ? `<p class="fl-none bad">${ic('lock')} חסר לפני תיאום: ${esc(miss.join(' · '))}</p>` : ''}
+          <button class="btn primary fl-openbtn" data-flopencrit="${esc(String(r.id))}">
+            ${ic('settings')} ${sum.length ? 'עדכון הקריטריונים' : 'לבירור הצורך'} ${ic('chevronL')}</button>
+        </div>`;
+      });
+      CBX.delegate('flow', '[data-flopencrit]', el => {
+        const r = (typeof RECORDS !== 'undefined') ? RECORDS.find(x => String(x.id) === el.dataset.flopencrit) : null;
+        if (!r) return;
+        const before = snapshot(r);
+        if (typeof openNeedsClarify === 'function')
+          openNeedsClarify(r, () => { if (typeof renderDrawerTab === 'function') renderDrawerTab(r); checkAfterCritChange(r, before); });
       });
 
       /* ממסך התיאום — חזרה לשירותים או לקריטריונים */
@@ -31016,144 +31142,277 @@ function openExtPanel() {
 </script>
   <script>
 /* ============================================================
-   הרחבה: ציר הטיפול מרוכז בקטגוריות  ·  key = 'stgroup'
+   הרחבה: מסלולי סגירה — מוצר · פגישה חינם · פגישה בתשלום
+   key = 'bookmode'
    ------------------------------------------------------------
-   במקום רשימה ארוכה של שלבים בודדים, השלבים מתקבצים לקטגוריות
-   (תהליך-העל שכבר מוגדר במערכת: קליטה · יצירת קשר · טיפול ותיאום ·
-   ביצוע · סיכום · סגירה). בחוץ רואים רק את מה שחשוב — מה מצב כל
-   קטגוריה ומה השלב הפעיל בתוכה. מי שרוצה לרדת לפרטים פותח.
+   מה שנבחר בקטלוג קובע איך התהליך נסגר, ולכן גם מה מוצג בליד:
 
-   הקטגוריה של הטיפול והתיאום מכבדת את המבנה החדש: כשהלקוח יודע
-   מה הוא רוצה מוצג קודם השירות ואז הקריטריונים, וכשלא — הפוך.
+     מוצר בלבד (לא דורש פגישה)
+       אין תיאום כלל — רק מעבר לרכישה. אם קטגוריית המוצר דורשת
+       הסכם, מוצג גם כפתור ההסכם לחתימה.
+
+     פגישה בלי תשלום ובלי הסכם
+       אחרי התיאום נשארים עם מועד הפגישה וכפתור עין שמציג את
+       ההנחיות והמידע לטיפול.
+
+     פגישה + סליקה
+       אפשר לשריין זמנית — ואז המועד יושב בכרטיס הליד בכתום, עם
+       אזהרה ושעון יורד לשעות/דקות/שניות. סליקה שאושרה סוגרת את
+       השיריון; מי שלא מאשר ולא רוצה לשריין יוצא בלי תאריך.
+
+   בנוסף: בתוך מסך התיאום, כששירות בתשלום נבחר — תוקף הצעה,
+   קוד קופון והנחה (סכום או אחוז) עם חישוב חי.
    ============================================================ */
 (function () {
 
-  const metaTitle = k => ((typeof META_STAGES !== 'undefined' ? META_STAGES : []).find(m => m.key === k) || {}).title || k;
-  const metaIcon = k => ((typeof META_STAGES !== 'undefined' ? META_STAGES : []).find(m => m.key === k) || {}).icon || 'layers';
-  const CRIT_KEYS = ['qualify', 'need', 'needs', 'classify', 'diagnose'];
-  const SVC_KEYS = ['service', 'svc', 'services'];
+  const treats = r => ((r && r.services) || []).map(k => (typeof cTreat === 'function') ? cTreat(k) : null).filter(Boolean);
+  const flags = r => {
+    const l = treats(r);
+    return { any: l.length, meet: l.some(t => t.requiresMeeting), pay: l.some(t => t.requiresBilling),
+      contract: l.some(t => t.requiresContract), freeSched: l.every(t => t.canScheduleWithoutBilling !== false), list: l };
+  };
+  function modeOf(r) {
+    const f = flags(r);
+    if (!f.any) return 'none';
+    if (!f.meet) return 'product';
+    return f.pay ? 'paid' : 'free';
+  }
 
-  /* סדר פנימי לפי המסלול שנבחר בליד */
-  function orderIn(items, rec) {
-    const mode = rec && rec.flowMode ? rec.flowMode : ((rec && (rec.services || []).length) ? 'known' : '');
-    if (!mode) return items;
-    const rank = el => {
-      const k = el.getAttribute('data-key');
-      if (CRIT_KEYS.indexOf(k) >= 0) return mode === 'known' ? 1 : 0;
-      if (SVC_KEYS.indexOf(k) >= 0) return mode === 'known' ? 0 : 1;
-      return 2;
+  /* ---------------- הצעה: תוקף · קופון · הנחה ---------------- */
+  function offerOf(r) { return (r.offer = r.offer || { validUntil: '', coupon: '', discType: 'pct', discVal: 0, couponOk: null }); }
+  const COUPONS = { WELCOME10: { t: 'pct', v: 10, label: 'הצטרפות · 10%' },
+    SUMMER50: { t: 'sum', v: 50, label: 'קיץ · 50 ₪' },
+    VIP15: { t: 'pct', v: 15, label: 'לקוח VIP · 15%' } };
+  function priceOf(r, keys) {
+    const base = (typeof svcTotals === 'function') ? svcTotals(keys || r.services || []).price : 0;
+    const o = offerOf(r);
+    let d = 0;
+    if (+o.discVal > 0) d = o.discType === 'pct' ? Math.round(base * Math.min(100, +o.discVal) / 100) : Math.min(base, +o.discVal);
+    return { base, disc: d, final: Math.max(0, base - d) };
+  }
+  function offerHTML(r, keys) {
+    const o = offerOf(r), p = priceOf(r, keys);
+    return `<div class="bm-offer">
+      <div class="bm-offer-h">${ic('bolt')} <b>תנאי ההצעה</b>
+        <small>נשמרים על הפנייה ועוברים להצעת המחיר ולהסכם</small></div>
+      <div class="bm-offer-g">
+        <label class="bm-f"><span>${ic('calendar')} תוקף ההצעה</span>
+          <input type="date" class="cc-inp" id="bmValid" value="${esc(o.validUntil || '')}"></label>
+        <label class="bm-f"><span>${ic('flag')} קוד קופון</span>
+          <input class="cc-inp" id="bmCoupon" placeholder="למשל WELCOME10" value="${esc(o.coupon || '')}">
+          ${o.couponOk === true ? `<small class="bm-ok">${ic('check')} ${esc(o.couponLbl || 'הקופון הוחל')}</small>`
+            : o.couponOk === false ? `<small class="bm-bad">${ic('alert')} קוד לא מוכר</small>` : ''}</label>
+        <div class="bm-f"><span>${ic('check')} הנחה</span>
+          <div class="bm-disc">
+            <div class="bm-seg">
+              <button class="${o.discType === 'pct' ? 'on' : ''}" data-bmdt="pct">%</button>
+              <button class="${o.discType === 'sum' ? 'on' : ''}" data-bmdt="sum">₪</button>
+            </div>
+            <input type="number" class="cc-inp" id="bmDisc" min="0" value="${+o.discVal || 0}">
+          </div></div>
+      </div>
+      <div class="bm-tot">
+        <span>מחיר מלא <b>${p.base} ₪</b></span>
+        ${p.disc ? `<span class="bm-off">הנחה <b>−${p.disc} ₪</b></span>` : ''}
+        <span class="bm-fin">לתשלום <b>${p.final} ₪</b></span>
+      </div></div>`;
+  }
+  /* רינדור מקומי בלבד — הבלוק מצייר את עצמו מחדש בלי לרנדר את כל המסך,
+     אחרת כל לחיצה על מתג נבלעת ברינדור הגדול והמתג "לא עובד". */
+  function mountOffer(box, r, keysFn) {
+    const draw = () => {
+      box.innerHTML = offerHTML(r, keysFn ? keysFn() : null);
+      bindOffer(box, r, draw, keysFn);
     };
-    return items.slice().sort((a, b) => rank(a) - rank(b));
+    draw();
+    return draw;
+  }
+  function bindOffer(host, r, after, keysFn) {
+    const o = offerOf(r);
+    const rr = () => { if (typeof after === 'function') after(); };
+    const v = host.querySelector('#bmValid');
+    if (v) v.addEventListener('change', () => { o.validUntil = v.value; toast(v.value ? 'תוקף ההצעה נשמר' : 'התוקף הוסר'); rr(); });
+    const c = host.querySelector('#bmCoupon');
+    if (c) c.addEventListener('change', () => {
+      const code = (c.value || '').trim().toUpperCase();
+      o.coupon = code;
+      if (!code) { o.couponOk = null; }
+      else if (COUPONS[code]) { const x = COUPONS[code]; o.couponOk = true; o.couponLbl = x.label; o.discType = x.t; o.discVal = x.v; toast('הקופון הוחל · ' + x.label); }
+      else { o.couponOk = false; toast('קוד קופון לא מוכר'); }
+      rr();
+    });
+    host.querySelectorAll('[data-bmdt]').forEach(b => b.addEventListener('click', () => { o.discType = b.dataset.bmdt; rr(); }));
+    const d = host.querySelector('#bmDisc');
+    if (d) d.addEventListener('change', () => { o.discVal = Math.max(0, +d.value || 0); o.coupon = o.coupon && o.couponOk ? o.coupon : o.coupon; rr(); });
   }
 
-  function groupState(items) {
-    const cls = items.map(el => el.className);
-    if (cls.some(c => /st-overdue/.test(c))) return { k: 'overdue', label: 'באיחור', color: 'red' };
-    if (cls.some(c => /st-active/.test(c))) return { k: 'active', label: 'פעיל עכשיו', color: 'brand' };
-    if (cls.every(c => /st-done/.test(c))) return { k: 'done', label: 'הושלם', color: 'green' };
-    if (cls.every(c => /st-todo/.test(c))) return { k: 'todo', label: 'ממתין', color: 'gray' };
-    return { k: 'part', label: 'חלקי', color: 'amber' };
+  /* ---------------- שעון יורד לשעות/דקות/שניות ---------------- */
+  function holdEndsAt(h) {
+    if (!h.__endsAt) h.__endsAt = Date.now() + (h.minsLeft || 0) * 60000;
+    return h.__endsAt;
+  }
+  function leftParts(h) {
+    const ms = Math.max(0, holdEndsAt(h) - Date.now());
+    const s = Math.floor(ms / 1000);
+    return { hh: Math.floor(s / 3600), mm: Math.floor((s % 3600) / 60), ss: s % 60, ms };
+  }
+  const two = n => String(n).padStart(2, '0');
+
+  /* ---------------- ההנחיות והמידע (כפתור העין) ---------------- */
+  function openInfo(r) {
+    const old = document.getElementById('bmInfo'); if (old) old.remove();
+    const w = document.createElement('div'); w.className = 'cbc-wrap'; w.id = 'bmInfo';
+    const l = treats(r), m = r.meeting;
+    w.innerHTML = `<div class="cbc-box bm-info" style="max-width:520px;text-align:start">
+      <div class="cbc-head"><span class="cbc-ic">${ic('eye')}</span><b>ההנחיות והמידע לפגישה</b></div>
+      ${m ? `<div class="bm-when">${ic('calendar')} <b>${esc(m.date)} · ${esc(m.time)}</b>
+        <span>${esc(m.with || '')}${m.branch && typeof cBranch === 'function' && cBranch(m.branch) ? ' · ' + esc(cBranch(m.branch).short || cBranch(m.branch).label) : ''}</span></div>` : ''}
+      <div class="bm-info-l">${l.map(t => `<div class="bm-info-i">
+        <b>${ic('layers')} ${esc(t.label)}</b>
+        ${t.pre ? `<div class="bm-info-r"><span>לפני</span><p>${esc(t.pre)}</p></div>` : ''}
+        ${t.instr ? `<div class="bm-info-r"><span>מהלך</span><p>${esc(t.instr)}</p></div>` : ''}
+        ${!t.pre && !t.instr ? '<div class="bm-info-r none">לא הוגדרו הנחיות לשירות הזה בקטלוג</div>' : ''}
+      </div>`).join('') || '<p class="bm-info-r none">לא נבחרו שירותים</p>'}</div>
+      <div class="cbc-actions">
+        <button class="btn" id="bmInfoSend">${ic('sync')} שלח ללקוח</button>
+        <button class="btn primary" id="bmInfoX">${ic('check')} סגור</button></div></div>`;
+    document.body.appendChild(w);
+    w.querySelector('#bmInfoX').addEventListener('click', () => w.remove());
+    w.querySelector('#bmInfoSend').addEventListener('click', () => { w.remove(); toast('ההנחיות נשלחו ללקוח'); });
+    w.addEventListener('mousedown', e => { if (e.target === w) w.remove(); });
   }
 
-  /* השורה שרואים בחוץ: מה פעיל, ואם הכל הושלם — מה התוצאה */
-  function headline(items) {
-    const act = items.find(el => /st-active|st-overdue/.test(el.className)) || null;
-    const pick = act || items.slice().reverse().find(el => /st-done/.test(el.className));
-    if (!pick) return { title: '', sum: '' };
-    const lbl = pick.querySelector('.label');
-    const sum = pick.querySelector('.acc-summary');
-    return { title: lbl ? lbl.textContent.trim() : '', sum: sum ? sum.textContent.replace(/^\s*/, '').trim() : '' };
+  /* ---------------- הסרגל בתוך הליד ---------------- */
+  function barHTML(r) {
+    const mode = modeOf(r); if (mode === 'none') return '';
+    const f = flags(r), m = r.meeting, h = r.slotHold;
+
+    if (mode === 'product') return `<div class="bm-bar product">${ic('layers')}
+      <div><b>מוצר — אין צורך בתיאום פגישה</b>
+        <small>${esc(f.list.map(t => t.label).join(' · '))}${f.pay ? ' · ' + priceOf(r).final + ' ₪' : ''}</small></div>
+      ${f.pay ? `<button class="btn sm primary" data-bmbuy>${ic('check')} מעבר לרכישה</button>` : ''}
+      ${f.contract ? `<button class="btn sm" data-bmct>${ic('docs')} הסכם לחתימה</button>` : ''}</div>`;
+
+    if (mode === 'free') return m
+      ? `<div class="bm-bar ok">${ic('check')}
+          <div><b>הפגישה נקבעה — אין תשלום ואין הסכם</b>
+            <small>${esc(m.date)} · ${esc(m.time)}${m.with ? ' · ' + esc(m.with) : ''}</small></div>
+          <button class="btn sm" data-bmeye title="הנחיות ומידע">${ic('eye')} הנחיות ומידע</button></div>`
+      : `<div class="bm-bar">${ic('calendar')}
+          <div><b>שירות ללא תשלום — נשאר רק לתאם</b>
+            <small>${esc(f.list.map(t => t.label).join(' · '))}</small></div>
+          <button class="btn sm primary" data-bmflow>${ic('calendar')} לתיאום פגישה</button></div>`;
+
+    /* paid */
+    if (h) { const t = leftParts(h);
+      return `<div class="bm-bar hold ${t.ms <= 120000 ? 'urgent' : ''}">${ic('alert')}
+        <div><b>המועד בשיריון זמני — טרם שולם</b>
+          <small>${typeof cDayLbl === 'function' ? cDayLbl(h.date) : ''} ${typeof fmtH === 'function' ? fmtH(h.h) : ''}${h.staffName ? ' · ' + esc(h.staffName) : ''} · ${priceOf(r).final} ₪</small></div>
+        <span class="bm-clock" data-bmclock>${t.hh ? two(t.hh) + ':' : ''}${two(t.mm)}:${two(t.ss)}</span>
+        <button class="btn sm primary" data-bmpay>${ic('check')} להמשך סליקה</button>
+        <button class="btn sm" data-bmdrop>${ic('close')} שחרר</button></div>`; }
+    if (m) return `<div class="bm-bar ok">${ic('check')}
+      <div><b>שולם והתור שוריין</b><small>${esc(m.date)} · ${esc(m.time)}${m.with ? ' · ' + esc(m.with) : ''}</small></div>
+      <button class="btn sm" data-bmeye>${ic('eye')} הנחיות ומידע</button></div>`;
+    return `<div class="bm-bar pay">${ic('lock')}
+      <div><b>שירות בתשלום — התור נסגר רק אחרי סליקה</b>
+        <small>${esc(f.list.map(t => t.label).join(' · '))} · ${priceOf(r).final} ₪
+          · ${f.freeSched ? 'ניתן לתאם גם לפני תשלום' : 'שיריון זמני עד להשלמת הסליקה'}</small></div>
+      <button class="btn sm primary" data-bmflow>${ic('calendar')} לתיאום וסליקה</button>
+      <button class="btn sm" data-bmhold>${ic('lock')} שריון זמני</button>
+      <button class="btn sm ghost" data-bmnodate>${ic('close')} צא בלי תאריך</button></div>`;
   }
 
-  function modeTag(rec, metaKey, items) {
-    const hasBoth = items.some(el => CRIT_KEYS.indexOf(el.getAttribute('data-key')) >= 0)
-      && items.some(el => SVC_KEYS.indexOf(el.getAttribute('data-key')) >= 0);
-    if (!hasBoth || !rec) return '';
-    const mode = rec.flowMode || ((rec.services || []).length ? 'known' : '');
-    if (!mode) return `<span class="sg-mode none">${ic('alert')} טרם נקבע אם הלקוח יודע מה הוא רוצה</span>`;
-    return mode === 'known'
-      ? `<span class="sg-mode">${ic('target')} הלקוח יודע — שירות ואז קריטריונים</span>`
-      : `<span class="sg-mode">${ic('search')} הלקוח לא יודע — קריטריונים ואז שירות</span>`;
-  }
+  function bind(r) {
+    const q = s => document.querySelector(s);
+    const go = () => { if (typeof renderDrawerTab === 'function') renderDrawerTab(r); };
+    const a = q('[data-bmflow]'); if (a) document.querySelectorAll('[data-bmflow]').forEach(b => b.addEventListener('click', () => {
+      if (typeof openServiceSelect === 'function') openServiceSelect(r); }));
+    const e = q('[data-bmeye]'); if (e) e.addEventListener('click', () => openInfo(r));
+    const buy = q('[data-bmbuy]'); if (buy) buy.addEventListener('click', () => {
+      if (typeof openPayPanel === 'function') openPayPanel(r);
+      else if (typeof openBillingPanel === 'function') openBillingPanel(r);
+      else toast('מעבר לסליקה · ' + priceOf(r).final + ' ₪'); });
+    const ct = q('[data-bmct]'); if (ct) ct.addEventListener('click', () => {
+      const c = (typeof CONTRACT_TEMPLATES !== 'undefined') ? CONTRACT_TEMPLATES.find(x => (x.audience || 'client') === 'client' && x.legalApproved) : null;
+      if (c && typeof openContractWizard === 'function') openContractWizard(c, r, 'preview');
+      else toast('אין תבנית הסכם מאושרת'); });
+    const pay = q('[data-bmpay]'); if (pay) pay.addEventListener('click', () => {
+      const h = r.slotHold; if (!h) return;
+      const slot = (typeof coordPool === 'function') ? coordPool().find(x => x.id === h.slotId) : null;
+      if (typeof openHoldPaymentPanel === 'function') openHoldPaymentPanel(r, slot, h); });
+    const hd = q('[data-bmhold]'); if (hd) hd.addEventListener('click', () => {
+      if (typeof openProposedTimes === 'function') { openProposedTimes(r); toast('בחר מועד — הוא יישמר בשיריון זמני עד להשלמת הסליקה'); }
+      else if (typeof openServiceSelect === 'function') openServiceSelect(r); });
+    const dr = q('[data-bmdrop]'); if (dr) dr.addEventListener('click', () => {
+      const h = r.slotHold; if (!h) return;
+      const slot = (typeof coordPool === 'function') ? coordPool().find(x => x.id === h.slotId) : null;
+      if (typeof releaseHold === 'function') releaseHold(h, r, slot, true);
+      go(); });
+    const nd = q('[data-bmnodate]'); if (nd) nd.addEventListener('click', () => {
+      r.meeting = null; r.noDate = true;
+      r.next = { type: 'followup', at: '' };
+      if (r.status) r.status = { label: 'ללא תאריך — ממתין להחלטת הלקוח', color: 'amber' };
+      toast('נסגר בלי תאריך · הפנייה נשארת פתוחה למעקב');
+      go(); if (typeof renderList === 'function') renderList(); });
 
-  function regroup(html, rec) {
-    const t = document.createElement('div');
-    t.innerHTML = html;
-    const acc = t.querySelector('#accordion'); if (!acc) return html;
-
-    /* מבטלים את מכולת "שלבים שהושלמו" — הקיבוץ מחליף אותה */
-    acc.querySelectorAll('.flow-done-wrap').forEach(d => {
-      d.querySelectorAll('.acc-item').forEach(it => acc.appendChild(it));
-      d.remove();
-    });
-
-    let items = Array.prototype.slice.call(acc.querySelectorAll('.acc-item'));
-    if (items.length < 3) return html;
-
-    /* סדר אמיתי לפי המסלול — שלבים שהוצאו מ"שלבים שהושלמו" איבדו את מקומם */
-    const seq = {};
-    try { (computeStages(rec) || []).forEach((s, i) => { seq[s.key] = i; }); } catch (e) {}
-    items = items.slice().sort((a, b) => {
-      const ia = seq[a.getAttribute('data-key')], ib = seq[b.getAttribute('data-key')];
-      return (ia === undefined ? 999 : ia) - (ib === undefined ? 999 : ib);
-    });
-
-    /* קיבוץ לפי תהליך-העל. חריג: בירור צורך, בחירת שירות והתיאום הם
-       שלושת הצעדים של אותו מהלך ולכן יושבים תמיד באותה קטגוריה. */
-    const metaFor = k => {
-      if (CRIT_KEYS.indexOf(k) >= 0 || SVC_KEYS.indexOf(k) >= 0) return 'handle';
-      return (typeof metaOf === 'function') ? metaOf(k) : 'handle';
-    };
-    const order = [], byMeta = {};
-    items.forEach(el => {
-      const k = metaFor(el.getAttribute('data-key'));
-      if (!byMeta[k]) { byMeta[k] = []; order.push(k); }
-      byMeta[k].push(el);
-    });
-
-    acc.innerHTML = '';
-    order.forEach(mk => {
-      const list = orderIn(byMeta[mk], rec);
-      const st = groupState(list);
-      const hl = headline(list);
-      const doneN = list.filter(el => /st-done/.test(el.className)).length;
-      const open = st.k === 'active' || st.k === 'overdue';
-
-      const g = document.createElement('details');
-      g.className = 'sg-group st-' + st.k;
-      if (open) g.open = true;
-      const s = document.createElement('summary');
-      s.className = 'sg-head';
-      s.innerHTML = `<span class="sg-ic">${ic(metaIcon(mk))}</span>
-        <span class="sg-t"><b>${esc(metaTitle(mk))}</b>
-          ${hl.title ? `<small class="sg-now">${st.k === 'done' ? ic('check') : ic('chevronL')} ${esc(hl.title)}${hl.sum ? ' · ' + esc(hl.sum) : ''}</small>` : ''}
-          ${modeTag(rec, mk, list)}</span>
-        <span class="sg-prog">${doneN}/${list.length}</span>
-        <span class="badge ${st.color} sm">${st.label}</span>
-        <span class="sg-chev">${ic('chevron')}</span>`;
-      g.appendChild(s);
-      const body = document.createElement('div');
-      body.className = 'sg-body';
-      list.forEach(el => body.appendChild(el));
-      g.appendChild(body);
-      acc.appendChild(g);
-    });
-    return t.innerHTML;
+    /* השעון — פעימה כל שנייה, בלי לרנדר מחדש את כל המגירה */
+    if (window.__bmTick) { clearInterval(window.__bmTick); window.__bmTick = null; }
+    if (r.slotHold) window.__bmTick = setInterval(() => {
+      const el = document.querySelector('[data-bmclock]');
+      if (!el || !r.slotHold) { clearInterval(window.__bmTick); window.__bmTick = null; return; }
+      const t = leftParts(r.slotHold);
+      el.textContent = (t.hh ? two(t.hh) + ':' : '') + two(t.mm) + ':' + two(t.ss);
+      const bar = el.closest('.bm-bar'); if (bar) bar.classList.toggle('urgent', t.ms <= 120000);
+      if (t.ms <= 0) { clearInterval(window.__bmTick); window.__bmTick = null;
+        if (typeof renderDrawerTab === 'function') renderDrawerTab(r); }
+    }, 1000);
   }
 
   CBX.register({
-    key: 'stgroup', label: 'ציר הטיפול מרוכז בקטגוריות', icon: 'layers',
-    desc: 'השלבים מתקבצים לקטגוריות תהליך-העל. בחוץ מוצג מצב הקטגוריה והשלב הפעיל בלבד, והקטגוריה הפעילה נפתחת לבד. סדר הקריטריונים והשירות בתוך קטגוריית הטיפול נקבע לפי המסלול — הלקוח יודע או לא יודע.',
-    files: ['js/ext/stage-groups.js', 'css/ext/stage-groups.css'],
+    key: 'bookmode', label: 'מסלולי סגירה — מוצר · פגישה · סליקה', icon: 'bolt',
+    desc: 'מוצר נסגר בלי תיאום (עם כפתור הסכם אם נדרש), שירות חינם נסגר במועד + כפתור הנחיות, ושירות בתשלום מציע שיריון זמני עם שעון יורד לשניות, סליקה, או יציאה בלי תאריך. במסך התיאום נוספו תוקף הצעה, קופון והנחה.',
+    files: ['js/ext/booking-modes.js', 'css/ext/booking.css'],
     install() {
-      if (typeof flowHTML === 'function') CBX.wrap('stgroup', 'flowHTML', o => function (r) {
+      /* סרגל אחד בתוך הליד — עם הכפתור שפותח את ממשק התיאום והמכירה */
+      if (typeof flowHTML === 'function') CBX.wrap('bookmode', 'flowHTML', o => function (r) {
         const html = o.apply(this, arguments);
-        try { return regroup(html, r); } catch (e) { console.error('[stgroup]', e); return html; }
+        try {
+          const bar = barHTML(r);
+          return bar ? html.replace('<div class="sec-title">', bar + '<div class="sec-title">') : html;
+        } catch (e) { console.error('[bookmode]', e); return html; }
       });
+
+      if (typeof renderDrawerTab === 'function') CBX.wrap('bookmode', 'renderDrawerTab', o => function (r) {
+        const out = o.apply(this, arguments);
+        try { bind(r); } catch (e) { console.error('[bookmode] bind', e); }
+        return out;
+      });
+
+      /* תוקף · קופון · הנחה — בשלב בחירת השירות/המוצר, ליד סיכום המחיר */
+      if (typeof renderServiceSelect === 'function') CBX.wrap('bookmode', 'renderServiceSelect', o => function () {
+        const out = o.apply(this, arguments);
+        try {
+          const st = (typeof svcSelState !== 'undefined') ? svcSelState : null;
+          const r = st && st.rec, body = document.querySelector('#modal .svc-sel');
+          if (!r || !body || body.querySelector('.bm-offer-box')) return out;
+          const sel = () => (svcSelState && svcSelState.sel) || [];
+          const paid = sel().map(k => (typeof cTreat === 'function') ? cTreat(k) : null)
+            .filter(Boolean).some(t => t.price > 0 || t.requiresBilling);
+          if (!paid) return out;
+          const box = document.createElement('div'); box.className = 'bm-offer-box';
+          const sum = body.querySelector('.svc-summary');
+          sum ? sum.parentNode.insertBefore(box, sum) : body.appendChild(box);
+          mountOffer(box, r, sel);
+        } catch (e) { console.error('[bookmode] offer', e); }
+        return out;
+      });
+
+      CBX._remember('bookmode', () => { if (window.__bmTick) { clearInterval(window.__bmTick); window.__bmTick = null; } });
     },
   });
 
-  window.STGROUP = { regroup };
+  window.BOOKMODE = { mode: modeOf, price: priceOf, offer: offerOf, info: openInfo, flags };
 })();
 
 </script>

@@ -134,3 +134,18 @@
 .dsg-chip.read { color: var(--text-2); }
 .dsg-chip.todo { border-style: dashed; color: var(--amber, #d97706);
   border-color: color-mix(in srgb, var(--amber, #d97706) 45%, transparent); }
+
+/* הרצועה מונפשת בהחלפת מסלול */
+.fl-st { will-change: transform; }
+.fl-strip .fl-st.now { box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 12%, transparent); }
+
+/* ---------- שלב בירור הצורך בתוך הליד ---------- */
+.fl-critstage .fl-sum { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 10px; }
+.fl-sumc { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px;
+  padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+.fl-sumc svg { width: 11px; height: 11px; color: var(--ok, #16a34a); }
+.fl-none { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); margin: 8px 0 10px; }
+.fl-none svg { width: 13px; height: 13px; }
+.fl-none.bad { color: var(--danger, #dc2626); }
+.fl-openbtn { width: 100%; justify-content: center; }
+.fl-openbtn svg { width: 14px; height: 14px; }

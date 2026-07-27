@@ -1,0 +1,75 @@
+/* ============================================================
+   מסלולי סגירה — מוצר · פגישה · סליקה (bookmode)
+   ============================================================ */
+.bm-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 11px 13px; border-radius: 13px; margin: 10px 0 4px;
+  border: 1px solid var(--line); background: var(--surface-2); }
+.bm-bar > svg { width: 16px; height: 16px; flex: 0 0 auto; color: var(--brand); }
+.bm-bar > div { flex: 1 1 190px; min-width: 0; }
+.bm-bar b { display: block; font-size: 13px; }
+.bm-bar small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
+
+.bm-bar.ok { border-color: color-mix(in srgb, var(--ok, #16a34a) 40%, transparent);
+  background: color-mix(in srgb, var(--ok, #16a34a) 6%, transparent); }
+.bm-bar.ok > svg { color: var(--ok, #16a34a); }
+.bm-bar.pay { border-color: color-mix(in srgb, var(--brand) 35%, transparent); }
+.bm-bar.product > svg { color: var(--text-2); }
+
+/* שיריון זמני — כתום עם אזהרה ושעון יורד */
+.bm-bar.hold { border-color: var(--amber, #d97706); border-width: 1.5px;
+  background: color-mix(in srgb, var(--amber, #d97706) 9%, transparent); }
+.bm-bar.hold > svg { color: var(--amber, #d97706); }
+.bm-bar.hold b { color: color-mix(in srgb, var(--amber, #d97706) 80%, var(--text)); }
+.bm-clock { flex: 0 0 auto; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 15px;
+  letter-spacing: .5px; padding: 5px 11px; border-radius: 10px;
+  color: var(--amber, #d97706); background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--amber, #d97706) 45%, transparent); }
+.bm-bar.hold.urgent { border-color: var(--danger, #dc2626);
+  background: color-mix(in srgb, var(--danger, #dc2626) 8%, transparent);
+  animation: bmPulse 1s ease-in-out infinite; }
+.bm-bar.hold.urgent > svg, .bm-bar.hold.urgent b { color: var(--danger, #dc2626); }
+.bm-bar.hold.urgent .bm-clock { color: var(--danger, #dc2626);
+  border-color: color-mix(in srgb, var(--danger, #dc2626) 50%, transparent); }
+@keyframes bmPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,.22); } 50% { box-shadow: 0 0 0 6px rgba(220,38,38,0); } }
+
+/* ---------- הנחיות ומידע ---------- */
+.bm-when { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 10px 12px; border-radius: 11px; margin-bottom: 12px;
+  border: 1px solid var(--line); background: var(--surface-2); font-size: 12.5px; }
+.bm-when svg { width: 14px; height: 14px; color: var(--brand); }
+.bm-when span { color: var(--text-2); font-size: 11.5px; }
+.bm-info-l { display: flex; flex-direction: column; gap: 9px; max-height: 46vh; overflow-y: auto; }
+.bm-info-i { border: 1px solid var(--line); border-radius: 11px; padding: 10px 12px; }
+.bm-info-i > b { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin-bottom: 6px; }
+.bm-info-i > b svg { width: 13px; height: 13px; color: var(--brand); }
+.bm-info-r { display: flex; gap: 8px; font-size: 12px; line-height: 1.6; margin-top: 4px; }
+.bm-info-r span { flex: 0 0 44px; font-size: 10.5px; color: var(--text-2); padding-top: 2px; }
+.bm-info-r p { margin: 0; color: var(--text-2); }
+.bm-info-r.none { color: var(--text-2); font-size: 11.5px; }
+
+/* ---------- תוקף · קופון · הנחה ---------- */
+.bm-offer { border: 1px solid var(--line); border-radius: 13px; padding: 12px; margin: 0 0 12px;
+  background: var(--surface); }
+.bm-offer-h { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 10px; }
+.bm-offer-h svg { width: 14px; height: 14px; color: var(--brand); }
+.bm-offer-h b { font-size: 13px; }
+.bm-offer-h small { font-size: 11px; color: var(--text-2); }
+.bm-offer-g { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 9px; }
+.bm-f { display: flex; flex-direction: column; gap: 4px; }
+.bm-f > span { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-2); }
+.bm-f > span svg { width: 12px; height: 12px; }
+.bm-ok { font-size: 10.5px; color: var(--ok, #16a34a); display: flex; align-items: center; gap: 4px; }
+.bm-bad { font-size: 10.5px; color: var(--danger, #dc2626); display: flex; align-items: center; gap: 4px; }
+.bm-ok svg, .bm-bad svg { width: 11px; height: 11px; }
+.bm-disc { display: flex; gap: 6px; }
+.bm-disc input { flex: 1 1 auto; min-width: 0; }
+.bm-seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+.bm-seg button { font: inherit; font-size: 12px; cursor: pointer; padding: 0 11px;
+  border: 0; background: var(--surface); color: var(--text-2); }
+.bm-seg button.on { background: var(--brand); color: #fff; font-weight: 600; }
+.bm-tot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px;
+  padding-top: 9px; border-top: 1px dashed var(--line); font-size: 12px; color: var(--text-2); }
+.bm-tot b { color: var(--text); }
+.bm-off b { color: var(--ok, #16a34a); }
+.bm-fin { margin-inline-start: auto; font-size: 13px; }
+.bm-fin b { color: var(--brand); font-size: 15px; }
