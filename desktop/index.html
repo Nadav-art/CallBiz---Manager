@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CallBiz Desktop — שולחן עבודה לנציג</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/desktop.css?v=2">
+</head>
+<body>
+
+<!-- ============================================================
+     CallBiz Desktop — אפליקציית שולחן עבודה עצמאית.
+     הזהות וההרשאות מגיעות מה-CRM (js/crm-bridge.js) ולא נשמרות כאן.
+     ============================================================ -->
+<div id="app" class="app">
+
+  <!-- רצועת הניווט -->
+  <aside class="rail" id="rail"></aside>
+
+  <!-- אזור העבודה -->
+  <main class="stage" id="stage"></main>
+
+  <!-- התראות בזמן אמת -->
+  <div class="alerts" id="alerts"></div>
+</div>
+
+<!-- שכבת חלונות -->
+<div class="modal-host" id="modalHost"></div>
+
+<script>window.APP_VERSION = "1.0.0";</script>
+<script src="js/icons.js?v=2"></script>
+<script src="js/crm-bridge.js?v=2"></script>
+<script src="js/telephony.js?v=2"></script>
+<script src="js/diagnostics.js?v=2"></script>
+<script src="js/analytics.js?v=2"></script>
+<script src="js/ui.js?v=2"></script>
+<script src="js/updater.js?v=2"></script>
+<script src="js/app.js?v=2"></script>
+</body>
+</html>
