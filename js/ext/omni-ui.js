@@ -65,9 +65,9 @@
     const done = list.filter(c => isOn(c.key));
     const needRoute = done.filter(c => !routed(c.key));
     return `<div class="ou">
-      <div class="view-head">
-        <div class="vh-title"><span class="num">${ic('chat')}</span> ערוצים
-          <span class="muted">· כל דרכי התקשורת עם הלקוחות במקום אחד</span></div>
+      <div class="view-head ou-head">
+        <div class="vh-title"><span class="num">${ic('chat')}</span> ערוצי תקשורת
+          <span class="muted">· חיבור וניהול של כל הערוצים שמזינים את רשימת השיחות</span></div>
         <div class="vh-actions">
           ${done.length ? `<button class="btn sm" data-ouwiz>${ic('bolt')} אשף חיבור</button>` : ''}
           ${O() && O().can('logs') ? `<button class="btn sm ghost" data-ouadmin>${ic('lock')} תצוגת מנהל CallBiz</button>` : ''}
@@ -274,6 +274,8 @@
      ============================================================ */
   let inView = false;
   function render() {
+    if (typeof platView !== 'undefined' && platView === 'admin' && typeof renderChatPlatform === 'function')
+      return renderChatPlatform();
     if (!inView) return;
     const host = document.getElementById('viewHost'); if (!host) return;
     host.innerHTML = screenHTML();
@@ -307,30 +309,28 @@
     desc: '"ערוצים" בתפריט הראשי: כרטיס לכל ערוץ עם סטטוס בצבע ובטקסט, חיבור בחלון אחד (הסבר → אישור → בחירת נכס → הצלחה → הגדרות), פס התקדמות, כרטיס "נותר שלב אחד" וכפתורי פעולה מהירים. פרטים טכניים מוסתרים ושמורים למסך מנהל CallBiz.',
     files: ['js/ext/omni-ui.js', 'css/ext/omni-ui.css'],
     install() {
-      if (typeof NAV === 'undefined') return;
-      if (!NAV.some(n => n.key === 'omni'))
-        CBX.push('omniui', NAV, { key: 'omni', label: 'ערוצים', icon: 'chat' });
+      /* המסך חי בתוך ממשק ניהול הוואטסאפ — אין פריט תפריט נפרד,
+         כך שהוא זמין גם בנייד דרך אותו מסך. */
+      if (typeof renderChatPlatform !== 'function') return;
 
-      /* כניסה לתפריט */
-      CBX.delegate('omniui', '[data-nav="omni"]', () => {
-        inView = true;
-        if (!wizDone() && !conns().some(c => isOn(c.key))) { render(); setTimeout(openWizard, 60); return; }
-        render();
-      });
-      /* יציאה מהמסך כשעוברים לטאב אחר */
-      CBX.delegate('omniui', '[data-nav]', el => { if (el.dataset.nav !== 'omni') inView = false; });
-
-      if (typeof renderNav === 'function') CBX.wrap('omniui', 'renderNav', o => function () {
+      /* הכל נשתל בתוך "ניהול ובקרה" — אין מסך נפרד ואין טאב נוסף,
+         כך שזה עובד גם בנייד באותו מקום שבו מנהלים את הצ׳אט. */
+      CBX.wrap('omniui', 'renderChatPlatform', o => function () {
         const out = o.apply(this, arguments);
         try {
-          const b = document.querySelector('[data-nav="omni"]');
-          if (b && !b.querySelector('.ou-badge')) {
-            const need = conns().filter(c => isOn(c.key) && !routed(c.key)).length;
-            if (need) { const s = document.createElement('span'); s.className = 'ou-badge'; s.textContent = need; b.appendChild(s); }
-          }
-        } catch (e) {}
+          if (typeof platView === 'undefined' || platView !== 'admin') return out;
+          const host = document.querySelector('.plat');
+          if (!host || host.querySelector('.ou')) return out;
+          const box = document.createElement('div');
+          box.className = 'plat-omni';
+          box.innerHTML = screenHTML();
+          host.appendChild(box);
+          inView = true; bind();
+          if (!wizDone() && !conns().some(c => isOn(c.key))) setTimeout(openWizard, 80);
+        } catch (e) { console.error('[omniui]', e); }
         return out;
       });
+
     },
   });
 

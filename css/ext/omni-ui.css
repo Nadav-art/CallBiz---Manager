@@ -121,3 +121,14 @@
   color: #fff; background: var(--amber, #B7791F); }
 
 @media (max-width: 640px) { .ou-grid { grid-template-columns: 1fr; } }
+
+/* המסך בתוך ממשק ניהול הוואטסאפ */
+.plat-omni { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 16px 24px 24px;
+  max-width: 1080px; width: 100%; margin-inline: auto; }
+.plat-omni .view-head { margin-bottom: 12px; }
+.plat-head-actions .ou-badge { margin-inline-start: 5px; }
+@media (max-width: 720px) { .plat-omni { padding: 12px; } }
+
+/* משתל בתוך "ניהול ובקרה" ולא כמסך נפרד */
+.plat > .plat-omni { border-top: 1px solid var(--line); margin-top: 4px; }
+.ou-head { padding-top: 4px; }

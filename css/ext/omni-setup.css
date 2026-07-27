@@ -1,0 +1,62 @@
+/* ============================================================
+   מדריך הקמת ערוצים ותשתית (omnisetup)
+   ============================================================ */
+.os-sub { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
+.os-body { max-height: 60vh; overflow-y: auto; padding-inline-end: 2px; }
+.os-prog { display: flex; align-items: center; gap: 10px; margin-bottom: 13px; }
+.os-bar { flex: 1 1 auto; height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.os-bar i { display: block; height: 100%; background: var(--brand); border-radius: 999px; transition: width .3s; }
+.os-prog span { font-size: 11.5px; color: var(--text-2); }
+.os-sec { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin: 14px 0 7px; }
+.os-sec:first-of-type { margin-top: 0; }
+.os-sec svg { width: 13px; height: 13px; color: var(--brand); }
+.os-pre { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.os-pre li { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; color: var(--text-2); line-height: 1.55; }
+.os-pre svg { width: 12px; height: 12px; flex: 0 0 auto; margin-top: 3px; color: var(--text-3, var(--text-2)); }
+.os-steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.os-steps li { display: flex; align-items: flex-start; gap: 10px; padding: 10px 11px; border-radius: 12px;
+  border: 1px solid var(--line); background: var(--surface); }
+.os-steps li.on { border-color: color-mix(in srgb, var(--ok, #16a34a) 40%, transparent);
+  background: color-mix(in srgb, var(--ok, #16a34a) 5%, transparent); }
+.os-steps b { display: block; font-size: 12.5px; }
+.os-steps small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 3px; line-height: 1.6; }
+.os-ck { flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font: inherit;
+  font-size: 11.5px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--text-2); }
+.os-steps li.on .os-ck { background: var(--ok, #16a34a); border-color: var(--ok, #16a34a); color: #fff; }
+.os-ck svg { width: 12px; height: 12px; }
+.os-alt { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 13px; padding: 11px 12px;
+  border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--brand) 40%, transparent);
+  background: color-mix(in srgb, var(--brand) 5%, transparent); }
+.os-alt > svg { width: 15px; height: 15px; color: var(--brand); }
+.os-alt > div { flex: 1 1 170px; }
+.os-alt b { display: block; font-size: 12.5px; }
+.os-alt small { display: block; font-size: 11px; color: var(--text-2); margin-top: 2px; }
+.os-tech { margin-top: 13px; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--surface-2); }
+.os-tech summary { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; color: var(--text-2); }
+.os-tech summary svg { width: 12px; height: 12px; }
+.os-tech ul { margin: 9px 0 0; padding-inline-start: 18px; font-size: 11.5px; color: var(--text-2); line-height: 1.7; }
+.os-tech p { display: flex; align-items: flex-start; gap: 6px; margin: 8px 0 0; font-size: 11px; color: var(--amber, #B7791F); }
+.os-tech p svg { width: 12px; height: 12px; flex: 0 0 auto; margin-top: 2px; }
+.os-guide-btn svg { width: 12px; height: 12px; }
+
+/* ---------- טופס IMAP ---------- */
+.os-l { font-size: 12.5px; color: var(--text-2); line-height: 1.65; margin: 2px 0 12px; }
+.os-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.os-f { display: flex; flex-direction: column; gap: 5px; }
+.os-f span { font-size: 11.5px; color: var(--text-2); }
+.os-sw { display: flex; align-items: center; gap: 8px; font-size: 12.5px; margin-top: 10px; }
+.os-warn { display: flex; align-items: flex-start; gap: 7px; font-size: 11px; color: var(--amber, #B7791F);
+  line-height: 1.6; margin: 11px 0 0; }
+.os-warn svg { width: 12px; height: 12px; flex: 0 0 auto; margin-top: 2px; }
+.os-warn code { font-size: 10.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+
+/* ---------- תשתית ---------- */
+.os-infra { display: flex; flex-direction: column; gap: 6px; }
+.os-infra-i { display: flex; align-items: flex-start; gap: 9px; padding: 9px 11px; border-radius: 11px;
+  border: 1px solid var(--line); background: var(--surface); }
+.os-i-d { width: 8px; height: 8px; flex: 0 0 auto; margin-top: 5px; border-radius: 50%; background: var(--text-3, #9A9EB1); }
+.os-i-d.must { background: var(--danger, #dc2626); }
+.os-infra-i b { display: block; font-size: 12.5px; }
+.os-infra-i small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 2px; line-height: 1.6; }
+@media (max-width: 560px) { .os-grid2 { grid-template-columns: 1fr; } }
