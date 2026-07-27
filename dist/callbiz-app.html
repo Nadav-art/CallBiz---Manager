@@ -7581,13 +7581,85 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 .ck-tag.btn-like { cursor: pointer; font: inherit; font-size: 10.5px; font-weight: 600; }
 .ck-tag.btn-like:hover { filter: brightness(.95); }
 
+</style>
+  <style>
+/* ============================================================
+   שלבי המהלך לפי דרישות הפריט (flowsteps)
+   ============================================================ */
 
-/* מעבר בין שלבים — הבהוב עדין של התוכן בלבד */
-#modal.fl-modal { transition: none; }
-#modal.fl-modal .modal-body, #modal.fl-modal .modal-head, #modal.fl-modal .modal-foot {
-  transition: opacity .1s ease, transform .1s ease; }
-#modal.fl-swapping .modal-body { opacity: 0; transform: translateY(4px); }
-#modal.fl-swapping .modal-foot { opacity: .45; }
+/* ---------- פריט נעול — אותה שפה כמו קריטריון חסום ---------- */
+.svc-card.fs-locked { position: relative; cursor: not-allowed; opacity: .5;
+  border-style: dashed !important;
+  background-image: repeating-linear-gradient(135deg,
+    color-mix(in srgb, var(--text-2) 13%, transparent) 0 5px, transparent 5px 10px); }
+.svc-card.fs-locked:hover { opacity: .66; }
+.svc-card.fs-locked .svc-check { visibility: hidden; }
+.svc-card.fs-locked .cfx-q { position: absolute; inset-inline-start: 9px; top: 9px; }
+.svc-card.fs-hidden { display: none; }
+.svc-tag.fs-lock { color: var(--text-2); border: 1px dashed var(--line); background: var(--surface); }
+.svc-tag.fs-lock svg { width: 11px; height: 11px; }
+
+/* ---------- הצ׳יפ "רק תואמים" ---------- */
+.fs-filter { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin: 0 0 10px; }
+.fs-chip { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; cursor: pointer;
+  padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--text-2); }
+.fs-chip svg { width: 12px; height: 12px; }
+.fs-chip:hover { border-color: var(--brand); color: var(--text); }
+.fs-chip.on { border-color: var(--brand); color: var(--brand); font-weight: 600;
+  background: color-mix(in srgb, var(--brand) 9%, transparent); }
+.fs-filter small { font-size: 11px; color: var(--text-2); }
+
+/* ---------- סיכום ---------- */
+.fs-sum { max-height: calc(100vh - 48px); overflow-y: auto; }
+.fs-sub { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
+.fs-sec { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin: 4px 0 8px; }
+.fs-sec svg { width: 13px; height: 13px; color: var(--brand); }
+.fs-sec.sm { font-size: 12px; margin-bottom: 6px; }
+.fs-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.fs-item { border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; background: var(--surface); }
+.fs-it-h { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+.fs-it-h b { font-size: 13px; }
+.fs-it-m { font-size: 11.5px; color: var(--text-2); }
+.fs-note { display: flex; gap: 8px; margin-top: 8px; font-size: 11.5px; line-height: 1.6; }
+.fs-note span { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px;
+  color: var(--text-2); padding: 2px 8px; border-radius: 999px; background: var(--surface-2);
+  border: 1px solid var(--line); height: fit-content; white-space: nowrap; }
+.fs-note span svg { width: 11px; height: 11px; }
+.fs-note p { margin: 0; color: var(--text-2); }
+.fs-note.in span { color: var(--brand); border-color: color-mix(in srgb, var(--brand) 30%, transparent);
+  background: color-mix(in srgb, var(--brand) 8%, transparent); }
+.fs-none { font-size: 12px; color: var(--text-2); }
+
+.fs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.fs-box { border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; background: var(--surface-2); }
+.fs-kv { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 3px 0; }
+.fs-kv span { display: inline-flex; align-items: center; gap: 5px; color: var(--text-2); }
+.fs-kv span svg { width: 12px; height: 12px; }
+.fs-kv b { margin-inline-start: auto; }
+.fs-kv b.ok { color: var(--ok, #16a34a); }
+.fs-kv b.need { color: var(--brand); }
+.fs-kv b.no { color: var(--text-2); font-weight: 500; }
+.fs-kv.big { font-size: 13px; padding: 9px 0; }
+.fs-kv.big b { font-size: 19px; color: var(--brand); }
+
+/* ---------- סליקה ---------- */
+.fs-hold { display: flex; align-items: flex-start; gap: 8px; padding: 10px 11px; border-radius: 11px;
+  margin-bottom: 12px; border: 1px solid var(--amber, #B7791F);
+  background: color-mix(in srgb, var(--amber, #B7791F) 9%, transparent); }
+.fs-hold svg { width: 13px; height: 13px; flex: 0 0 auto; margin-top: 1px; color: var(--amber, #B7791F); }
+.fs-hold b { display: block; font-size: 12.5px; }
+.fs-hold small { display: block; font-size: 11px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
+.fs-hold.warn { border-color: var(--danger, #dc2626);
+  background: color-mix(in srgb, var(--danger, #dc2626) 7%, transparent); }
+.fs-hold.warn svg { color: var(--danger, #dc2626); }
+.fs-hint { display: flex; align-items: flex-start; gap: 7px; font-size: 11.5px; color: var(--text-2);
+  line-height: 1.65; margin: 10px 0 4px; }
+.fs-hint svg { width: 13px; height: 13px; flex: 0 0 auto; margin-top: 2px; color: var(--amber, #B7791F); }
+.cbc-actions.col { flex-direction: column; align-items: stretch; gap: 7px; }
+.cbc-actions.col .btn { justify-content: center; }
+
+@media (max-width: 640px) { .fs-grid { grid-template-columns: 1fr; } }
 
 </style>
   <style>
@@ -30354,7 +30426,19 @@ function openExtPanel() {
   const S_CRIT = { key: 'crit', label: 'קריטריונים', icon: 'settings' };
   const S_SVC = { key: 'svc', label: 'שירות / מוצר', icon: 'layers' };
   const S_CAL = { key: 'cal', label: 'תיאום', icon: 'calendar' };
-  const stepsOf = r => modeOf(r) === 'unknown' ? [S_CRIT, S_SVC, S_CAL] : [S_SVC, S_CRIT, S_CAL];
+  const STEP_DEF = { crit: S_CRIT, svc: S_SVC, cal: S_CAL,
+    contract: { key: 'contract', label: 'הסכם', icon: 'docs' },
+    pay:      { key: 'pay',      label: 'סליקה', icon: 'check' },
+    summary:  { key: 'summary',  label: 'סיכום', icon: 'note' } };
+  /* ספק חיצוני (flow-steps) גוזר את השלבים מדרישות הפריטים.
+     בלעדיו — שלושת השלבים הבסיסיים, כפי שהיה. */
+  const stepsOf = r => {
+    if (typeof window.FLOW_STEPS_PROVIDER === 'function') {
+      const out = (window.FLOW_STEPS_PROVIDER(r) || []).map(k => STEP_DEF[k]).filter(Boolean);
+      if (out.length) return out;
+    }
+    return modeOf(r) === 'unknown' ? [S_CRIT, S_SVC, S_CAL] : [S_SVC, S_CRIT, S_CAL];
+  };
 
   /* ---------------- בדיקת ההתאמה ---------------- */
   const reqMissing = r => (typeof needsMissingRequired === 'function') ? needsMissingRequired(r) : [];
@@ -30419,14 +30503,18 @@ function openExtPanel() {
     const miss = reqMissing(r);
     /* חסם ברמת המוצר קודם — הוא מסביר את עצמו טוב יותר */
     const bad = svcs.map(k => {
-      const st = staffFor(r, k);
+      /* מוצר שאינו דורש פגישה אינו זקוק למטפל — אין לחסום אותו על כך */
+      const t = (typeof cTreat === 'function') ? cTreat(k) : null;
+      const needsStaff = !t || t.requiresMeeting;
+      const st = needsStaff ? staffFor(r, k) : { ok: true, why: '' };
       return { k, why: svcBlocked(r, k) || (st.ok ? null : st.why) };
     }).filter(x => x.why);
     if (bad.length) return { ok: false, blame: 'product', bad, miss, slots: 0 };
     if (miss.length) return { ok: false, blame: 'crit', bad: [], miss, slots: 0, reasons: [] };
-    if (!window.CRITFX || !svcs.length) return { ok: true, blame: '', bad: [], miss, slots: -1 };
+    const meetSvcs = svcs.filter(k => { const t = (typeof cTreat === 'function') ? cTreat(k) : null; return !t || t.requiresMeeting; });
+    if (!window.CRITFX || !meetSvcs.length) return { ok: true, blame: '', bad: [], miss, slots: -1 };
 
-    const pool = window.CRITFX.candidates(r);
+    const pool = window.CRITFX.candidates(Object.assign({}, r, { services: meetSvcs }));
     if (!pool) return { ok: true, blame: '', bad: [], miss, slots: -1 };
     const needs = Object.assign({}, r.needs || {}); delete needs.note;
     const n = window.CRITFX.countFor(r, pool, needs);
@@ -30480,20 +30568,9 @@ function openExtPanel() {
   /* החלפת שלב בתוך אותו חלון: הבהוב עדין של התוכן בלבד, בלי
      שהחלון ייסגר וייפתח — כדי שהמעבר ירגיש רציף ולא כמו קפיצה
      למסך אחר. הגובה והרוחב כבר נעולים ב-sizeModal. */
-  function swapStep(fn) {
-    const m = document.getElementById('modal');
-    if (!m) { fn(); return; }
-    m.classList.add('fl-swapping');
-    setTimeout(() => {
-      fn();
-      const m2 = document.getElementById('modal');
-      if (!m2) return;
-      m2.classList.add('fl-swapping');
-      requestAnimationFrame(() => m2.classList.remove('fl-swapping'));
-      setTimeout(() => m2.classList.remove('fl-swapping'), 30);
-    }, 110);
-  }
-
+  /* החלפת שלב — מיידית, בלי אנימציה. החלון פתוח וממודד קבוע,
+     ולכן החלפת התוכן לבדה מספיקה. */
+  function swapStep(fn) { fn(); }
   function stripRects(host) {
     const m = {};
     (host ? host.querySelectorAll('[data-flgo]') : []).forEach(el => { m[el.dataset.flgo] = el.getBoundingClientRect().left; });
@@ -30559,6 +30636,10 @@ function openExtPanel() {
       if (k === 'crit') { const before = snapshot(r);
         swapStep(() => openNeedsClarify(r, () => { if (typeof after === 'function') after(); checkAfterCritChange(r, before); })); }
       else if (k === 'svc') { swapStep(() => { if (typeof openServiceSelect === 'function') openServiceSelect(r); }); }
+      else if (k === 'contract' || k === 'pay' || k === 'summary') {
+        if (typeof closeModal === 'function') closeModal();
+        if (window.FLOWSTEPS) setTimeout(() => FLOWSTEPS.open(r, k), 60);
+      }
       else if (k === 'cal') {
         const rd = readiness(r);
         if (!rd.ok) { toast(rd.blame === 'product' ? 'המוצר שנבחר אינו מתאים — יש לבחור חלופה' : 'צריך לעדכן קריטריונים — אין מועד מתאים'); return; }
@@ -30781,6 +30862,11 @@ function openExtPanel() {
                  מחדש, אחרת המסך "קופץ" ונראה כאילו עברנו למקום אחר. */
               if (nxt.key === 'svc') return swapStep(() => {
                 if (typeof openServiceSelect === 'function') openServiceSelect(rec); });
+              if (['contract', 'pay', 'summary'].indexOf(nxt.key) >= 0) {
+                if (typeof closeModal === 'function') closeModal();
+                if (window.FLOWSTEPS) setTimeout(() => FLOWSTEPS.open(rec, nxt.key), 60);
+                return;
+              }
               if (nxt.key === 'cal') {
                 const rd2 = readiness(rec);
                 if (!rd2.ok) { toast(rd2.blame === 'product' ? 'המוצר שנבחר אינו מתאים — יש לבחור חלופה' : 'אין מועד בקריטריונים שנבחרו');
@@ -30896,6 +30982,335 @@ function openExtPanel() {
 
   window.FLOW = { mode: modeOf, blocked: svcBlocked, staffFor, alternatives, related: relatedTo,
     missing: reqMissing, check: checkAfterCritChange, readiness, steps: stepsOf };
+})();
+
+</script>
+  <script>
+/* ============================================================
+   הרחבה: שלבי המהלך לפי דרישות הפריט  ·  key = 'flowsteps'
+   ------------------------------------------------------------
+   מטפל במסלול "הלקוח לא יודע מה הוא רוצה" בלבד, ובדיוק במצבים
+   שהוגדרו:
+
+     אין פגישה · אין סליקה · אין הסכם
+        קריטריונים → שירות/מוצר → סיכום            (שלב 3)
+
+     נדרשת פגישה, בלי סליקה
+        קריטריונים → שירות/מוצר → תיאום → סיכום     (שלב 4)
+
+     נדרשת סליקה + פגישה
+        ... → תיאום (קופץ שיריון) → סליקה → סיכום
+        זמן שיריון 0 = אין שיריון בלי תשלום.
+
+     נדרשת סליקה בלי פגישה (רכישת מוצר)
+        ... → סליקה → סיכום        — בלי מסך תיאום כלל.
+
+   הדרישות מוגדרות ברשימה אחת (REQS) כדי שאפשר יהיה להוסיף
+   דרישות נוספות בעתיד והן יחולו על כל המהלך אוטומטית:
+       FLOWSTEPS.addReq({ key, label, test, step })
+   ============================================================ */
+(function () {
+
+  /* ---------------- מרשם הדרישות ---------------- */
+  const REQS = [
+    { key: 'meeting',  label: 'פגישה', icon: 'calendar', step: 'cal',      test: t => !!t.requiresMeeting },
+    { key: 'billing',  label: 'סליקה', icon: 'check',    step: 'pay',      test: t => !!t.requiresBilling },
+    { key: 'contract', label: 'הסכם',  icon: 'docs',     step: 'contract', test: t => !!t.requiresContract },
+  ];
+  const addReq = req => { if (req && req.key && !REQS.some(x => x.key === req.key)) REQS.push(req); };
+
+  const treats = r => ((r && r.services) || []).map(k => (typeof cTreat === 'function') ? cTreat(k) : null).filter(Boolean);
+  function reqsOf(r, keys) {
+    const list = (keys ? keys.map(k => cTreat(k)).filter(Boolean) : treats(r));
+    const on = {};
+    REQS.forEach(q => { on[q.key] = list.some(q.test); });
+    return { list, on, none: REQS.every(q => !on[q.key]) };
+  }
+  /* האם יש בכלל במערכת פריט שדורש פגישה — קובע אם מסך התיאום רלוונטי */
+  const catalogHasMeeting = () => (typeof COORD_TREATMENTS !== 'undefined')
+    && COORD_TREATMENTS.some(t => t.requiresMeeting);
+
+  /* ---------------- השלבים ---------------- */
+  function steps(r) {
+    const mode = (window.FLOW && FLOW.mode) ? FLOW.mode(r) : 'unknown';
+    const base = mode === 'unknown' ? ['crit', 'svc'] : ['svc', 'crit'];
+    const q = reqsOf(r);
+    if (!q.list.length) return base.concat(['summary']);
+    const out = base.slice();
+    if (q.on.contract) out.push('contract');
+    /* פגישה — רק אם פריט דורש אותה, או שסומנה פגישה פנימית לקידום */
+    if (q.on.meeting || r.internalMeet) out.push('cal');
+    if (q.on.billing) out.push('pay');
+    out.push('summary');
+    return out;
+  }
+
+  /* ---------------- שיריון ---------------- */
+  const holdMins = () => {
+    if (typeof NEEDS_CFG !== 'undefined' && NEEDS_CFG.__holdMin !== undefined) return +NEEDS_CFG.__holdMin || 0;
+    return (typeof holdMinutes === 'function') ? holdMinutes() : 10;
+  };
+  const holdAllowed = () => holdMins() > 0;
+
+  /* ---------------- חסימת פריט שאינו עומד בקריטריונים ---------------- */
+  function svcBlock(r, key) {
+    const t = (typeof cTreat === 'function') ? cTreat(key) : null;
+    if (!t) return null;
+    /* 1. שאלון ההתאמה והאזור */
+    if (window.FLOW && FLOW.blocked) { const w = FLOW.blocked(r, key); if (w) return { why: w, short: 'לא מתאים ללקוח' }; }
+    /* 2. מטפל מתאים — רלוונטי רק לפריט שדורש פגישה. מוצר נמכר
+          בלי מטפל, ולכן אין טעם לחסום אותו על "אין מטפל". */
+    if (t.requiresMeeting && window.FLOW && FLOW.staffFor) {
+      const st = FLOW.staffFor(r, key); if (!st.ok) return { why: st.why, short: 'אין מטפל מתאים' };
+    }
+    /* 3. זמינות אמיתית ביומן — רק לפריט שדורש פגישה */
+    if (t.requiresMeeting && window.CRITFX) {
+      const rt = { id: r.id, name: r.name, city: r.city, services: [key], needs: r.needs || {} };
+      const pool = CRITFX.candidates(rt);
+      if (pool && pool.length) {
+        const needs = Object.assign({}, r.needs || {}); delete needs.note;
+        if (!CRITFX.countFor(rt, pool, needs))
+          return { why: 'אין מועד פנוי לשירות הזה בקריטריונים שנבחרו — יש לשנות קריטריון או לבחור פריט אחר',
+            short: 'אין מועד בקריטריונים' };
+      } else if (pool) {
+        return { why: 'אין סניף פעיל שמספק את השירות הזה', short: 'אין סניף שמספק' };
+      }
+    }
+    return null;
+  }
+
+  /* פופ-אפ ההסבר — אותו רכיב שבמסך הקריטריונים */
+  function tip(anchor, text, title) {
+    const old = document.getElementById('cfxTip'); if (old) old.remove();
+    const t = document.createElement('div'); t.className = 'cfx-tip'; t.id = 'cfxTip';
+    t.innerHTML = `<div class="cfx-tip-h">${ic('lock')} <b>${esc(title || 'למה הפריט נעול')}</b>
+      <button class="cfx-tip-x" aria-label="סגור">${ic('close')}</button></div><p>${esc(text)}</p>`;
+    document.body.appendChild(t);
+    const rc = anchor.getBoundingClientRect(), tw = t.offsetWidth || 260, th = t.offsetHeight || 90;
+    t.style.left = Math.min(window.innerWidth - tw - 8, Math.max(8, rc.left + rc.width / 2 - tw / 2)) + 'px';
+    t.style.top = (rc.bottom + 8 + th > window.innerHeight - 8 ? Math.max(8, rc.top - th - 8) : rc.bottom + 8) + 'px';
+    t.querySelector('.cfx-tip-x').addEventListener('click', () => t.remove());
+    setTimeout(() => document.addEventListener('mousedown', function out(e) {
+      if (!e.target.closest('#cfxTip') && !e.target.closest('.cfx-q')) { t.remove(); document.removeEventListener('mousedown', out); }
+    }), 0);
+  }
+
+  let onlyFit = false;   // הצ׳יפ "רק תואמים"
+
+  /* ---------------- סיכום ---------------- */
+  function openSummary(r) {
+    const q = reqsOf(r);
+    const price = (window.BOOKMODE && BOOKMODE.price) ? BOOKMODE.price(r) : { base: 0, disc: 0, final: 0 };
+    const dur = q.list.reduce((s, t) => s + (+t.dur || 0), 0);
+    const old = document.getElementById('fsSum'); if (old) old.remove();
+    const w = document.createElement('div'); w.className = 'cbc-wrap'; w.id = 'fsSum';
+    const money = n => (n || 0).toLocaleString('he-IL') + ' ₪';
+    w.innerHTML = `<div class="cbc-box fs-sum" style="max-width:640px;text-align:start">
+      <div class="cbc-head"><span class="cbc-ic">${ic('check')}</span>
+        <div><b>סיכום</b><small class="fs-sub">${esc(r.name)}${r.org ? ' · ' + esc(r.org) : ''}</small></div></div>
+
+      <div class="fs-sec">${ic('layers')} <b>מה נבחר</b></div>
+      <div class="fs-items">${q.list.map(t => `<div class="fs-item">
+        <div class="fs-it-h"><b>${esc(t.label)}</b>
+          <span class="fs-it-m">${t.kind ? esc(t.kind) : ''}${t.dur ? ' · ' + t.dur + ' דק׳' : ''}${t.price ? ' · ' + money(t.price) : ' · ללא עלות'}</span></div>
+        ${t.pre ? `<div class="fs-note"><span>${ic('note')} הנחיות ללקוח</span><p>${esc(t.pre)}</p></div>` : ''}
+        ${t.instr ? `<div class="fs-note in"><span>${ic('tasks')} הנחיות פנימיות</span><p>${esc(t.instr)}</p></div>` : ''}
+      </div>`).join('') || '<p class="fs-none">לא נבחרו פריטים</p>'}</div>
+
+      <div class="fs-grid">
+        <div class="fs-box">
+          <div class="fs-sec sm">${ic('check')} <b>סיכום</b></div>
+          <div class="fs-kv"><span>פריטים</span><b>${q.list.length}</b></div>
+          ${dur ? `<div class="fs-kv"><span>זמן כולל</span><b>${dur} דק׳</b></div>` : ''}
+          <div class="fs-kv"><span>עלות</span><b>${price.base ? money(price.final) : 'ללא עלות'}</b></div>
+          ${r.meeting ? `<div class="fs-kv"><span>מועד</span><b>${esc(r.meeting.date)} ${esc(r.meeting.time)}</b></div>` : ''}
+          ${r.paid ? `<div class="fs-kv"><span>תשלום</span><b class="ok">שולם · ${esc(r.paid.ref || '')}</b></div>` : ''}
+        </div>
+        <div class="fs-box">
+          <div class="fs-sec sm">${ic('bolt')} <b>מה נדרש בפריטים</b></div>
+          ${REQS.map(x => `<div class="fs-kv"><span>${ic(x.icon)} ${esc(x.label)}</span>
+            <b class="${q.on[x.key] ? 'need' : 'no'}">${q.on[x.key] ? 'נדרש' : 'לא נדרש'}</b></div>`).join('')}
+        </div>
+      </div>
+
+      <div class="cbc-actions">
+        <button class="btn ghost" id="fsBack">${ic('layers')} חזרה לפריטים</button>
+        <button class="btn primary" id="fsDone">${ic('check')} סיום</button>
+      </div></div>`;
+    document.body.appendChild(w);
+    w.querySelector('#fsBack').addEventListener('click', () => { w.remove(); if (typeof openServiceSelect === 'function') openServiceSelect(r); });
+    w.querySelector('#fsDone').addEventListener('click', () => {
+      w.remove(); r.dealDone = true;
+      toast('המהלך הושלם');
+      if (typeof renderDrawerTab === 'function') renderDrawerTab(r);
+      if (typeof renderList === 'function') renderList();
+    });
+  }
+
+  /* ---------------- סליקה ---------------- */
+  function openPay(r) {
+    const q = reqsOf(r);
+    const price = (window.BOOKMODE && BOOKMODE.price) ? BOOKMODE.price(r) : { final: 0 };
+    const dep = q.list.reduce((s, t) => s + (+t.deposit || 0), 0);
+    const due = dep || price.final;
+    const money = n => (n || 0).toLocaleString('he-IL') + ' ₪';
+    const old = document.getElementById('fsPay'); if (old) old.remove();
+    const w = document.createElement('div'); w.className = 'cbc-wrap'; w.id = 'fsPay';
+    w.innerHTML = `<div class="cbc-box fs-box2" style="max-width:520px;text-align:start">
+      <div class="cbc-head"><span class="cbc-ic">${ic('check')}</span><b>סליקה · ${esc(r.name)}</b></div>
+      ${r.slotHold ? `<div class="fs-hold">${ic('lock')} <b>המועד בשיריון זמני</b>
+          <small>${typeof cDayLbl === 'function' ? cDayLbl(r.slotHold.date) : ''} ${typeof fmtH === 'function' ? fmtH(r.slotHold.h) : ''}
+          · הסליקה תהפוך אותו לתור קבוע</small></div>`
+        : (q.on.meeting ? `<div class="fs-hold warn">${ic('alert')} <b>אין שיריון פעיל</b>
+            <small>${holdAllowed() ? 'המועד לא נשמר' : 'זמן השיריון בהגדרות הוא 0 — לא ניתן לשריין בלי תשלום'}</small></div>` : '')}
+      <div class="fs-kv big"><span>לתשלום</span><b>${money(due)}</b></div>
+      ${dep && price.final > dep ? `<div class="fs-kv"><span>יתרה</span><b>${money(price.final - dep)}</b></div>` : ''}
+      <p class="fs-hint">${ic('alert')} הסליקה מתבצעת כרגע בפלטפורמה חיצונית. אפשר לשלוח קישור,
+        או לאשר כאן שהתשלום כבר בוצע — והמערכת תמשיך בהתאם.</p>
+      <div class="cbc-actions col">
+        <button class="btn" id="fsPayLink">${ic('sync')} שליחת קישור סליקה ללקוח</button>
+        <button class="btn primary" id="fsPayOK">${ic('check')} אשר שבוצעה סליקה</button>
+        <button class="btn ghost" id="fsPayX">חזרה</button>
+      </div></div>`;
+    document.body.appendChild(w);
+    const done = (ref, note) => {
+      r.paid = { at: (typeof docStamp === 'function') ? docStamp() : '', amount: due, ref, mode: 'external' };
+      if (r.slotHold) {   /* השיריון הופך לתור קבוע */
+        const s = (typeof coordPool === 'function') ? coordPool().find(x => x.id === r.slotHold.slotId) : null;
+        if (s) { s.booked = true; s.held = false; }
+        r.meeting = { date: (typeof ptFmtDate === 'function') ? ptFmtDate(r.slotHold.date) : r.slotHold.date,
+          time: (typeof fmtH === 'function') ? fmtH(r.slotHold.h) : '', dur: 60,
+          channel: r.slotHold.staffName || '', with: r.slotHold.staffName || '' };
+        if (typeof SLOT_HOLDS !== 'undefined') SLOT_HOLDS = SLOT_HOLDS.filter(x => x.id !== r.slotHold.id);
+        r.slotHold = null;
+      }
+      w.remove(); toast(note);
+      if (typeof renderDrawerTab === 'function') renderDrawerTab(r);
+      openSummary(r);
+    };
+    w.querySelector('#fsPayLink').addEventListener('click', () => {
+      r.payLinkSent = true; toast('קישור סליקה נשלח ללקוח · הפנייה תתעדכן עם החיווי');
+      w.remove(); openSummary(r);
+    });
+    w.querySelector('#fsPayOK').addEventListener('click', () => done('EXT-' + ((r.id || 0) * 7 + 1000), 'הסליקה אושרה · ' + money(due)));
+    w.querySelector('#fsPayX').addEventListener('click', () => w.remove());
+  }
+
+  /* ---------------- ניווט ---------------- */
+  function open(r, key) {
+    if (key === 'crit' && typeof openNeedsClarify === 'function') return openNeedsClarify(r);
+    if (key === 'svc' && typeof openServiceSelect === 'function') return openServiceSelect(r);
+    if (key === 'cal' && typeof openProposedTimes === 'function') return openProposedTimes(r);
+    if (key === 'pay') return openPay(r);
+    if (key === 'summary') return openSummary(r);
+  }
+  function next(r, from) {
+    const st = steps(r), i = st.indexOf(from);
+    const k = st[i + 1]; if (!k) return;
+    open(r, k);
+  }
+
+  CBX.register({
+    key: 'flowsteps', label: 'שלבי המהלך לפי דרישות הפריט', icon: 'bolt',
+    desc: 'הפריטים שאינם עומדים בקריטריונים ננעלים במסך הבחירה באותה שפה כמו במסך הקריטריונים, עם צ׳יפ "רק תואמים". השלבים נגזרים מהדרישות: בלי פגישה/סליקה/הסכם — ישר לסיכום; עם פגישה — תיאום ואז סיכום; עם סליקה — שיריון (אם מוגדר) וסליקה. רכישת מוצר בלי פגישה מדלגת על מסך התיאום.',
+    files: ['js/ext/flow-steps.js', 'css/ext/steps.css'],
+    install() {
+      /* השלבים שהרצועה מציגה */
+      window.FLOW_STEPS_PROVIDER = steps;
+
+      /* --- מסך הבחירה: נעילה + צ׳יפ "רק תואמים" --- */
+      if (typeof renderServiceSelect === 'function') CBX.wrap('flowsteps', 'renderServiceSelect', o => function () {
+        const out = o.apply(this, arguments);
+        try {
+          const st = (typeof svcSelState !== 'undefined') ? svcSelState : null;
+          const r = st && st.rec, body = document.querySelector('#modal .svc-sel');
+          if (!r || !body) return out;
+
+          const cards = Array.prototype.slice.call(body.querySelectorAll('[data-svc]'));
+          let blocked = 0;
+          cards.forEach(card => {
+            const b = svcBlock(r, card.dataset.svc);
+            if (!b) return;
+            blocked++;
+            card.classList.add('fs-locked');
+            card.dataset.svcwhy = b.why;                    /* הליבה כבר חוסמת בחירה לפי זה */
+            const tags = card.querySelector('.svc-tags');
+            if (tags && !tags.querySelector('.fs-lock')) {
+              const s = document.createElement('span');
+              s.className = 'svc-tag fs-lock';
+              s.innerHTML = ic('lock') + ' ' + esc(b.short);
+              tags.insertBefore(s, tags.firstChild);
+            }
+            if (!card.querySelector('.cfx-q')) {
+              const qm = document.createElement('span');
+              qm.className = 'cfx-q'; qm.textContent = '?'; qm.setAttribute('role', 'button');
+              qm.addEventListener('click', e => { e.preventDefault(); e.stopPropagation();
+                tip(qm, b.why, (card.querySelector('b') || {}).textContent || 'הפריט נעול'); });
+              card.appendChild(qm);
+            }
+            if (onlyFit) card.classList.add('fs-hidden');
+          });
+
+          /* הצ׳יפ */
+          const list = body.querySelector('.svc-list');
+          if (list && !body.querySelector('.fs-filter')) {
+            const bar = document.createElement('div');
+            bar.className = 'fs-filter';
+            bar.innerHTML = `<button class="fs-chip ${onlyFit ? 'on' : ''}" data-fsonly>
+                ${ic(onlyFit ? 'check' : 'target')} הצג רק תואמים</button>
+              <small>${blocked ? blocked + ' פריטים אינם עומדים בקריטריונים' : 'כל הפריטים תואמים'}</small>`;
+            list.parentNode.insertBefore(bar, list);
+            bar.querySelector('[data-fsonly]').addEventListener('click', () => { onlyFit = !onlyFit; renderServiceSelect(); });
+          }
+
+          /* הכפתור הראשי — לשלב הבא האמיתי */
+          const nextBtn = document.getElementById('svcNext');
+          if (nextBtn) {
+            const stx = steps(Object.assign({}, r, { services: st.sel }));
+            const i = stx.indexOf('svc'), nk = stx[i + 1];
+            const LBL = { crit: 'לקריטריונים', contract: 'להסכם', cal: 'לתיאום', pay: 'לסליקה', summary: 'לסיכום' };
+            if (nk && LBL[nk]) nextBtn.innerHTML = `בחירה והמשך ${LBL[nk]} ${ic('chevronL')}`;
+            if (!nextBtn.__fs) {
+              nextBtn.__fs = true;
+              nextBtn.addEventListener('click', () => {
+                r.services = (st.sel || []).slice();
+                if (!nk || nk === 'cal') return;             /* הליבה כבר מטפלת בתיאום */
+                setTimeout(() => { if (typeof closeModal === 'function') closeModal(); open(r, nk); }, 30);
+              }, true);
+            }
+          }
+        } catch (e) { console.error('[flowsteps] svc', e); }
+        return out;
+      });
+
+      /* --- אחרי התיאום: סיכום, או סליקה אם נדרשת --- */
+      if (typeof closeProposedTimes === 'function') CBX.wrap('flowsteps', 'closeProposedTimes', o => function () {
+        const r = (typeof proposeState !== 'undefined') ? proposeState.rec : null;
+        const out = o.apply(this, arguments);
+        try {
+          if (!r || (!r.meeting && !r.slotHold)) return out;
+          if (document.getElementById('fsSum') || document.getElementById('fsPay')) return out;
+          const q = reqsOf(r);
+          setTimeout(() => { q.on.billing && !r.paid ? openPay(r) : openSummary(r); }, 220);
+        } catch (e) {}
+        return out;
+      });
+
+      /* --- שיריון: כשזמן השיריון 0 אין שיריון בלי תשלום --- */
+      if (typeof holdSlotForPayment === 'function') CBX.wrap('flowsteps', 'holdSlotForPayment', o => function (r, s, staffName, flow) {
+        if (!holdAllowed()) {
+          toast('זמן השיריון בהגדרות הוא 0 — המועד לא נשמר עד להשלמת הסליקה');
+          if (typeof closeProposedTimes === 'function') closeProposedTimes(false);
+          setTimeout(() => openPay(r), 150);
+          return;
+        }
+        return o.apply(this, arguments);
+      });
+    },
+  });
+
+  window.FLOWSTEPS = { steps, reqs: reqsOf, addReq, REQS, block: svcBlock, summary: openSummary,
+    pay: openPay, open, next, holdAllowed, hasMeetingCatalog: catalogHasMeeting };
 })();
 
 </script>

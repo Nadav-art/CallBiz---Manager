@@ -33,7 +33,19 @@
   const S_CRIT = { key: 'crit', label: 'קריטריונים', icon: 'settings' };
   const S_SVC = { key: 'svc', label: 'שירות / מוצר', icon: 'layers' };
   const S_CAL = { key: 'cal', label: 'תיאום', icon: 'calendar' };
-  const stepsOf = r => modeOf(r) === 'unknown' ? [S_CRIT, S_SVC, S_CAL] : [S_SVC, S_CRIT, S_CAL];
+  const STEP_DEF = { crit: S_CRIT, svc: S_SVC, cal: S_CAL,
+    contract: { key: 'contract', label: 'הסכם', icon: 'docs' },
+    pay:      { key: 'pay',      label: 'סליקה', icon: 'check' },
+    summary:  { key: 'summary',  label: 'סיכום', icon: 'note' } };
+  /* ספק חיצוני (flow-steps) גוזר את השלבים מדרישות הפריטים.
+     בלעדיו — שלושת השלבים הבסיסיים, כפי שהיה. */
+  const stepsOf = r => {
+    if (typeof window.FLOW_STEPS_PROVIDER === 'function') {
+      const out = (window.FLOW_STEPS_PROVIDER(r) || []).map(k => STEP_DEF[k]).filter(Boolean);
+      if (out.length) return out;
+    }
+    return modeOf(r) === 'unknown' ? [S_CRIT, S_SVC, S_CAL] : [S_SVC, S_CRIT, S_CAL];
+  };
 
   /* ---------------- בדיקת ההתאמה ---------------- */
   const reqMissing = r => (typeof needsMissingRequired === 'function') ? needsMissingRequired(r) : [];
@@ -98,14 +110,18 @@
     const miss = reqMissing(r);
     /* חסם ברמת המוצר קודם — הוא מסביר את עצמו טוב יותר */
     const bad = svcs.map(k => {
-      const st = staffFor(r, k);
+      /* מוצר שאינו דורש פגישה אינו זקוק למטפל — אין לחסום אותו על כך */
+      const t = (typeof cTreat === 'function') ? cTreat(k) : null;
+      const needsStaff = !t || t.requiresMeeting;
+      const st = needsStaff ? staffFor(r, k) : { ok: true, why: '' };
       return { k, why: svcBlocked(r, k) || (st.ok ? null : st.why) };
     }).filter(x => x.why);
     if (bad.length) return { ok: false, blame: 'product', bad, miss, slots: 0 };
     if (miss.length) return { ok: false, blame: 'crit', bad: [], miss, slots: 0, reasons: [] };
-    if (!window.CRITFX || !svcs.length) return { ok: true, blame: '', bad: [], miss, slots: -1 };
+    const meetSvcs = svcs.filter(k => { const t = (typeof cTreat === 'function') ? cTreat(k) : null; return !t || t.requiresMeeting; });
+    if (!window.CRITFX || !meetSvcs.length) return { ok: true, blame: '', bad: [], miss, slots: -1 };
 
-    const pool = window.CRITFX.candidates(r);
+    const pool = window.CRITFX.candidates(Object.assign({}, r, { services: meetSvcs }));
     if (!pool) return { ok: true, blame: '', bad: [], miss, slots: -1 };
     const needs = Object.assign({}, r.needs || {}); delete needs.note;
     const n = window.CRITFX.countFor(r, pool, needs);
@@ -159,20 +175,9 @@
   /* החלפת שלב בתוך אותו חלון: הבהוב עדין של התוכן בלבד, בלי
      שהחלון ייסגר וייפתח — כדי שהמעבר ירגיש רציף ולא כמו קפיצה
      למסך אחר. הגובה והרוחב כבר נעולים ב-sizeModal. */
-  function swapStep(fn) {
-    const m = document.getElementById('modal');
-    if (!m) { fn(); return; }
-    m.classList.add('fl-swapping');
-    setTimeout(() => {
-      fn();
-      const m2 = document.getElementById('modal');
-      if (!m2) return;
-      m2.classList.add('fl-swapping');
-      requestAnimationFrame(() => m2.classList.remove('fl-swapping'));
-      setTimeout(() => m2.classList.remove('fl-swapping'), 30);
-    }, 110);
-  }
-
+  /* החלפת שלב — מיידית, בלי אנימציה. החלון פתוח וממודד קבוע,
+     ולכן החלפת התוכן לבדה מספיקה. */
+  function swapStep(fn) { fn(); }
   function stripRects(host) {
     const m = {};
     (host ? host.querySelectorAll('[data-flgo]') : []).forEach(el => { m[el.dataset.flgo] = el.getBoundingClientRect().left; });
@@ -238,6 +243,10 @@
       if (k === 'crit') { const before = snapshot(r);
         swapStep(() => openNeedsClarify(r, () => { if (typeof after === 'function') after(); checkAfterCritChange(r, before); })); }
       else if (k === 'svc') { swapStep(() => { if (typeof openServiceSelect === 'function') openServiceSelect(r); }); }
+      else if (k === 'contract' || k === 'pay' || k === 'summary') {
+        if (typeof closeModal === 'function') closeModal();
+        if (window.FLOWSTEPS) setTimeout(() => FLOWSTEPS.open(r, k), 60);
+      }
       else if (k === 'cal') {
         const rd = readiness(r);
         if (!rd.ok) { toast(rd.blame === 'product' ? 'המוצר שנבחר אינו מתאים — יש לבחור חלופה' : 'צריך לעדכן קריטריונים — אין מועד מתאים'); return; }
@@ -460,6 +469,11 @@
                  מחדש, אחרת המסך "קופץ" ונראה כאילו עברנו למקום אחר. */
               if (nxt.key === 'svc') return swapStep(() => {
                 if (typeof openServiceSelect === 'function') openServiceSelect(rec); });
+              if (['contract', 'pay', 'summary'].indexOf(nxt.key) >= 0) {
+                if (typeof closeModal === 'function') closeModal();
+                if (window.FLOWSTEPS) setTimeout(() => FLOWSTEPS.open(rec, nxt.key), 60);
+                return;
+              }
               if (nxt.key === 'cal') {
                 const rd2 = readiness(rec);
                 if (!rd2.ok) { toast(rd2.blame === 'product' ? 'המוצר שנבחר אינו מתאים — יש לבחור חלופה' : 'אין מועד בקריטריונים שנבחרו');

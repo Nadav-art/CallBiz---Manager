@@ -1,0 +1,77 @@
+/* ============================================================
+   שלבי המהלך לפי דרישות הפריט (flowsteps)
+   ============================================================ */
+
+/* ---------- פריט נעול — אותה שפה כמו קריטריון חסום ---------- */
+.svc-card.fs-locked { position: relative; cursor: not-allowed; opacity: .5;
+  border-style: dashed !important;
+  background-image: repeating-linear-gradient(135deg,
+    color-mix(in srgb, var(--text-2) 13%, transparent) 0 5px, transparent 5px 10px); }
+.svc-card.fs-locked:hover { opacity: .66; }
+.svc-card.fs-locked .svc-check { visibility: hidden; }
+.svc-card.fs-locked .cfx-q { position: absolute; inset-inline-start: 9px; top: 9px; }
+.svc-card.fs-hidden { display: none; }
+.svc-tag.fs-lock { color: var(--text-2); border: 1px dashed var(--line); background: var(--surface); }
+.svc-tag.fs-lock svg { width: 11px; height: 11px; }
+
+/* ---------- הצ׳יפ "רק תואמים" ---------- */
+.fs-filter { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin: 0 0 10px; }
+.fs-chip { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; cursor: pointer;
+  padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--text-2); }
+.fs-chip svg { width: 12px; height: 12px; }
+.fs-chip:hover { border-color: var(--brand); color: var(--text); }
+.fs-chip.on { border-color: var(--brand); color: var(--brand); font-weight: 600;
+  background: color-mix(in srgb, var(--brand) 9%, transparent); }
+.fs-filter small { font-size: 11px; color: var(--text-2); }
+
+/* ---------- סיכום ---------- */
+.fs-sum { max-height: calc(100vh - 48px); overflow-y: auto; }
+.fs-sub { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
+.fs-sec { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin: 4px 0 8px; }
+.fs-sec svg { width: 13px; height: 13px; color: var(--brand); }
+.fs-sec.sm { font-size: 12px; margin-bottom: 6px; }
+.fs-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.fs-item { border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; background: var(--surface); }
+.fs-it-h { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+.fs-it-h b { font-size: 13px; }
+.fs-it-m { font-size: 11.5px; color: var(--text-2); }
+.fs-note { display: flex; gap: 8px; margin-top: 8px; font-size: 11.5px; line-height: 1.6; }
+.fs-note span { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px;
+  color: var(--text-2); padding: 2px 8px; border-radius: 999px; background: var(--surface-2);
+  border: 1px solid var(--line); height: fit-content; white-space: nowrap; }
+.fs-note span svg { width: 11px; height: 11px; }
+.fs-note p { margin: 0; color: var(--text-2); }
+.fs-note.in span { color: var(--brand); border-color: color-mix(in srgb, var(--brand) 30%, transparent);
+  background: color-mix(in srgb, var(--brand) 8%, transparent); }
+.fs-none { font-size: 12px; color: var(--text-2); }
+
+.fs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.fs-box { border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; background: var(--surface-2); }
+.fs-kv { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 3px 0; }
+.fs-kv span { display: inline-flex; align-items: center; gap: 5px; color: var(--text-2); }
+.fs-kv span svg { width: 12px; height: 12px; }
+.fs-kv b { margin-inline-start: auto; }
+.fs-kv b.ok { color: var(--ok, #16a34a); }
+.fs-kv b.need { color: var(--brand); }
+.fs-kv b.no { color: var(--text-2); font-weight: 500; }
+.fs-kv.big { font-size: 13px; padding: 9px 0; }
+.fs-kv.big b { font-size: 19px; color: var(--brand); }
+
+/* ---------- סליקה ---------- */
+.fs-hold { display: flex; align-items: flex-start; gap: 8px; padding: 10px 11px; border-radius: 11px;
+  margin-bottom: 12px; border: 1px solid var(--amber, #B7791F);
+  background: color-mix(in srgb, var(--amber, #B7791F) 9%, transparent); }
+.fs-hold svg { width: 13px; height: 13px; flex: 0 0 auto; margin-top: 1px; color: var(--amber, #B7791F); }
+.fs-hold b { display: block; font-size: 12.5px; }
+.fs-hold small { display: block; font-size: 11px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
+.fs-hold.warn { border-color: var(--danger, #dc2626);
+  background: color-mix(in srgb, var(--danger, #dc2626) 7%, transparent); }
+.fs-hold.warn svg { color: var(--danger, #dc2626); }
+.fs-hint { display: flex; align-items: flex-start; gap: 7px; font-size: 11.5px; color: var(--text-2);
+  line-height: 1.65; margin: 10px 0 4px; }
+.fs-hint svg { width: 13px; height: 13px; flex: 0 0 auto; margin-top: 2px; color: var(--amber, #B7791F); }
+.cbc-actions.col { flex-direction: column; align-items: stretch; gap: 7px; }
+.cbc-actions.col .btn { justify-content: center; }
+
+@media (max-width: 640px) { .fs-grid { grid-template-columns: 1fr; } }
