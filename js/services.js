@@ -236,17 +236,34 @@ function openServiceCfgEditor(key) {
       <label class="cfg-row"><span>משך פגישה (ד׳)</span><input type="number" class="cc-inp" data-cfg="dur" min="15" max="180" step="15" value="${t.dur}"></label>
       <label class="cfg-row"><span>מחיר (₪)</span><input type="number" class="cc-inp" data-cfg="price" min="0" step="10" value="${t.price}"></label>
       <label class="cfg-row"><span>גובה מקדמה (₪)</span><input type="number" class="cc-inp" data-cfg="deposit" min="0" step="10" value="${t.deposit}"></label>
+      <label class="cfg-row hl"><span>${ic('docs')} דורש הסכם חתום
+        <small>ההסכם נשלח לחתימה כחלק מהמהלך</small></span>
+        <input type="checkbox" data-cfg="requiresContract" ${t.requiresContract ? 'checked' : ''}></label>
+      ${(t.requiresContract && t.requiresBilling) ? `<div class="cfg-order">
+        <div class="cfg-order-h">${ic('bolt')} <b>סדר ההסכם והסליקה</b></div>
+        <label class="cfg-order-o ${t.contractBeforePay !== false ? 'on' : ''}">
+          <input type="radio" name="cfgOrd" data-cfgord="sign" ${t.contractBeforePay !== false ? 'checked' : ''}>
+          <span><b>חתימה לפני סליקה</b><small>לא ניתן לסלוק עד שההסכם חוזר חתום</small></span></label>
+        <label class="cfg-order-o ${t.contractBeforePay === false ? 'on' : ''}">
+          <input type="radio" name="cfgOrd" data-cfgord="pay" ${t.contractBeforePay === false ? 'checked' : ''}>
+          <span><b>אפשר לסלוק לפני חתימה</b><small>ההסכם ייחתם בהמשך התהליך</small></span></label>
+      </div>` : ''}
       <p class="cfg-hint">${ic('bolt')} התצורה מרוכזת בקטלוג ומשפיעה על הניתוב, הזמנים המוצעים והמחיר לאורך כל התהליך.</p>
     </div>
     <div class="modal-foot"><button class="btn primary block" id="cfgSave">${ic('check')} שמור</button></div>`;
   $('#cfgClose').addEventListener('click', () => { $('#modal').innerHTML = prev; renderServiceSelect(); });
+  /* מתגי התשלום וסדר ההסכם — נקשרים מיד, לא בתוך מטפל השמירה */
+  $$('[data-cfgpay]').forEach(b => b.addEventListener('change', () => {
+    const k = b.dataset.cfgpay;
+    t.requiresBilling = k !== 'none';
+    t.canScheduleWithoutBilling = k !== 'pre';
+    openServiceCfgEditor(key);
+  }));
+  $$('[data-cfgord]').forEach(b => b.addEventListener('change', () => {
+    t.contractBeforePay = b.dataset.cfgord === 'sign';
+    openServiceCfgEditor(key);
+  }));
   $('#cfgSave').addEventListener('click', () => {
-    $$('[data-cfgpay]').forEach(b => b.addEventListener('change', () => {
-      const k = b.dataset.cfgpay;
-      t.requiresBilling = k !== 'none';
-      t.canScheduleWithoutBilling = k !== 'pre';
-      openServiceCfgEditor(key);
-    }));
     $$('[data-cfg]').forEach(inp => {
       const k = inp.dataset.cfg;
       t[k] = inp.type === 'checkbox' ? inp.checked : +inp.value;

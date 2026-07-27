@@ -163,6 +163,7 @@
     return list.slice(0, 40);
   }
   let swapTo = null;          // מועד שנבחר להחלפה וממתין לאישור
+  let calEntryTitle = '';     // הכותרת נקבעת בכניסה לשלב ולא משתנה תוך כדי
 
   /* המועד הנוכחי — פגישה קבועה, שיריון, או מועד שממתין לתשלום */
   function currentSlot(r) {
@@ -187,9 +188,9 @@
     const sw = swapTo ? (typeof coordPool === 'function' ? coordPool().find(x => x.id === swapTo) : null) : null;
     const body = `
       ${cur ? `<div class="fs-cur ${cur.kind}">
-        <div class="fs-cur-h">${ic('calendar')} <b>המועד הקיים</b><span class="fs-cur-tag">${esc(cur.tag)}</span></div>
+        <div class="fs-cur-h">${ic('calendar')} <b>המועד שנבחר</b><span class="fs-cur-tag">${esc(cur.tag)}</span></div>
         <div class="fs-cur-b"><b>${esc(cur.label)}</b>${cur.who ? `<small>${esc(cur.who)}</small>` : ''}</div>
-        <small class="fs-cur-n">בחירת מועד אחר מהרשימה תחליף אותו — נדרש אישור.</small>
+        <small class="fs-cur-n">אפשר לבחור מועד אחר מהרשימה (נדרש אישור), או להמשיך לשלב הבא.</small>
       </div>` : ''}
       ${sw ? `<div class="fs-swap">${ic('sync')}
         <div><b>להחליף את המועד?</b>
@@ -210,9 +211,13 @@
               ${s.reason ? ' · ' + esc(s.reason) : ''}</small></span>
           <span class="fs-go">${ic('chevronL')}</span></button>`).join('')
         : `<div class="fs-empty2">${ic('alert')} אין מועדים פנויים בקריטריונים שנבחרו</div>`}</div>`;
-    shell(r, 'cal', cur ? 'עדכון פגישה' : 'תיאום מועד', body,
+    shell(r, 'cal', calEntryTitle || (cur ? 'עדכון פגישה' : 'תיאום מועד'), body,
       `${backBtn(r, 'cal')}<span class="fs-foot-n">${all.length} מועדים מתאימים</span>
-       ${cur ? `<button class="btn primary" data-fskeep>${ic('check')} להשאיר את המועד ולהמשיך</button>` : ''}`);
+       ${cur ? (function () {
+         const nk = nextStep(r, 'cal');
+         const L = { summary: 'סיכום הצעה', pay: 'סליקה', contract: 'הסכם' };
+         return `<button class="btn primary" data-fskeep>${ic('check')} המשך ל${L[nk] || 'שלב הבא'} ${ic('chevronL')}</button>`;
+       })() : ''}`);
     const host = document.querySelector('#modal .fs-step');
     host.querySelectorAll('[data-fsday]').forEach(b => b.addEventListener('click', () => { calDay = b.dataset.fsday; openCal(r); }));
     host.querySelectorAll('[data-fsslot]').forEach(b => b.addEventListener('click', () => {
@@ -274,7 +279,66 @@
       toast('נקבעה פגישה · ' + ((typeof cDayLbl === 'function') ? cDayLbl(s.date) : s.date) + ' ' + ((typeof fmtH === 'function') ? fmtH(s.h) : ''));
     }
     if (typeof renderList === 'function') renderList();
-    openSummary(r);
+    /* לא מקדמים שלב מעצמנו — הנציג רואה מה נבחר ומחליט מתי להמשיך */
+    openCal(r);
+  }
+
+  /* ---------------- הסכם לחתימה ---------------- */
+  const ctState = r => (r.contract = r.contract || { tplId: null, sent: false, signed: false, at: '' });
+  /* האם חובה לקבל הסכם חתום לפני סליקה — מוגדר בכרטיס הפריט */
+  function mustSignFirst(r) {
+    const q = reqsOf(r);
+    if (!q.on.contract || !q.on.billing) return false;
+    return q.list.some(t => t.requiresContract && t.contractBeforePay !== false);
+  }
+  function ctTemplates() {
+    const all = (typeof CONTRACT_TEMPLATES !== 'undefined') ? CONTRACT_TEMPLATES : [];
+    return all.filter(c => (c.audience || 'client') === 'client' && c.legalApproved);
+  }
+  function ctBlock(r) {
+    const q = reqsOf(r), c = ctState(r), tpls = ctTemplates();
+    if (!c.tplId && tpls.length) c.tplId = tpls[0].id;
+    const need = q.on.contract;
+    const state = c.signed ? 'signed' : (c.sent ? 'sent' : 'none');
+    const LBL = { none: 'טרם נשלח', sent: 'נשלח — ממתין לחתימה', signed: 'נחתם' };
+    return `<div class="fs-ct ${state} ${need ? 'need' : ''}">
+      <div class="fs-sec sm">${ic('docs')} <b>הסכם לחתימה</b>
+        <span class="fs-ct-tag ${state}">${need ? 'נדרש · ' : 'לא נדרש · '}${LBL[state]}</span></div>
+      ${need && mustSignFirst(r) ? `<p class="fs-ct-rule">${ic('lock')} לפי הגדרת הפריט — חובה לקבל הסכם חתום <b>לפני</b> הסליקה.</p>`
+        : (need ? `<p class="fs-ct-rule ok">${ic('bolt')} לפי הגדרת הפריט — אפשר לסלוק גם לפני החתימה.</p>` : '')}
+      ${tpls.length ? `<label class="fs-ct-sel"><span>תבנית</span>
+        <select class="cc-inp" data-fsct>${tpls.map(t => `<option value="${esc(t.id)}" ${c.tplId === t.id ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label>`
+        : `<p class="fs-none">אין תבנית הסכם מאושרת במערכת</p>`}
+      <div class="fs-ct-acts">
+        ${!c.sent ? `<button class="btn sm" data-fsctsend>${ic('sync')} ${need ? 'שלח לחתימה' : 'שלח הסכם לחתימה (לא חובה)'}</button>`
+          : `<button class="btn sm" data-fsctsend>${ic('sync')} שלח שוב</button>`}
+        ${c.sent && !c.signed ? `<button class="btn sm primary" data-fsctsign>${ic('check')} סמן כנחתם</button>` : ''}
+        ${tpls.length ? `<button class="btn sm ghost" data-fsctprev>${ic('eye')} תצוגה מקדימה</button>` : ''}
+      </div>
+    </div>`;
+  }
+  function bindCt(r, rerender) {
+    const c = ctState(r);
+    const sel = document.querySelector('#modal [data-fsct]');
+    if (sel) sel.addEventListener('change', () => { c.tplId = sel.value; });
+    const sn = document.querySelector('#modal [data-fsctsend]');
+    if (sn) sn.addEventListener('click', () => {
+      c.sent = true; c.at = (typeof docStamp === 'function') ? docStamp() : '';
+      if (typeof ctRegisterIssue === 'function' && typeof contractById === 'function') {
+        const t = contractById(c.tplId); if (t) { try { ctRegisterIssue(t, r); } catch (e) {} }
+      }
+      toast('ההסכם נשלח ללקוח לחתימה'); rerender();
+    });
+    const sg = document.querySelector('#modal [data-fsctsign]');
+    if (sg) sg.addEventListener('click', () => {
+      c.signed = true; toast('ההסכם סומן כנחתם'); rerender();
+    });
+    const pv = document.querySelector('#modal [data-fsctprev]');
+    if (pv) pv.addEventListener('click', () => {
+      const t = (typeof contractById === 'function') ? contractById(c.tplId) : null;
+      if (t && typeof openContractWizard === 'function') openContractWizard(t, r, 'preview');
+      else toast('אין תצוגה מקדימה זמינה');
+    });
   }
 
   /* ---------------- סיכום הצעה ---------------- */
@@ -282,38 +346,92 @@
     const q = reqsOf(r);
     const price = (window.BOOKMODE && BOOKMODE.price) ? BOOKMODE.price(r) : { base: 0, disc: 0, final: 0 };
     const dur = q.list.reduce((s, t) => s + (+t.dur || 0), 0);
+    const dep = q.list.reduce((s, t) => s + (+t.deposit || 0), 0);
+    const tpl = (typeof contractById === 'function' && ctState(r).tplId) ? contractById(ctState(r).tplId) : null;
+    const terms = (typeof ctSvcTermsFor === 'function') ? ctSvcTermsFor(r, tpl) : [];
     const when = r.meeting ? (r.meeting.date + ' ' + r.meeting.time)
       : r.slotHold ? ((typeof cDayLbl === 'function' ? cDayLbl(r.slotHold.date) : '') + ' ' + (typeof fmtH === 'function' ? fmtH(r.slotHold.h) : '') + ' · בשיריון')
       : r.pendingSlot ? ((typeof cDayLbl === 'function' ? cDayLbl(r.pendingSlot.date) : '') + ' ' + (typeof fmtH === 'function' ? fmtH(r.pendingSlot.h) : '') + ' · ממתין לתשלום') : '';
     const body = `
-      <div class="fs-sec">${ic('layers')} <b>מה נבחר</b></div>
-      <div class="fs-items">${q.list.map(t => `<div class="fs-item">
-        <div class="fs-it-h"><b>${esc(t.label)}</b>
-          <span class="fs-it-m">${t.kind ? esc(t.kind) : ''}${t.dur ? ' · ' + t.dur + ' דק׳' : ''}${t.price ? ' · ' + money(t.price) : ' · ללא עלות'}</span></div>
-        ${t.pre ? `<div class="fs-note"><span>${ic('note')} הנחיות ללקוח</span><p>${esc(t.pre)}</p></div>` : ''}
-        ${t.instr ? `<div class="fs-note in"><span>${ic('tasks')} הנחיות פנימיות</span><p>${esc(t.instr)}</p></div>` : ''}
-      </div>`).join('') || '<p class="fs-none">לא נבחרו פריטים</p>'}</div>
-      <div class="fs-grid">
-        <div class="fs-box">
-          <div class="fs-sec sm">${ic('check')} <b>סיכום</b></div>
-          <div class="fs-kv"><span>פריטים</span><b>${q.list.length}</b></div>
-          ${dur ? `<div class="fs-kv"><span>זמן כולל</span><b>${dur} דק׳</b></div>` : ''}
-          <div class="fs-kv"><span>עלות</span><b>${price.base ? money(price.final) : 'ללא עלות'}</b></div>
-          ${when ? `<div class="fs-kv"><span>מועד</span><b>${esc(when)}</b></div>` : ''}
-          ${r.paid ? `<div class="fs-kv"><span>תשלום</span><b class="ok">שולם · ${esc(r.paid.ref || '')}</b></div>` : ''}
+      <div class="sm-head">
+        <div class="sm-h-ic">${ic('docs')}</div>
+        <div><b>פריטים נבחרים להסכם</b>
+          <small>${esc(r.name)}${r.org ? ' · ' + esc(r.org) : ''} · ${esc(((typeof JOURNEY_TYPES !== 'undefined' && JOURNEY_TYPES[r.journey]) || {}).label || '')}</small></div>
+      </div>
+
+      <div class="sm-tbl-wrap"><table class="sm-tbl">
+        <thead><tr>
+          <th>שם הפריט</th><th>קטגוריה</th><th>משך</th><th>מחיר</th><th>מקדמה</th>
+          <th>סליקה / חיוב</th><th>פגישה</th><th>הנחיות</th>
+        </tr></thead>
+        <tbody>${q.list.map(t => `<tr>
+          <td class="sm-name"><b>${esc(t.label)}</b>${t.subType ? `<span class="sm-sub">${esc(t.subType)}</span>` : ''}</td>
+          <td><span class="sm-chip">${esc(t.kind || '')}</span></td>
+          <td>${t.dur ? t.dur + ' דק׳' : '—'}</td>
+          <td>${t.price ? money(t.price) : '—'}</td>
+          <td>${t.deposit ? money(t.deposit) : '0 ₪'}</td>
+          <td>${t.requiresBilling ? '<span class="sm-b need">נדרש חיוב</span>' : '<span class="sm-b free">ללא סליקה</span>'}</td>
+          <td>${t.requiresMeeting ? '<span class="sm-b meet">נדרשת</span>' : '<span class="sm-b none">לא נדרשת</span>'}</td>
+          <td class="sm-icons">${t.pre ? `<span title="${esc(t.pre)}">${ic('note')}</span>` : ''}
+            ${t.instr ? `<span class="in" title="${esc(t.instr)}">${ic('tasks')}</span>` : ''}
+            ${!t.pre && !t.instr ? '<i>—</i>' : ''}</td>
+        </tr>`).join('') || '<tr><td colspan="8" class="sm-empty">לא נבחרו פריטים</td></tr>'}</tbody>
+      </table></div>
+      <button class="sm-add" data-fsedit>${ic('plus')} הוספה או שינוי של פריטים</button>
+
+      <div class="sm-money">
+        <div class="sm-m"><span>פריטים</span><b>${q.list.length}</b></div>
+        <div class="sm-m"><span>זמן כולל</span><b>${dur} דק׳</b></div>
+        <div class="sm-m"><span>סה״כ מחיר</span><b>${money(price.base)}</b></div>
+        ${price.disc ? `<div class="sm-m off"><span>הנחה${r.offer && r.offer.discType === 'pct' && +r.offer.discVal ? ' ' + (+r.offer.discVal) + '%' : ''}</span>
+          <b>−${money(price.disc)}</b></div>` : ''}
+        <div class="sm-m"><span>מקדמה כוללת</span><b>${money(dep)}</b></div>
+        <div class="sm-m tot"><span>יתרה לחיוב</span><b>${money(Math.max(0, price.final - dep))}</b></div>
+      </div>
+
+      <div class="sm-grid">
+        <div class="sm-card">
+          <div class="sm-c-h">${ic('clients')} <b>מה יופיע ללקוח בהסכם</b></div>
+          <ul class="sm-list">
+            ${(r.offer && r.offer.validUntil) ? `<li>${ic('check')} תוקף ההצעה: ${esc(r.offer.validUntil)}</li>` : ''}
+            ${price.disc ? `<li>${ic('check')} הנחה שסוכמה: ${money(price.disc)}</li>` : ''}
+            ${terms.length ? terms.slice(0, 5).map(t => `<li>${ic('check')} ${esc(t.title)}</li>`).join('')
+              : `<li class="muted">${q.on.contract ? 'טרם נבחרה תבנית הסכם' : 'לא נדרש הסכם לפריטים שנבחרו'}</li>`}
+            ${terms.length > 5 ? `<li class="muted">ועוד ${terms.length - 5} תנאים</li>` : ''}
+          </ul>
         </div>
-        <div class="fs-box">
-          <div class="fs-sec sm">${ic('bolt')} <b>מה נדרש בפריטים</b></div>
-          ${REQS.map(x => `<div class="fs-kv"><span>${ic(x.icon)} ${esc(x.label)}</span>
-            <b class="${q.on[x.key] ? 'need' : 'no'}">${q.on[x.key] ? 'נדרש' : 'לא נדרש'}</b></div>`).join('')}
+        <div class="sm-card">
+          <div class="sm-c-h">${ic('note')} <b>הנחיות פנימיות</b></div>
+          <ul class="sm-list">
+            ${q.list.filter(t => t.instr).map(t => `<li>${ic('check')} ${esc(t.label)}: ${esc(t.instr)}</li>`).join('')}
+            ${q.on.contract ? `<li>${ic('check')} להחתים על ההסכם ${mustSignFirst(r) ? 'לפני הסליקה' : 'במהלך התהליך'}</li>` : ''}
+            ${q.on.billing ? `<li>${ic('check')} להסביר תנאי סליקה ותשלום</li>` : ''}
+            ${(r.needs || {}).note ? `<li>${ic('check')} ${esc(String(r.needs.note).slice(0, 90))}</li>` : ''}
+            ${!q.list.some(t => t.instr) && !q.on.contract && !q.on.billing ? '<li class="muted">אין הנחיות מיוחדות</li>' : ''}
+          </ul>
         </div>
-      </div>`;
+        <div class="sm-card">
+          <div class="sm-c-h">${ic('calendar')} <b>מועד ותיאום</b></div>
+          <ul class="sm-list">
+            ${when ? `<li>${ic('check')} ${esc(when)}</li>` : `<li class="muted">${q.on.meeting ? 'טרם נבחר מועד' : 'לא נדרשת פגישה'}</li>`}
+            ${r.paid ? `<li>${ic('check')} שולם · ${esc(r.paid.ref || '')}</li>` : (q.on.billing ? '<li class="muted">טרם שולם</li>' : '')}
+          </ul>
+        </div>
+      </div>
+      ${ctBlock(r)}`;
     const nx = nextStep(r, 'summary');
+    const gate = nx === 'pay' && mustSignFirst(r) && !ctState(r).signed;
     shell(r, 'summary', 'סיכום הצעה', body,
-      `${backBtn(r, 'summary')}<button class="btn primary" data-fsnext>${ic('check')} ${nx === 'pay' ? 'המשך לסליקה' : 'סיום'}</button>`);
+      `${backBtn(r, 'summary')}
+       ${gate ? `<span class="fs-gate">${ic('lock')} נדרש הסכם חתום לפני סליקה</span>` : ''}
+       <button class="btn primary" data-fsnext ${gate ? 'disabled' : ''}>${ic('check')} ${nx === 'pay' ? 'המשך לסליקה' : 'סיום'}</button>`);
     bindBack(r, 'summary');
+    bindCt(r, () => openSummary(r));
+    const ed = document.querySelector('#modal [data-fsedit]');
+    if (ed) ed.addEventListener('click', () => { if (typeof openServiceSelect === 'function') openServiceSelect(r); });
     const b = document.querySelector('#modal [data-fsnext]');
     if (b) b.addEventListener('click', () => {
+      if (gate) { toast('יש לשלוח את ההסכם ולקבל אותו חתום לפני הסליקה'); return; }
       if (nx === 'pay') return openPay(r);
       r.dealDone = true;
       if (typeof closeModal === 'function') closeModal();
@@ -347,6 +465,7 @@
     if (lk) lk.addEventListener('click', () => { r.payLinkSent = true; toast('קישור סליקה נשלח ללקוח'); });
     const ok = document.querySelector('#modal [data-fsok]');
     if (ok) ok.addEventListener('click', () => {
+      if (mustSignFirst(r) && !ctState(r).signed) { toast('נדרש הסכם חתום לפני סליקה — חזרה לסיכום ההצעה'); return openSummary(r); }
       r.paid = { at: (typeof docStamp === 'function') ? docStamp() : '', amount: due,
         ref: 'EXT-' + ((r.id || 0) * 7 + 1000), mode: 'external' };
       const src = r.slotHold || r.pendingSlot;
@@ -378,7 +497,7 @@
   function open(r, key) {
     if (key === 'crit' && typeof openNeedsClarify === 'function') return openNeedsClarify(r);
     if (key === 'svc' && typeof openServiceSelect === 'function') return openServiceSelect(r);
-    if (key === 'cal') return openCal(r);
+    if (key === 'cal') { calEntryTitle = currentSlot(r) ? 'עדכון פגישה' : 'תיאום מועד'; return openCal(r); }
     if (key === 'pay') return openPay(r);
     if (key === 'summary') return openSummary(r);
   }

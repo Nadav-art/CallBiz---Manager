@@ -862,6 +862,10 @@ function openCatalogItemEditor(key) {
   $('#modal').style.maxWidth = '520px'; $('#modal').style.height = '';
   // קורא את כל שדות ה-[data-ce] וה-[data-crit] אל האובייקט לפני רינדור-מחדש (כדי לא לאבד עריכות)
   const syncFields = () => {
+    $$('[data-ordsel]').forEach(b => b.addEventListener('change', () => {
+      t.contractBeforePay = b.dataset.ordsel === 'sign';
+      openServiceCfgEditor(key);
+    }));
     $$('[data-ce]').forEach(inp => {
   $$('[data-cepay]').forEach(b => b.addEventListener('change', () => {
     const k = b.dataset.cepay;
@@ -921,6 +925,16 @@ function openCatalogItemEditor(key) {
             <span><b>${o.t}</b><small>${o.d}</small></span></label>`).join('')}</div>`;
       })()}
       <label class="cfg-row"><span>דורש אישור</span><input type="checkbox" data-ce="approval" ${t.approval ? 'checked' : ''}></label>
+
+      ${(t.requiresContract && t.requiresBilling) ? `<div class="cfg-order">
+        <div class="cfg-order-h">${ic('bolt')} <b>סדר ההסכם והסליקה</b></div>
+        <label class="cfg-order-o ${t.contractBeforePay !== false ? 'on' : ''}">
+          <input type="radio" name="ordSel" data-ordsel="sign" ${t.contractBeforePay !== false ? 'checked' : ''}>
+          <span><b>חתימה לפני סליקה</b><small>לא ניתן לסלוק עד שההסכם חוזר חתום</small></span></label>
+        <label class="cfg-order-o ${t.contractBeforePay === false ? 'on' : ''}">
+          <input type="radio" name="ordSel" data-ordsel="pay" ${t.contractBeforePay === false ? 'checked' : ''}>
+          <span><b>אפשר לסלוק לפני חתימה</b><small>ההסכם ייחתם בהמשך התהליך</small></span></label>
+      </div>` : ''}
       <label class="cfg-row hl"><span>${ic('docs')} דורש הסכם חתום<small>לפני התיאום — ההסכם נשלח לחתימה, ורק אחריו סליקה (אם נדרשת)</small></span><input type="checkbox" data-ce="requiresContract" ${t.requiresContract ? 'checked' : ''}></label>
       <label class="cfg-row hl"><span>${ic('layers')} הרחבת שירות (Upsell)<small>יוצע כתוספת בהצעות מחיר</small></span><input type="checkbox" data-ce="isExtension" ${t.isExtension ? 'checked' : ''}></label>
       ${t.isExtension ? extPanel() : ''}

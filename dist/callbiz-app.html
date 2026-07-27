@@ -7735,6 +7735,63 @@ select.ax-tag.green { background: color-mix(in srgb, #1f8a4c 15%, var(--surface)
 .fs-swap b { font-size: 12.5px; }
 .fs-swap small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
 
+/* ============================================================
+   סיכום הצעה — טבלת פריטים וכרטיסים
+   ============================================================ */
+.sm-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.sm-h-ic { width: 36px; height: 36px; flex: 0 0 auto; border-radius: 11px; display: flex;
+  align-items: center; justify-content: center; background: var(--brand-soft, var(--surface-2)); }
+.sm-h-ic svg { width: 17px; height: 17px; color: var(--brand); }
+.sm-head b { display: block; font-size: 15px; }
+.sm-head small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
+
+.sm-tbl-wrap { border: 1px solid var(--line); border-radius: 13px; overflow: auto; }
+.sm-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.sm-tbl th { text-align: start; font-size: 10.5px; font-weight: 600; color: var(--text-2); white-space: nowrap;
+  padding: 10px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+.sm-tbl td { padding: 11px 10px; border-bottom: 1px solid var(--border-2, var(--line)); white-space: nowrap; }
+.sm-tbl tbody tr:last-child td { border-bottom: 0; }
+.sm-tbl tbody tr:hover { background: var(--surface-2); }
+.sm-name b { font-size: 12.5px; }
+.sm-sub { display: block; font-size: 10.5px; color: var(--text-2); margin-top: 2px; }
+.sm-chip { font-size: 10.5px; padding: 2px 9px; border-radius: 999px; color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 10%, transparent); }
+.sm-b { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; padding: 2px 9px; border-radius: 999px; }
+.sm-b.need { color: var(--danger, #dc2626); background: color-mix(in srgb, var(--danger, #dc2626) 9%, transparent); }
+.sm-b.free, .sm-b.none { color: var(--text-2); background: var(--surface-2); }
+.sm-b.meet { color: var(--ok, #16a34a); background: color-mix(in srgb, var(--ok, #16a34a) 10%, transparent); }
+.sm-icons { color: var(--text-2); }
+.sm-icons span { display: inline-flex; margin-inline-end: 5px; }
+.sm-icons svg { width: 14px; height: 14px; }
+.sm-icons .in svg { color: var(--brand); }
+.sm-icons i { font-style: normal; opacity: .5; }
+.sm-empty { text-align: center; color: var(--text-2); padding: 20px; }
+.sm-add { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
+  font: inherit; font-size: 12.5px; cursor: pointer; margin: 8px 0 12px; padding: 11px;
+  border: 1px dashed var(--line); border-radius: 12px; background: transparent; color: var(--brand); }
+.sm-add svg { width: 13px; height: 13px; }
+.sm-add:hover { background: var(--surface-2); border-color: var(--brand); }
+
+.sm-money { display: flex; flex-wrap: wrap; align-items: stretch; border: 1px solid var(--line);
+  border-radius: 13px; overflow: hidden; margin-bottom: 12px; background: var(--surface); }
+.sm-m { flex: 1 1 110px; padding: 11px 12px; text-align: center; border-inline-start: 1px solid var(--border-2, var(--line)); }
+.sm-m:first-child { border-inline-start: 0; }
+.sm-m span { display: block; font-size: 10.5px; color: var(--text-2); }
+.sm-m b { display: block; font-size: 15px; margin-top: 3px; }
+.sm-m.off b { color: var(--ok, #16a34a); }
+.sm-m.tot { background: color-mix(in srgb, var(--brand) 7%, transparent); }
+.sm-m.tot b { color: var(--brand); font-size: 17px; }
+
+.sm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 10px; }
+.sm-card { border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; background: var(--surface); }
+.sm-c-h { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin-bottom: 7px; }
+.sm-c-h svg { width: 13px; height: 13px; color: var(--brand); }
+.sm-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.sm-list li { display: flex; align-items: flex-start; gap: 6px; font-size: 11.5px; color: var(--text-2); line-height: 1.55; }
+.sm-list li svg { width: 11px; height: 11px; flex: 0 0 auto; margin-top: 3px; color: var(--ok, #16a34a); }
+.sm-list li.muted { color: var(--text-3, var(--text-2)); font-style: italic; }
+@media (max-width: 640px) { .sm-grid { grid-template-columns: 1fr; } .sm-m { flex: 1 1 45%; } }
+
 </style>
   <style>
 /* ============================================================
@@ -13068,6 +13125,10 @@ function openCatalogItemEditor(key) {
   $('#modal').style.maxWidth = '520px'; $('#modal').style.height = '';
   // קורא את כל שדות ה-[data-ce] וה-[data-crit] אל האובייקט לפני רינדור-מחדש (כדי לא לאבד עריכות)
   const syncFields = () => {
+    $$('[data-ordsel]').forEach(b => b.addEventListener('change', () => {
+      t.contractBeforePay = b.dataset.ordsel === 'sign';
+      openServiceCfgEditor(key);
+    }));
     $$('[data-ce]').forEach(inp => {
   $$('[data-cepay]').forEach(b => b.addEventListener('change', () => {
     const k = b.dataset.cepay;
@@ -13127,6 +13188,16 @@ function openCatalogItemEditor(key) {
             <span><b>${o.t}</b><small>${o.d}</small></span></label>`).join('')}</div>`;
       })()}
       <label class="cfg-row"><span>דורש אישור</span><input type="checkbox" data-ce="approval" ${t.approval ? 'checked' : ''}></label>
+
+      ${(t.requiresContract && t.requiresBilling) ? `<div class="cfg-order">
+        <div class="cfg-order-h">${ic('bolt')} <b>סדר ההסכם והסליקה</b></div>
+        <label class="cfg-order-o ${t.contractBeforePay !== false ? 'on' : ''}">
+          <input type="radio" name="ordSel" data-ordsel="sign" ${t.contractBeforePay !== false ? 'checked' : ''}>
+          <span><b>חתימה לפני סליקה</b><small>לא ניתן לסלוק עד שההסכם חוזר חתום</small></span></label>
+        <label class="cfg-order-o ${t.contractBeforePay === false ? 'on' : ''}">
+          <input type="radio" name="ordSel" data-ordsel="pay" ${t.contractBeforePay === false ? 'checked' : ''}>
+          <span><b>אפשר לסלוק לפני חתימה</b><small>ההסכם ייחתם בהמשך התהליך</small></span></label>
+      </div>` : ''}
       <label class="cfg-row hl"><span>${ic('docs')} דורש הסכם חתום<small>לפני התיאום — ההסכם נשלח לחתימה, ורק אחריו סליקה (אם נדרשת)</small></span><input type="checkbox" data-ce="requiresContract" ${t.requiresContract ? 'checked' : ''}></label>
       <label class="cfg-row hl"><span>${ic('layers')} הרחבת שירות (Upsell)<small>יוצע כתוספת בהצעות מחיר</small></span><input type="checkbox" data-ce="isExtension" ${t.isExtension ? 'checked' : ''}></label>
       ${t.isExtension ? extPanel() : ''}
@@ -19884,17 +19955,34 @@ function openServiceCfgEditor(key) {
       <label class="cfg-row"><span>משך פגישה (ד׳)</span><input type="number" class="cc-inp" data-cfg="dur" min="15" max="180" step="15" value="${t.dur}"></label>
       <label class="cfg-row"><span>מחיר (₪)</span><input type="number" class="cc-inp" data-cfg="price" min="0" step="10" value="${t.price}"></label>
       <label class="cfg-row"><span>גובה מקדמה (₪)</span><input type="number" class="cc-inp" data-cfg="deposit" min="0" step="10" value="${t.deposit}"></label>
+      <label class="cfg-row hl"><span>${ic('docs')} דורש הסכם חתום
+        <small>ההסכם נשלח לחתימה כחלק מהמהלך</small></span>
+        <input type="checkbox" data-cfg="requiresContract" ${t.requiresContract ? 'checked' : ''}></label>
+      ${(t.requiresContract && t.requiresBilling) ? `<div class="cfg-order">
+        <div class="cfg-order-h">${ic('bolt')} <b>סדר ההסכם והסליקה</b></div>
+        <label class="cfg-order-o ${t.contractBeforePay !== false ? 'on' : ''}">
+          <input type="radio" name="cfgOrd" data-cfgord="sign" ${t.contractBeforePay !== false ? 'checked' : ''}>
+          <span><b>חתימה לפני סליקה</b><small>לא ניתן לסלוק עד שההסכם חוזר חתום</small></span></label>
+        <label class="cfg-order-o ${t.contractBeforePay === false ? 'on' : ''}">
+          <input type="radio" name="cfgOrd" data-cfgord="pay" ${t.contractBeforePay === false ? 'checked' : ''}>
+          <span><b>אפשר לסלוק לפני חתימה</b><small>ההסכם ייחתם בהמשך התהליך</small></span></label>
+      </div>` : ''}
       <p class="cfg-hint">${ic('bolt')} התצורה מרוכזת בקטלוג ומשפיעה על הניתוב, הזמנים המוצעים והמחיר לאורך כל התהליך.</p>
     </div>
     <div class="modal-foot"><button class="btn primary block" id="cfgSave">${ic('check')} שמור</button></div>`;
   $('#cfgClose').addEventListener('click', () => { $('#modal').innerHTML = prev; renderServiceSelect(); });
+  /* מתגי התשלום וסדר ההסכם — נקשרים מיד, לא בתוך מטפל השמירה */
+  $$('[data-cfgpay]').forEach(b => b.addEventListener('change', () => {
+    const k = b.dataset.cfgpay;
+    t.requiresBilling = k !== 'none';
+    t.canScheduleWithoutBilling = k !== 'pre';
+    openServiceCfgEditor(key);
+  }));
+  $$('[data-cfgord]').forEach(b => b.addEventListener('change', () => {
+    t.contractBeforePay = b.dataset.cfgord === 'sign';
+    openServiceCfgEditor(key);
+  }));
   $('#cfgSave').addEventListener('click', () => {
-    $$('[data-cfgpay]').forEach(b => b.addEventListener('change', () => {
-      const k = b.dataset.cfgpay;
-      t.requiresBilling = k !== 'none';
-      t.canScheduleWithoutBilling = k !== 'pre';
-      openServiceCfgEditor(key);
-    }));
     $$('[data-cfg]').forEach(inp => {
       const k = inp.dataset.cfg;
       t[k] = inp.type === 'checkbox' ? inp.checked : +inp.value;
@@ -31347,6 +31435,7 @@ function openExtPanel() {
     return list.slice(0, 40);
   }
   let swapTo = null;          // מועד שנבחר להחלפה וממתין לאישור
+  let calEntryTitle = '';     // הכותרת נקבעת בכניסה לשלב ולא משתנה תוך כדי
 
   /* המועד הנוכחי — פגישה קבועה, שיריון, או מועד שממתין לתשלום */
   function currentSlot(r) {
@@ -31371,9 +31460,9 @@ function openExtPanel() {
     const sw = swapTo ? (typeof coordPool === 'function' ? coordPool().find(x => x.id === swapTo) : null) : null;
     const body = `
       ${cur ? `<div class="fs-cur ${cur.kind}">
-        <div class="fs-cur-h">${ic('calendar')} <b>המועד הקיים</b><span class="fs-cur-tag">${esc(cur.tag)}</span></div>
+        <div class="fs-cur-h">${ic('calendar')} <b>המועד שנבחר</b><span class="fs-cur-tag">${esc(cur.tag)}</span></div>
         <div class="fs-cur-b"><b>${esc(cur.label)}</b>${cur.who ? `<small>${esc(cur.who)}</small>` : ''}</div>
-        <small class="fs-cur-n">בחירת מועד אחר מהרשימה תחליף אותו — נדרש אישור.</small>
+        <small class="fs-cur-n">אפשר לבחור מועד אחר מהרשימה (נדרש אישור), או להמשיך לשלב הבא.</small>
       </div>` : ''}
       ${sw ? `<div class="fs-swap">${ic('sync')}
         <div><b>להחליף את המועד?</b>
@@ -31394,9 +31483,13 @@ function openExtPanel() {
               ${s.reason ? ' · ' + esc(s.reason) : ''}</small></span>
           <span class="fs-go">${ic('chevronL')}</span></button>`).join('')
         : `<div class="fs-empty2">${ic('alert')} אין מועדים פנויים בקריטריונים שנבחרו</div>`}</div>`;
-    shell(r, 'cal', cur ? 'עדכון פגישה' : 'תיאום מועד', body,
+    shell(r, 'cal', calEntryTitle || (cur ? 'עדכון פגישה' : 'תיאום מועד'), body,
       `${backBtn(r, 'cal')}<span class="fs-foot-n">${all.length} מועדים מתאימים</span>
-       ${cur ? `<button class="btn primary" data-fskeep>${ic('check')} להשאיר את המועד ולהמשיך</button>` : ''}`);
+       ${cur ? (function () {
+         const nk = nextStep(r, 'cal');
+         const L = { summary: 'סיכום הצעה', pay: 'סליקה', contract: 'הסכם' };
+         return `<button class="btn primary" data-fskeep>${ic('check')} המשך ל${L[nk] || 'שלב הבא'} ${ic('chevronL')}</button>`;
+       })() : ''}`);
     const host = document.querySelector('#modal .fs-step');
     host.querySelectorAll('[data-fsday]').forEach(b => b.addEventListener('click', () => { calDay = b.dataset.fsday; openCal(r); }));
     host.querySelectorAll('[data-fsslot]').forEach(b => b.addEventListener('click', () => {
@@ -31458,7 +31551,66 @@ function openExtPanel() {
       toast('נקבעה פגישה · ' + ((typeof cDayLbl === 'function') ? cDayLbl(s.date) : s.date) + ' ' + ((typeof fmtH === 'function') ? fmtH(s.h) : ''));
     }
     if (typeof renderList === 'function') renderList();
-    openSummary(r);
+    /* לא מקדמים שלב מעצמנו — הנציג רואה מה נבחר ומחליט מתי להמשיך */
+    openCal(r);
+  }
+
+  /* ---------------- הסכם לחתימה ---------------- */
+  const ctState = r => (r.contract = r.contract || { tplId: null, sent: false, signed: false, at: '' });
+  /* האם חובה לקבל הסכם חתום לפני סליקה — מוגדר בכרטיס הפריט */
+  function mustSignFirst(r) {
+    const q = reqsOf(r);
+    if (!q.on.contract || !q.on.billing) return false;
+    return q.list.some(t => t.requiresContract && t.contractBeforePay !== false);
+  }
+  function ctTemplates() {
+    const all = (typeof CONTRACT_TEMPLATES !== 'undefined') ? CONTRACT_TEMPLATES : [];
+    return all.filter(c => (c.audience || 'client') === 'client' && c.legalApproved);
+  }
+  function ctBlock(r) {
+    const q = reqsOf(r), c = ctState(r), tpls = ctTemplates();
+    if (!c.tplId && tpls.length) c.tplId = tpls[0].id;
+    const need = q.on.contract;
+    const state = c.signed ? 'signed' : (c.sent ? 'sent' : 'none');
+    const LBL = { none: 'טרם נשלח', sent: 'נשלח — ממתין לחתימה', signed: 'נחתם' };
+    return `<div class="fs-ct ${state} ${need ? 'need' : ''}">
+      <div class="fs-sec sm">${ic('docs')} <b>הסכם לחתימה</b>
+        <span class="fs-ct-tag ${state}">${need ? 'נדרש · ' : 'לא נדרש · '}${LBL[state]}</span></div>
+      ${need && mustSignFirst(r) ? `<p class="fs-ct-rule">${ic('lock')} לפי הגדרת הפריט — חובה לקבל הסכם חתום <b>לפני</b> הסליקה.</p>`
+        : (need ? `<p class="fs-ct-rule ok">${ic('bolt')} לפי הגדרת הפריט — אפשר לסלוק גם לפני החתימה.</p>` : '')}
+      ${tpls.length ? `<label class="fs-ct-sel"><span>תבנית</span>
+        <select class="cc-inp" data-fsct>${tpls.map(t => `<option value="${esc(t.id)}" ${c.tplId === t.id ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></label>`
+        : `<p class="fs-none">אין תבנית הסכם מאושרת במערכת</p>`}
+      <div class="fs-ct-acts">
+        ${!c.sent ? `<button class="btn sm" data-fsctsend>${ic('sync')} ${need ? 'שלח לחתימה' : 'שלח הסכם לחתימה (לא חובה)'}</button>`
+          : `<button class="btn sm" data-fsctsend>${ic('sync')} שלח שוב</button>`}
+        ${c.sent && !c.signed ? `<button class="btn sm primary" data-fsctsign>${ic('check')} סמן כנחתם</button>` : ''}
+        ${tpls.length ? `<button class="btn sm ghost" data-fsctprev>${ic('eye')} תצוגה מקדימה</button>` : ''}
+      </div>
+    </div>`;
+  }
+  function bindCt(r, rerender) {
+    const c = ctState(r);
+    const sel = document.querySelector('#modal [data-fsct]');
+    if (sel) sel.addEventListener('change', () => { c.tplId = sel.value; });
+    const sn = document.querySelector('#modal [data-fsctsend]');
+    if (sn) sn.addEventListener('click', () => {
+      c.sent = true; c.at = (typeof docStamp === 'function') ? docStamp() : '';
+      if (typeof ctRegisterIssue === 'function' && typeof contractById === 'function') {
+        const t = contractById(c.tplId); if (t) { try { ctRegisterIssue(t, r); } catch (e) {} }
+      }
+      toast('ההסכם נשלח ללקוח לחתימה'); rerender();
+    });
+    const sg = document.querySelector('#modal [data-fsctsign]');
+    if (sg) sg.addEventListener('click', () => {
+      c.signed = true; toast('ההסכם סומן כנחתם'); rerender();
+    });
+    const pv = document.querySelector('#modal [data-fsctprev]');
+    if (pv) pv.addEventListener('click', () => {
+      const t = (typeof contractById === 'function') ? contractById(c.tplId) : null;
+      if (t && typeof openContractWizard === 'function') openContractWizard(t, r, 'preview');
+      else toast('אין תצוגה מקדימה זמינה');
+    });
   }
 
   /* ---------------- סיכום הצעה ---------------- */
@@ -31466,38 +31618,92 @@ function openExtPanel() {
     const q = reqsOf(r);
     const price = (window.BOOKMODE && BOOKMODE.price) ? BOOKMODE.price(r) : { base: 0, disc: 0, final: 0 };
     const dur = q.list.reduce((s, t) => s + (+t.dur || 0), 0);
+    const dep = q.list.reduce((s, t) => s + (+t.deposit || 0), 0);
+    const tpl = (typeof contractById === 'function' && ctState(r).tplId) ? contractById(ctState(r).tplId) : null;
+    const terms = (typeof ctSvcTermsFor === 'function') ? ctSvcTermsFor(r, tpl) : [];
     const when = r.meeting ? (r.meeting.date + ' ' + r.meeting.time)
       : r.slotHold ? ((typeof cDayLbl === 'function' ? cDayLbl(r.slotHold.date) : '') + ' ' + (typeof fmtH === 'function' ? fmtH(r.slotHold.h) : '') + ' · בשיריון')
       : r.pendingSlot ? ((typeof cDayLbl === 'function' ? cDayLbl(r.pendingSlot.date) : '') + ' ' + (typeof fmtH === 'function' ? fmtH(r.pendingSlot.h) : '') + ' · ממתין לתשלום') : '';
     const body = `
-      <div class="fs-sec">${ic('layers')} <b>מה נבחר</b></div>
-      <div class="fs-items">${q.list.map(t => `<div class="fs-item">
-        <div class="fs-it-h"><b>${esc(t.label)}</b>
-          <span class="fs-it-m">${t.kind ? esc(t.kind) : ''}${t.dur ? ' · ' + t.dur + ' דק׳' : ''}${t.price ? ' · ' + money(t.price) : ' · ללא עלות'}</span></div>
-        ${t.pre ? `<div class="fs-note"><span>${ic('note')} הנחיות ללקוח</span><p>${esc(t.pre)}</p></div>` : ''}
-        ${t.instr ? `<div class="fs-note in"><span>${ic('tasks')} הנחיות פנימיות</span><p>${esc(t.instr)}</p></div>` : ''}
-      </div>`).join('') || '<p class="fs-none">לא נבחרו פריטים</p>'}</div>
-      <div class="fs-grid">
-        <div class="fs-box">
-          <div class="fs-sec sm">${ic('check')} <b>סיכום</b></div>
-          <div class="fs-kv"><span>פריטים</span><b>${q.list.length}</b></div>
-          ${dur ? `<div class="fs-kv"><span>זמן כולל</span><b>${dur} דק׳</b></div>` : ''}
-          <div class="fs-kv"><span>עלות</span><b>${price.base ? money(price.final) : 'ללא עלות'}</b></div>
-          ${when ? `<div class="fs-kv"><span>מועד</span><b>${esc(when)}</b></div>` : ''}
-          ${r.paid ? `<div class="fs-kv"><span>תשלום</span><b class="ok">שולם · ${esc(r.paid.ref || '')}</b></div>` : ''}
+      <div class="sm-head">
+        <div class="sm-h-ic">${ic('docs')}</div>
+        <div><b>פריטים נבחרים להסכם</b>
+          <small>${esc(r.name)}${r.org ? ' · ' + esc(r.org) : ''} · ${esc(((typeof JOURNEY_TYPES !== 'undefined' && JOURNEY_TYPES[r.journey]) || {}).label || '')}</small></div>
+      </div>
+
+      <div class="sm-tbl-wrap"><table class="sm-tbl">
+        <thead><tr>
+          <th>שם הפריט</th><th>קטגוריה</th><th>משך</th><th>מחיר</th><th>מקדמה</th>
+          <th>סליקה / חיוב</th><th>פגישה</th><th>הנחיות</th>
+        </tr></thead>
+        <tbody>${q.list.map(t => `<tr>
+          <td class="sm-name"><b>${esc(t.label)}</b>${t.subType ? `<span class="sm-sub">${esc(t.subType)}</span>` : ''}</td>
+          <td><span class="sm-chip">${esc(t.kind || '')}</span></td>
+          <td>${t.dur ? t.dur + ' דק׳' : '—'}</td>
+          <td>${t.price ? money(t.price) : '—'}</td>
+          <td>${t.deposit ? money(t.deposit) : '0 ₪'}</td>
+          <td>${t.requiresBilling ? '<span class="sm-b need">נדרש חיוב</span>' : '<span class="sm-b free">ללא סליקה</span>'}</td>
+          <td>${t.requiresMeeting ? '<span class="sm-b meet">נדרשת</span>' : '<span class="sm-b none">לא נדרשת</span>'}</td>
+          <td class="sm-icons">${t.pre ? `<span title="${esc(t.pre)}">${ic('note')}</span>` : ''}
+            ${t.instr ? `<span class="in" title="${esc(t.instr)}">${ic('tasks')}</span>` : ''}
+            ${!t.pre && !t.instr ? '<i>—</i>' : ''}</td>
+        </tr>`).join('') || '<tr><td colspan="8" class="sm-empty">לא נבחרו פריטים</td></tr>'}</tbody>
+      </table></div>
+      <button class="sm-add" data-fsedit>${ic('plus')} הוספה או שינוי של פריטים</button>
+
+      <div class="sm-money">
+        <div class="sm-m"><span>פריטים</span><b>${q.list.length}</b></div>
+        <div class="sm-m"><span>זמן כולל</span><b>${dur} דק׳</b></div>
+        <div class="sm-m"><span>סה״כ מחיר</span><b>${money(price.base)}</b></div>
+        ${price.disc ? `<div class="sm-m off"><span>הנחה${r.offer && r.offer.discType === 'pct' && +r.offer.discVal ? ' ' + (+r.offer.discVal) + '%' : ''}</span>
+          <b>−${money(price.disc)}</b></div>` : ''}
+        <div class="sm-m"><span>מקדמה כוללת</span><b>${money(dep)}</b></div>
+        <div class="sm-m tot"><span>יתרה לחיוב</span><b>${money(Math.max(0, price.final - dep))}</b></div>
+      </div>
+
+      <div class="sm-grid">
+        <div class="sm-card">
+          <div class="sm-c-h">${ic('clients')} <b>מה יופיע ללקוח בהסכם</b></div>
+          <ul class="sm-list">
+            ${(r.offer && r.offer.validUntil) ? `<li>${ic('check')} תוקף ההצעה: ${esc(r.offer.validUntil)}</li>` : ''}
+            ${price.disc ? `<li>${ic('check')} הנחה שסוכמה: ${money(price.disc)}</li>` : ''}
+            ${terms.length ? terms.slice(0, 5).map(t => `<li>${ic('check')} ${esc(t.title)}</li>`).join('')
+              : `<li class="muted">${q.on.contract ? 'טרם נבחרה תבנית הסכם' : 'לא נדרש הסכם לפריטים שנבחרו'}</li>`}
+            ${terms.length > 5 ? `<li class="muted">ועוד ${terms.length - 5} תנאים</li>` : ''}
+          </ul>
         </div>
-        <div class="fs-box">
-          <div class="fs-sec sm">${ic('bolt')} <b>מה נדרש בפריטים</b></div>
-          ${REQS.map(x => `<div class="fs-kv"><span>${ic(x.icon)} ${esc(x.label)}</span>
-            <b class="${q.on[x.key] ? 'need' : 'no'}">${q.on[x.key] ? 'נדרש' : 'לא נדרש'}</b></div>`).join('')}
+        <div class="sm-card">
+          <div class="sm-c-h">${ic('note')} <b>הנחיות פנימיות</b></div>
+          <ul class="sm-list">
+            ${q.list.filter(t => t.instr).map(t => `<li>${ic('check')} ${esc(t.label)}: ${esc(t.instr)}</li>`).join('')}
+            ${q.on.contract ? `<li>${ic('check')} להחתים על ההסכם ${mustSignFirst(r) ? 'לפני הסליקה' : 'במהלך התהליך'}</li>` : ''}
+            ${q.on.billing ? `<li>${ic('check')} להסביר תנאי סליקה ותשלום</li>` : ''}
+            ${(r.needs || {}).note ? `<li>${ic('check')} ${esc(String(r.needs.note).slice(0, 90))}</li>` : ''}
+            ${!q.list.some(t => t.instr) && !q.on.contract && !q.on.billing ? '<li class="muted">אין הנחיות מיוחדות</li>' : ''}
+          </ul>
         </div>
-      </div>`;
+        <div class="sm-card">
+          <div class="sm-c-h">${ic('calendar')} <b>מועד ותיאום</b></div>
+          <ul class="sm-list">
+            ${when ? `<li>${ic('check')} ${esc(when)}</li>` : `<li class="muted">${q.on.meeting ? 'טרם נבחר מועד' : 'לא נדרשת פגישה'}</li>`}
+            ${r.paid ? `<li>${ic('check')} שולם · ${esc(r.paid.ref || '')}</li>` : (q.on.billing ? '<li class="muted">טרם שולם</li>' : '')}
+          </ul>
+        </div>
+      </div>
+      ${ctBlock(r)}`;
     const nx = nextStep(r, 'summary');
+    const gate = nx === 'pay' && mustSignFirst(r) && !ctState(r).signed;
     shell(r, 'summary', 'סיכום הצעה', body,
-      `${backBtn(r, 'summary')}<button class="btn primary" data-fsnext>${ic('check')} ${nx === 'pay' ? 'המשך לסליקה' : 'סיום'}</button>`);
+      `${backBtn(r, 'summary')}
+       ${gate ? `<span class="fs-gate">${ic('lock')} נדרש הסכם חתום לפני סליקה</span>` : ''}
+       <button class="btn primary" data-fsnext ${gate ? 'disabled' : ''}>${ic('check')} ${nx === 'pay' ? 'המשך לסליקה' : 'סיום'}</button>`);
     bindBack(r, 'summary');
+    bindCt(r, () => openSummary(r));
+    const ed = document.querySelector('#modal [data-fsedit]');
+    if (ed) ed.addEventListener('click', () => { if (typeof openServiceSelect === 'function') openServiceSelect(r); });
     const b = document.querySelector('#modal [data-fsnext]');
     if (b) b.addEventListener('click', () => {
+      if (gate) { toast('יש לשלוח את ההסכם ולקבל אותו חתום לפני הסליקה'); return; }
       if (nx === 'pay') return openPay(r);
       r.dealDone = true;
       if (typeof closeModal === 'function') closeModal();
@@ -31531,6 +31737,7 @@ function openExtPanel() {
     if (lk) lk.addEventListener('click', () => { r.payLinkSent = true; toast('קישור סליקה נשלח ללקוח'); });
     const ok = document.querySelector('#modal [data-fsok]');
     if (ok) ok.addEventListener('click', () => {
+      if (mustSignFirst(r) && !ctState(r).signed) { toast('נדרש הסכם חתום לפני סליקה — חזרה לסיכום ההצעה'); return openSummary(r); }
       r.paid = { at: (typeof docStamp === 'function') ? docStamp() : '', amount: due,
         ref: 'EXT-' + ((r.id || 0) * 7 + 1000), mode: 'external' };
       const src = r.slotHold || r.pendingSlot;
@@ -31562,7 +31769,7 @@ function openExtPanel() {
   function open(r, key) {
     if (key === 'crit' && typeof openNeedsClarify === 'function') return openNeedsClarify(r);
     if (key === 'svc' && typeof openServiceSelect === 'function') return openServiceSelect(r);
-    if (key === 'cal') return openCal(r);
+    if (key === 'cal') { calEntryTitle = currentSlot(r) ? 'עדכון פגישה' : 'תיאום מועד'; return openCal(r); }
     if (key === 'pay') return openPay(r);
     if (key === 'summary') return openSummary(r);
   }
