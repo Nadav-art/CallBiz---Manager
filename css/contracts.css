@@ -154,7 +154,15 @@
 .ct-terms-link { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 10px 0;
   padding: 10px 12px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-2); font-size: 13px; }
 .ct-terms-link small { flex: 1 1 220px; font-size: 11.5px; color: var(--text-2); line-height: 1.5; }
-.st-box { max-width: 620px; text-align: start; }
+/* הפאנל ארוך מהמסך — הכותרת והכפתור נשארים במקום והתוכן נגלל בפנים,
+   אחרת התחתית (טופס התנאי החדש וכפתור הסיום) נחתכת מחוץ למסך. */
+.st-box { max-width: 620px; text-align: start; display: flex; flex-direction: column;
+  max-height: calc(100vh - 48px); padding-bottom: 0; }
+.st-box > .cbc-head { flex: 0 0 auto; }
+.st-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  margin: 0 -20px; padding: 0 20px 6px; }
+.st-box > .cbc-actions { flex: 0 0 auto; margin: 0 -20px; padding: 12px 20px;
+  border-top: 1px solid var(--line); background: var(--surface); }
 .st-lead { font-size: 12.5px; color: var(--text-2); line-height: 1.65; margin: 4px 0 14px; }
 .st-lead b { color: var(--text); }
 .st-list { display: flex; flex-direction: column; gap: 9px; }
@@ -209,3 +217,40 @@
 .st-inct { display: flex; align-items: center; gap: 6px; padding: 9px 11px; border-radius: 10px;
   background: color-mix(in srgb, var(--brand) 8%, transparent); font-size: 12px; }
 .st-inct svg { width: 13px; height: 13px; color: var(--brand); }
+
+/* ---------- בורר היקף קומפקטי: ברירת מחדל "הכל", בחירה ספציפית בכרטיסים ---------- */
+.st-pick { display: flex; flex-direction: column; gap: 7px; }
+.st-pick-head { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.st-all { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  font: inherit; font-size: 12.5px; cursor: pointer; padding: 9px 12px; border-radius: 11px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text-2); }
+.st-all svg { width: 13px; height: 13px; }
+.st-all.on { border-color: var(--brand); color: var(--brand); font-weight: 600;
+  background: color-mix(in srgb, var(--brand) 8%, transparent); }
+.st-all:hover { background: var(--surface-2); }
+.st-more { display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; cursor: pointer;
+  padding: 9px 12px; border-radius: 11px; border: 1px dashed var(--line); background: transparent; color: var(--text-2); }
+.st-more b { color: var(--brand); }
+.st-more svg { width: 12px; height: 12px; transition: transform .15s; }
+.st-pick.open .st-more svg { transform: rotate(180deg); }
+.st-more:hover { border-color: var(--brand); color: var(--text); }
+
+.st-pick-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 8px;
+  max-height: 232px; overflow-y: auto; overscroll-behavior: contain; padding: 3px;
+  border-radius: 12px; background: var(--surface-2); }
+.st-tile { position: relative; font: inherit; text-align: center; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 13px 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+.st-tile b { font-size: 12.5px; line-height: 1.35; }
+.st-tile small { font-size: 10.5px; color: var(--text-2); }
+.st-tile-ic svg { width: 16px; height: 16px; color: var(--text-2); margin-bottom: 2px; }
+.st-tile:hover { border-color: color-mix(in srgb, var(--brand) 45%, transparent); background: var(--surface-2); }
+.st-tile.on { border-color: var(--brand); background: color-mix(in srgb, var(--brand) 7%, transparent); }
+.st-tile.on b { color: var(--brand); }
+.st-tile.on .st-tile-ic svg { color: var(--brand); }
+.st-tile-ck { position: absolute; inset-inline-start: 8px; top: 8px; width: 16px; height: 16px;
+  display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; }
+.st-tile.on .st-tile-ck { background: var(--brand); color: #fff; }
+.st-tile-ck svg { width: 10px; height: 10px; }
+.st-row-empty { grid-column: 1 / -1; margin: 0; padding: 14px; text-align: center;
+  font-size: 12px; color: var(--text-2); }

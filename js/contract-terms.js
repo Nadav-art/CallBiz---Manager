@@ -61,17 +61,47 @@ function ctSvcTermsRaw(lead, contract) {
 
 /* ---------------- ניהול הספרייה ---------------- */
 let ctTermEdit = null;   // התנאי שנמצא בעריכה, או null
+let stPickOpen = {};     // אילו בוררי "בחירה ספציפית" פתוחים (נשמר בין רינדורים)
 
 function openSvcTermsPanel(onDone, ctx) {
   /* ctx.contractId — נפתח מתוך תבנית מסוימת: מה שנוסף נשמר לה בלבד.
      בלי ctx — נפתח מהמסך הראשי: אפשר לבחור על אילו תבניות זה חל. */
   const CTX = ctx || {};
-  const CT = (typeof CONTRACT_TEMPLATES !== 'undefined') ? CONTRACT_TEMPLATES : [];
-  const inCt = CTX.contractId ? (CT.find(c => c.id === CTX.contractId) || null) : null;
+  const ALL_CT = (typeof CONTRACT_TEMPLATES !== 'undefined') ? CONTRACT_TEMPLATES : [];
+  const inCt = CTX.contractId ? (ALL_CT.find(c => c.id === CTX.contractId) || null) : null;
+  /* הכל בהיקף הקהל שבו נמצאים — בטאב הלקוחות מוצגות רק תבניות לקוח
+     וסוגי הסכם של לקוחות, ולא הסכמי העסקה או מסמכים לחתימה. */
+  const AUD = inCt ? (inCt.audience || 'client') : ((typeof ctAud !== 'undefined') ? ctAud : 'client');
+  const CT = ALL_CT.filter(c => (c.audience || 'client') === AUD);
+  const AUD_LBL = ((typeof CT_AUDIENCES !== 'undefined' ? CT_AUDIENCES : []).find(a => a.key === AUD) || {}).label || 'הסכמי לקוחות';
   const old = document.getElementById('svcTermsPanel'); if (old) old.remove();
   const w = document.createElement('div'); w.className = 'cbc-wrap'; w.id = 'svcTermsPanel';
   const treats = (typeof COORD_TREATMENTS !== 'undefined') ? COORD_TREATMENTS : [];
-  const types = (typeof CONTRACT_TYPES !== 'undefined') ? CONTRACT_TYPES : [];
+  /* סוגי ההסכם נגזרים מהתבניות שקיימות בקהל הזה — ולא מרשימה גורפת */
+  const types = CT.map(c => c.type).filter((t, i, a) => t && a.indexOf(t) === i);
+
+  /* בורר מרובה קומפקטי: ברירת המחדל היא "הכל", ומי שרוצה ספציפי
+     פותח רשימה נגללת עם בחירה מרובה — במקום קיר של צ׳יפים. */
+  const pick = (id, label, allLabel, attr, items, sel) => {
+    const open = stPickOpen[id] || sel.length > 0;
+    return `<div class="st-f st-pick ${open ? 'open' : ''}">
+      <span>${label}</span>
+      <div class="st-pick-head">
+        <button class="st-all ${!sel.length ? 'on' : ''}" data-${attr}="">${!sel.length ? ic('check') : ''} ${esc(allLabel)}</button>
+        <button class="st-more" data-stopen="${id}">
+          ${sel.length ? `<b>${sel.length}</b> נבחרו` : 'בחירה ספציפית'} ${ic('chevron')}</button>
+      </div>
+      ${open ? `<div class="st-pick-list">
+        ${items.length ? items.map(it => {
+          const on = sel.indexOf(it.v) >= 0;
+          return `<button class="st-tile ${on ? 'on' : ''}" data-${attr}="${esc(it.v)}">
+            <span class="st-tile-ck">${on ? ic('check') : ''}</span>
+            <span class="st-tile-ic">${ic(it.icon || 'docs')}</span>
+            <b>${esc(it.t)}</b>${it.sub ? `<small>${esc(it.sub)}</small>` : ''}</button>`;
+        }).join('') : '<p class="st-row-empty">אין פריטים בקהל הזה</p>'}
+      </div>` : ''}
+    </div>`;
+  };
 
   const render = () => {
     const e = ctTermEdit;
@@ -79,6 +109,7 @@ function openSvcTermsPanel(onDone, ctx) {
       <div class="cbc-head"><span class="cbc-ic">${ic('docs')}</span>
         <b>סעיפים, תנאים והערות להסכם</b>
         ${inCt ? `<span class="st-scope-tag">${esc(inCt.name)}</span>` : '<span class="st-scope-tag all">כל התבניות</span>'}</div>
+      <div class="st-scroll">
       <p class="st-lead">${inCt
         ? 'מה שתוסיפו כאן יישמר <b>לתבנית הזו בלבד</b>, באופן קבוע, ויופיע בכל הסכם שיופק ממנה.'
         : 'מה שתוסיפו כאן חל על <b>כל התבניות</b> — או רק על אלה שתבחרו.'}
@@ -125,23 +156,18 @@ function openSvcTermsPanel(onDone, ctx) {
         <label class="st-f"><span>הנוסח</span>
           <textarea class="cc-inp" id="stText" rows="3" placeholder="משפט או שניים בשפה פשוטה…">${esc((e && e.text) || '')}</textarea></label>
 
-        <div class="st-f"><span>על אילו שירותים זה חל?</span>
-          <div class="st-chips">
-            <button class="st-chip ${!((e && e.svcs) || []).length ? 'on' : ''}" data-stsvc="">כל השירותים</button>
-            ${treats.map(t => `<button class="st-chip ${(((e && e.svcs) || []).indexOf(t.key) >= 0) ? 'on' : ''}" data-stsvc="${t.key}">${esc(t.label)}</button>`).join('')}
-          </div></div>
+        ${pick('svcs', 'על אילו שירותים זה חל?', 'כל השירותים', 'stsvc',
+          treats.map(t => ({ v: t.key, t: t.label, icon: 'layers',
+            sub: (t.kind || '') + (t.dur ? ' · ' + t.dur + ' ד׳' : '') })), ((e && e.svcs) || []))}
 
         ${inCt ? `<div class="st-inct">${ic('lock')} התנאי יישמר ל<b>${esc(inCt.name)}</b> בלבד</div>`
-          : `<div class="st-f"><span>על אילו תבניות חוזה?</span>
-            <div class="st-chips">
-              <button class="st-chip ${!((e && e.ctIds) || []).length ? 'on' : ''}" data-stct="">כל התבניות</button>
-              ${CT.map(c => `<button class="st-chip ${(((e && e.ctIds) || []).indexOf(c.id) >= 0) ? 'on' : ''}" data-stct="${esc(String(c.id))}">${esc(c.name)}</button>`).join('')}
-            </div></div>`}
-        <div class="st-f"><span>על אילו סוגי הסכם?</span>
-          <div class="st-chips">
-            <button class="st-chip ${!((e && e.types) || []).length ? 'on' : ''}" data-sttype="">כל סוגי ההסכם</button>
-            ${types.map(t => `<button class="st-chip ${(((e && e.types) || []).indexOf(t) >= 0) ? 'on' : ''}" data-sttype="${esc(t)}">${esc(t)}</button>`).join('')}
-          </div></div>
+          : pick('ctIds', 'על אילו תבניות?', 'כל התבניות ב' + AUD_LBL, 'stct',
+              CT.map(c => ({ v: String(c.id), t: c.name, icon: 'docs', sub: c.type })), ((e && e.ctIds) || []))}
+
+        ${pick('types', 'על אילו סוגי הסכם?', 'כל סוגי ההסכם ב' + AUD_LBL, 'sttype',
+          types.map(t => ({ v: t, t: t, icon: 'flag',
+            sub: (function () { const n = CT.filter(c => c.type === t).length; return n === 1 ? 'תבנית אחת' : n + ' תבניות'; })() })),
+          ((e && e.types) || []))}
 
         <label class="st-lockrow"><input type="checkbox" id="stLock" ${(!e || e.locked !== false) ? 'checked' : ''}>
           <span><b>תנאי קבוע — נעול</b><small>יופיע בכל הסכם תואם, ולא ניתן להסיר או לערוך אותו בעסקה בודדת.</small></span></label>
@@ -152,6 +178,7 @@ function openSvcTermsPanel(onDone, ctx) {
         </div>
       </div>
 
+      </div>
       <div class="cbc-actions"><button class="btn primary" id="stClose">${ic('check')} סיום</button></div>
     </div>`;
 
@@ -164,6 +191,10 @@ function openSvcTermsPanel(onDone, ctx) {
       if (lk) ctTermEdit.locked = lk.checked;
       return ctTermEdit;
     };
+    $$('[data-stopen]', w).forEach(b => b.addEventListener('click', () => {
+      const k = b.dataset.stopen; stPickOpen[k] = !stPickOpen[k];
+      draft(); render();
+    }));
     $$('[data-stsvc]', w).forEach(b => b.addEventListener('click', () => {
       const d = draft(), k = b.dataset.stsvc;
       if (!k) d.svcs = []; else { const i = d.svcs.indexOf(k); if (i >= 0) d.svcs.splice(i, 1); else d.svcs.push(k); }

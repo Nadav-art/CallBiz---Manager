@@ -189,11 +189,15 @@
         const bad = rows.filter(x => x.block || !x.staff.ok);
         const prodBad = rd && !rd.ok && rd.blame === 'product';
         const critBad = rd && !rd.ok && rd.blame === 'crit' && (rd.reasons || []).length;
+        /* לפני שנענו הקריטריונים אי-אפשר לקבוע שהמוצר "מתאים" —
+           כל מה שידוע בשלב הזה הוא שיש מועדים פנויים. */
+        const answered = Object.keys(r.needs || {}).some(k => k !== 'note' && (r.needs || {})[k]);
         return `<div class="fl-step ${bad.length || !rd || !rd.ok ? 'bad' : 'ok'}">
           <span class="fl-n">${(bad.length || (rd && !rd.ok)) ? ic('alert') : ic('check')}</span>
           <div><b>${bad.length ? 'הלקוח אינו עומד בקריטריונים של המוצר'
-            : (rd && !rd.ok ? (rd.blame === 'crit' ? 'המוצר מתאים — אבל אין מועד בקריטריונים שנבחרו' : 'אין מועד פנוי למוצר הזה')
-            : (rd && rd.slots > 0 ? 'המוצר מתאים ויש מועדים פנויים' : 'המוצר מתאים — אפשר להמשיך'))}</b>
+            : (rd && !rd.ok ? (rd.blame === 'crit' ? 'אין מועד בקריטריונים שנבחרו' : 'אין מועד פנוי למוצר הזה')
+            : !answered ? (rd && rd.slots > 0 ? 'יש מועדים פנויים · ההתאמה תיבדק בבירור הצורך' : 'אפשר להמשיך לבירור הצורך')
+            : (rd && rd.slots > 0 ? 'עומד בקריטריונים ויש מועדים פנויים' : 'עומד בקריטריונים — אפשר להמשיך'))}</b>
             <div class="fl-rows">${rows.map(x => `<div class="fl-row ${x.block || !x.staff.ok ? 'bad' : 'ok'}">
               <span>${esc(x.label)}</span>
               <small>${x.block ? esc(x.block) : (x.staff.ok
