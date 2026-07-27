@@ -105,19 +105,33 @@
     qs.forEach(q => {
       if (!q.opts) return;
       q.opts.forEach(o => {
-        if (o.blocked) { locked++; return; }        // כבר נחסם ע״י כלל קיים — לא נוגעים
+        /* נחסם כבר ע״י כלל קיים — לא משנים את ההחלטה, רק מציגים את
+           הסיבה גם על השורה עצמה ולא רק ב-tooltip */
+        if (o.blocked) { locked++; if (!o.hint && o.why) o.hint = o.why; return; }
         if (!o.v || o.v === '__near') return;        // "אין העדפה" תמיד פתוח
         if (typeof CRIT_OTHER !== 'undefined' && o.v === CRIT_OTHER) return;
         const test = Object.assign({}, base); test[q.key] = o.v;
         if (countFor(r, pool, test)) return;         // יש זמינות — פתוח
+
+        /* האם האפשרות זמינה כשהיא לבדה? רק אם כן — הצירוף הוא שחוסם.
+           אחרת מדובר בעובדה מבנית (סניף סגור, אין יומן) ולא באשמת הבחירה. */
+        const alone = {}; alone[q.key] = o.v;
+        const standalone = countFor(r, pool, alone);
         o.blocked = true; o.noAvail = true; locked++;
+        if (!standalone) {
+          o.why = structuralWhy(q.key, o.v);
+          o.hint = o.why;
+          return;
+        }
         const cul = culprits(r, pool, test).filter(k => k !== q.key);
         if (cul.length) {
           const names = cul.map(k => `${labelOf(k)}: ${valLabel(k, base[k])}`);
           o.why = 'אין מועד פנוי בצירוף הזה · ייפתח אם משנים ' + names.join(' או ');
+          o.hint = 'לא מתאים ל' + cul.map(k => labelOf(k)).join(' / ') + ' שנבחר';
           cul.forEach(k => { if (hints.indexOf(k) < 0) hints.push(k); });
         } else {
           o.why = 'אין מועד פנוי ביומן לאפשרות הזו';
+          o.hint = 'אין מועד פנוי';
         }
       });
       /* כל האפשרויות של השאלה ננעלו — משאירים אותה כאינדיקציה, לא כמלכודת */
@@ -125,6 +139,19 @@
       q.allBlocked = live.length <= 1;
     });
     return { qs: qs, locked: locked, hints: hints, base: base, dropped: dropped };
+  }
+
+  /* חסימה מבנית — לא באשמת מה שנבחר, ולכן מנוסחת אחרת */
+  function structuralWhy(key, v) {
+    if (key === 'branch') {
+      const b = (typeof cBranch === 'function') ? cBranch(v) : null;
+      if (b && b.on === false) return 'הסניף סגור כרגע — אין לו יומן פעיל';
+      if (b && b.active === false) return 'הסניף כבוי בהגדרות';
+      return 'אין יומן פעיל בסניף הזה';
+    }
+    if (key === 'timeOfDay') return 'אין משבצות בשעות האלה באף סניף';
+    if (key === 'gender') return 'אין מטפל/ת בהעדפה הזו עם יומן פעיל';
+    return 'אין מועד ביומן לאפשרות הזו';
   }
 
   let lastMark = null;

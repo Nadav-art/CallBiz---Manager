@@ -1,0 +1,35 @@
+/* ============================================================
+   אימות יישוב תוך כדי הקלדה (geoverify)
+   ============================================================ */
+.gv-wrap { position: relative; flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.gv-wrap input { width: 100%; }
+.gv-wrap.ok input { border-color: color-mix(in srgb, var(--ok, #16a34a) 55%, transparent); }
+.gv-wrap.alias input { border-color: color-mix(in srgb, var(--brand) 55%, transparent); }
+.gv-wrap.warn input { border-color: color-mix(in srgb, var(--amber, #d97706) 55%, transparent); }
+
+.gv-list { position: absolute; top: 100%; inset-inline: 0; z-index: 60; display: none;
+  margin-top: 4px; max-height: 244px; overflow-y: auto; overscroll-behavior: contain;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
+  box-shadow: var(--shadow-lg); padding: 4px; }
+.gv-list.open { display: block; }
+.gv-i { display: flex; align-items: center; gap: 8px; width: 100%; font: inherit; text-align: start;
+  cursor: pointer; padding: 8px 9px; border: 0; border-radius: 9px; background: transparent; }
+.gv-i:hover, .gv-i.on { background: var(--surface-2); }
+.gv-i svg { width: 14px; height: 14px; flex: 0 0 auto; color: var(--text-2); }
+.gv-i span { flex: 1 1 auto; min-width: 0; }
+.gv-i b { display: block; font-size: 13px; }
+.gv-i small { display: block; font-size: 10.5px; color: var(--text-2); }
+.gv-i em { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 3px; font-style: normal;
+  font-size: 10.5px; color: var(--ok, #16a34a); }
+.gv-i em svg { width: 11px; height: 11px; color: inherit; }
+
+.gv-flag:empty { display: none; }
+.gv-flag { display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+  margin-top: 5px; font-size: 11px; color: var(--text-2); }
+.gv-flag svg { width: 12px; height: 12px; }
+.gv-wrap.ok .gv-flag { color: var(--ok, #16a34a); }
+.gv-wrap.alias .gv-flag { color: var(--brand); }
+.gv-wrap.warn .gv-flag { color: var(--amber, #d97706); }
+.gv-flag b { color: var(--text); }
+.gv-fix { font: inherit; font-size: 10.5px; cursor: pointer; padding: 1px 8px; border-radius: 999px;
+  border: 1px solid currentColor; background: transparent; color: inherit; }

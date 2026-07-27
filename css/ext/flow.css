@@ -149,3 +149,9 @@
 .fl-none.bad { color: var(--danger, #dc2626); }
 .fl-openbtn { width: 100%; justify-content: center; }
 .fl-openbtn svg { width: 14px; height: 14px; }
+
+/* סיבת הנעילה מוצגת על האפשרות עצמה */
+.cbx-critfx .needs-opt.blocked .nopt-hint { display: block; font-size: 10px; line-height: 1.35;
+  margin-top: 2px; opacity: .95; text-decoration: none; }
+.cbx-critfx .needs-opt.blocked { flex-direction: column; align-items: flex-start; text-align: start; }
+.cbx-critfx .needs-opt.blocked::after { inset-inline: 9px; top: 12px; }
