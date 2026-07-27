@@ -8,10 +8,9 @@
 
    מקור הנתונים ניתן להחלפה בנקודה אחת:
        GEOV.setProvider(async q => [{ name, official, region }])
-   כרגע רץ מרשם מקומי (IL_CITIES + כינויים). ספק חיצוני — Google
-   Places או data.gov.il — נרשם באותה שורה בלי לגעת בממשק.
-   שים לב: בגרסה שרצה כקובץ בודד אין קריאות רשת, ולכן ההשלמה
-   עובדת מול המרשם המקומי בלבד עד שיחובר ספק.
+   המרשם מובנה בקובץ — 1,272 היישובים הרשמיים של הלמ״ס (ראו
+   js/ext/geo-registry.js). אין צורך להעלות דבר, וזה עובד גם בלי
+   רשת. ספק חיצוני (Google Places) אפשרי אך אינו נדרש.
    ============================================================ */
 (function () {
 
@@ -81,9 +80,12 @@
   /* האם מה שהוקלד מאומת — ומהו השם הרשמי */
   function verify(q) {
     const n = norm(q); if (!n) return { state: 'empty' };
-    const hit = registry().find(c => norm(c.name) === n || norm(c.official) === n);
+    const all = registry();
+    const hit = all.find(c => norm(c.name) === n || norm(c.official) === n);
     if (!hit) return { state: 'unknown' };
-    return { state: norm(hit.official) === n ? 'exact' : 'alias', official: hit.official, region: hit.region };
+    /* לכינוי אין מחוז משלו — לוקחים אותו מהרשומה הרשמית */
+    const off = all.find(c => norm(c.official) === norm(hit.official) && c.region) || hit;
+    return { state: norm(hit.official) === n ? 'exact' : 'alias', official: hit.official, region: off.region || '' };
   }
 
   /* ---------------- הרכבת ההשלמה על שדה קיים ---------------- */
@@ -105,7 +107,7 @@
       wrap.classList.remove('ok', 'warn', 'alias');
       if (v.state === 'empty') { flag.innerHTML = ''; return; }
       if (v.state === 'exact') { wrap.classList.add('ok');
-        flag.innerHTML = `${ic('check')} מאומת מול מרשם היישובים${v.region ? ' · ' + esc(v.region) : ''}`; return; }
+        flag.innerHTML = `${ic('check')} מאומת מול מרשם היישובים של הלמ״ס${v.region ? ' · ' + esc(v.region) : ''}`; return; }
       if (v.state === 'alias') { wrap.classList.add('alias');
         flag.innerHTML = `${ic('sync')} הכתיב הרשמי: <b>${esc(v.official)}</b>
           <button type="button" class="gv-fix">החלף</button>`;
@@ -113,7 +115,7 @@
         if (b) b.addEventListener('click', () => { setVal(v.official); });
         return; }
       wrap.classList.add('warn');
-      flag.innerHTML = `${ic('alert')} לא נמצא ב${provider ? 'מקור החיצוני' : 'מרשם המקומי'}
+      flag.innerHTML = `${ic('alert')} לא נמצא במרשם היישובים של הלמ״ס
         (${registry().length} יישובים) — יישמר בדיוק כפי שהוקלד`;
     };
     const setVal = val => {
