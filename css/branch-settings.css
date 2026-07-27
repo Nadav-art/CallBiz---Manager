@@ -1,0 +1,117 @@
+/* ============================================================
+   הגדרות סניף — עיצוב (branch-settings.js). משתמש בשלד .whs-*.
+   ============================================================ */
+/* כניסה לסניף — כותרת לחיצה */
+.branch-enter { display: flex; align-items: center; gap: 9px; flex: 1; border: none; background: transparent; font: inherit; cursor: pointer; text-align: start; padding: 0; color: inherit; }
+.branch-enter > svg:last-child { margin-inline-start: auto; width: 15px; height: 15px; color: var(--text-3); }
+.branch-enter:hover b { color: var(--brand-600); }
+.branch-enter:hover > svg:last-child { color: var(--brand); }
+.branch-enter-cell { border: none; background: transparent; font: inherit; cursor: pointer; text-align: start; padding: 0; color: inherit; }
+.branch-enter-cell svg { width: 12px; height: 12px; color: var(--text-3); vertical-align: middle; }
+.branch-enter-cell:hover b { color: var(--brand-600); }
+
+/* פרטי הסניף */
+.br-active-row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-2); font-size: 13px; font-weight: 600; }
+.br-geo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.block { display: flex; width: 100%; justify-content: center; }
+
+/* יומן פיצולים */
+.br-daysgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.br-day { border: 1px solid var(--border); border-radius: 12px; padding: 12px; background: var(--surface); }
+.br-day.off { background: var(--surface-2); }
+.br-day-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.br-day-head b { font-size: 14px; font-weight: 800; }
+.br-split { border: 1px solid var(--border-2); border-radius: 10px; padding: 8px; margin-bottom: 8px; background: var(--surface-2); }
+.br-split-time { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; }
+.br-split-time input[type=time] { flex: 1; min-width: 0; border: 1px solid var(--border); border-radius: 7px; padding: 4px 6px; font: inherit; font-size: 12.5px; font-weight: 700; background: var(--surface); text-align: center; }
+.br-split-x { width: 24px; height: 24px; flex: none; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-3); border-radius: 7px; cursor: pointer; }
+.br-split-x:hover { background: var(--red-bg); color: var(--red); }
+.br-split-x svg { width: 12px; height: 12px; }
+.br-split-svc { width: 100%; font-size: 12.5px; padding: 5px 8px; }
+.br-addsplit { display: inline-flex; align-items: center; justify-content: center; gap: 5px; width: 100%; border: 1px dashed var(--brand); background: var(--brand-soft-2); color: var(--brand-600); border-radius: 9px; padding: 7px; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.br-addsplit svg { width: 13px; height: 13px; }
+.br-addsplit:hover { background: var(--brand-soft); }
+
+/* חיווי אימות כתובת */
+.whs-sec h4 .br-verify-badge { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+.whs-sec h4 { display: flex; align-items: center; gap: 7px; }
+.br-verify-badge svg { width: 12px; height: 12px; }
+.br-verify-badge.ok { color: var(--green); background: #E8F7EE; }
+.br-verify-badge.no { color: var(--amber); background: var(--amber-bg); }
+
+/* פופ-אפ מפת סניף */
+.br-map-box { max-width: 420px; text-align: start; }
+.br-map-view { margin: 6px 0 14px; }
+.br-map-svg { width: 100%; height: 150px; border-radius: 12px; display: block; }
+.br-map-addr { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--text); margin-top: 9px; }
+.br-map-addr svg { width: 14px; height: 14px; color: var(--brand); }
+.br-map-addr small { color: var(--text-3); font-weight: 400; }
+.br-map-box .cbc-actions .btn { text-decoration: none; }
+
+/* יומן הסניף — 7 ימים בשורה אחת (כמו העובד), התיוגים נשברים בתוך הכרטיס */
+.wh-daysgrid.br-daysgrid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.br-daysgrid .wh-seg.br-seg { text-align: start; }
+.br-daysgrid .wh-seg-time { justify-content: center; margin-bottom: 8px; }
+/* צ'יפי בחירה-מרובה של קהל/שירות בכל פיצול */
+.br-split-svcs { display: flex; flex-wrap: wrap; gap: 5px; }
+.br-svc-chip { border: 1px solid var(--border); background: var(--surface); color: var(--text-2); border-radius: 999px; padding: 3px 9px; font: inherit; font-size: 11px; font-weight: 600; cursor: pointer; }
+.br-svc-chip:hover { border-color: var(--brand); color: var(--brand-600); }
+.br-svc-chip.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+/* מאפייני נגישות/מידע-חובה של סניף */
+.br-attrs { display: flex; flex-wrap: wrap; gap: 8px; }
+.br-attr { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); background: var(--surface); border-radius: 10px; padding: 7px 11px; font-size: 12.5px; font-weight: 600; color: var(--text-2); cursor: pointer; }
+.br-attr input { accent-color: var(--brand); }
+.br-attr svg { width: 14px; height: 14px; }
+.br-attr.on { border-color: var(--brand); background: var(--brand-soft-2); color: var(--brand-600); }
+/* כתובת לקריאה בלבד בכרטיס הסניף */
+.br-addr-ro { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; font-weight: 600; color: var(--text); }
+.br-addr-ro .badge.sm { font-size: 10px; }
+.br-hours-btn { display: flex; width: 100%; justify-content: center; }
+
+/* סיווג שירות: כללי לסניף / לפי משמרת */
+.br-svc-mode-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-2); font-size: 13px; }
+.br-svc-mode-row:last-child { border-bottom: none; }
+.br-mode-seg { display: inline-flex; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; }
+.br-mode-seg button { border: none; background: var(--surface); color: var(--text-2); padding: 5px 11px; font: inherit; font-size: 11.5px; font-weight: 600; cursor: pointer; }
+.br-mode-seg button + button { border-inline-start: 1px solid var(--border); }
+.br-mode-seg button.on { background: var(--brand); color: #fff; }
+
+/* מקטע זמן צמוד בפיצול הסניף — בלי רווח מיותר באמצע */
+.br-daysgrid .wh-seg-time { gap: 2px; }
+.br-daysgrid .wh-seg-time input[type=time] { width: 42px; }
+
+/* קריטריונים לפי שירות (נגזרים מהקטלוג, בחירת ערכים פר-סניף) */
+.br-svc-crit { border: 1px solid var(--border-2); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; background: var(--surface-2); }
+.br-crit-svc { font-size: 12.5px; font-weight: 800; color: var(--brand-600); display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.br-crit-svc svg { width: 14px; height: 14px; }
+.br-crit-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; flex-wrap: wrap; }
+.br-crit-name { font-size: 12.5px; font-weight: 600; }
+.br-crit-vals { display: flex; flex-wrap: wrap; gap: 5px; }
+.br-crit-chip { display: inline-flex; align-items: center; gap: 3px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); border-radius: 999px; padding: 4px 11px; font: inherit; font-size: 11.5px; font-weight: 600; cursor: pointer; }
+.br-crit-chip svg { width: 11px; height: 11px; }
+.br-crit-chip:hover { border-color: var(--brand); color: var(--brand-600); }
+.br-crit-chip.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+/* תקציר מוצר/שירות בכותרת הליד */
+.head-svc { display: inline-flex; align-items: center; gap: 5px; }
+.head-svc.missing { color: var(--amber); }
+.head-svc.missing b { color: var(--amber); }
+/* מסמכים בליד */
+.docs-tab .docs-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.docs-tab .docs-head b { flex: 1; display: inline-flex; align-items: center; gap: 6px; }
+.docs-list { display: flex; flex-direction: column; gap: 8px; }
+.doc-row { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px; }
+.doc-ic { width: 34px; height: 34px; flex: none; border-radius: 9px; background: var(--brand-soft); color: var(--brand); display: flex; align-items: center; justify-content: center; }
+.doc-ic svg { width: 16px; height: 16px; }
+.doc-info { flex: 1; min-width: 0; } .doc-info b { font-size: 13px; } .doc-info small { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; color: var(--text-3); font-size: 11px; }
+.doc-info small svg { width: 11px; height: 11px; }
+.doc-del { width: 26px; height: 26px; flex: none; border: none; background: transparent; color: var(--text-3); border-radius: 7px; cursor: pointer; }
+.doc-del:hover { background: var(--red-bg); color: var(--red); }
+.doc-del svg { width: 12px; height: 12px; }
+.doc-type-list { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 14px; }
+.doc-type-opt { border: 1px solid var(--border); background: var(--surface); border-radius: 9px; padding: 9px 12px; font: inherit; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; text-align: start; }
+.doc-type-opt:hover { border-color: var(--brand); background: var(--brand-soft-2); color: var(--brand-600); }
+
+/* קריטריון מאוחד — כותרת + מתג כללי/לפי-שירות */
+.br-crit-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+.br-mode-seg.sm button { padding: 4px 9px; font-size: 11px; }

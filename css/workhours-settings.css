@@ -1,0 +1,169 @@
+/* ============================================================
+   הגדרות שעות פעילות — חלון מלא (workhours-settings.js)
+   קובץ עיצוב נפרד: שינויי עיצוב לחלון זה נעשים כאן בלבד.
+   ============================================================ */
+.whs-overlay {
+  position: fixed; inset: 0; z-index: 340; display: flex; align-items: center; justify-content: center;
+  background: rgba(20,22,34,.45); padding: 22px; opacity: 0; transition: opacity .16s ease;
+}
+.whs-overlay.open { opacity: 1; }
+.whs-window {
+  width: 100%; max-width: 1260px; height: 88vh; max-height: 92vh; background: var(--surface);
+  border-radius: 18px; box-shadow: var(--shadow-lg); display: flex; flex-direction: column; overflow: hidden;
+  transform: translateY(8px) scale(.99); transition: transform .18s ease;
+}
+.whs-overlay.open .whs-window { transform: none; }
+
+/* header */
+.whs-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+.whs-head-r { display: flex; align-items: center; gap: 12px; }
+.whs-x { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: var(--surface); border-radius: 10px; color: var(--text-2); cursor: pointer; }
+.whs-x:hover { background: var(--red-bg); color: var(--red); border-color: transparent; }
+.whs-x svg { width: 16px; height: 16px; }
+.whs-title { display: inline-flex; align-items: center; gap: 8px; font-size: 16px; color: var(--text); }
+.whs-title svg { width: 19px; height: 19px; color: var(--brand); }
+.whs-save { min-width: 96px; justify-content: center; }
+
+/* body: sidebar (right) + content (left) */
+.whs-body { flex: 1; display: flex; min-height: 0; }
+.whs-side { width: 186px; flex: none; border-inline-start: 1px solid var(--border); background: var(--surface-2); padding: 12px 10px; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; }
+.whs-nav { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border: none; background: transparent; border-radius: 10px; font: inherit; font-size: 13px; font-weight: 600; color: var(--text-2); cursor: pointer; text-align: start; position: relative; }
+.whs-nav svg { width: 16px; height: 16px; flex: none; }
+.whs-nav:hover { background: var(--surface); color: var(--text); }
+.whs-nav.on { background: var(--brand-soft); color: var(--brand-600); }
+.whs-nav.on::before { content: ''; position: absolute; inset-inline-start: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 3px; background: var(--brand); }
+.whs-content { flex: 1; min-width: 0; overflow-y: auto; overflow-x: hidden; padding: 18px 20px; }
+
+/* footer */
+.whs-foot { display: flex; align-items: center; justify-content: space-between; padding: 11px 20px; border-top: 1px solid var(--border); background: var(--surface-2); }
+.whs-autosave { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--green); }
+.whs-autosave svg { width: 14px; height: 14px; }
+.whs-tz { display: inline-flex; align-items: center; gap: 6px; color: var(--text-3); }
+.whs-tz svg { width: 15px; height: 15px; }
+.whs-tz select { border: 1px solid var(--border); border-radius: 8px; padding: 5px 8px; font: inherit; font-size: 12px; background: var(--surface); color: var(--text-2); }
+
+/* topbar (hours panel) */
+.whs-topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.whs-tb-mid { display: inline-flex; align-items: center; gap: 8px; }
+.whs-tb-chip { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--border); background: var(--surface); border-radius: 9px; padding: 6px 11px; font: inherit; font-size: 12px; font-weight: 600; color: var(--text-2); cursor: pointer; }
+.whs-tb-chip svg { width: 14px; height: 14px; }
+.whs-tb-chip:hover { border-color: var(--brand); color: var(--brand-600); }
+.whs-tb-nav { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: var(--surface); border-radius: 9px; color: var(--text-2); cursor: pointer; }
+.whs-tb-nav svg { width: 15px; height: 15px; }
+.whs-tb-nav:hover { border-color: var(--brand); color: var(--brand-600); }
+
+/* days grid inside window — up to 7 across */
+.whs-daysgrid { grid-template-columns: repeat(7, minmax(0, 1fr)); padding: 0 0 4px; gap: 9px; }
+.whs-daysgrid .wh-day { padding: 10px 9px; }
+/* מקטעים קומפקטיים ונקיים בעמודות הצרות של החלון (7 ימים בשורה) */
+.whs-daysgrid .wh-segs { gap: 6px; margin-top: 9px; }
+.whs-daysgrid .wh-seg { padding: 6px 7px; border-radius: 9px; }
+.whs-daysgrid .wh-seg-top { margin-bottom: 2px; }
+.whs-daysgrid .wh-seg-lbl { font-size: 10.5px; }
+.whs-daysgrid .wh-seg-x { width: 17px; height: 17px; }
+.whs-daysgrid .wh-seg-time { gap: 3px; }
+.whs-daysgrid .wh-seg-time input[type=time] { width: 40px; font-size: 11px; padding: 1px 0; font-weight: 700; }
+.whs-daysgrid .wh-seg { padding: 6px 5px; }
+.whs-daysgrid .wh-seg-dash { font-size: 11px; }
+.whs-daysgrid .wh-seg-top .wh-seg-clk svg { width: 11px; height: 11px; }
+.whs-daysgrid .wh-dayadd { margin-top: 8px; }
+.whs-daysgrid .wh-dayadd .wh-add { padding: 6px; font-size: 11px; }
+.whs-daysgrid .wh-day-foot { margin-top: 9px; padding-top: 8px; }
+.whs-daysgrid .wh-active-lbl { font-size: 11px; }
+.whs-daysgrid .wh-day-head .wh-name { font-size: 13px; }
+.whs-daysgrid .wh-tl { margin: 9px 0 2px; }
+
+/* panel headings */
+.whs-ph { font-size: 16px; font-weight: 800; margin: 0 0 14px; display: flex; align-items: center; gap: 8px; }
+.whs-ph svg { width: 18px; height: 18px; color: var(--brand); }
+.whs-ph-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.whs-ph-row .whs-ph { margin: 0; }
+
+/* section cards */
+.whs-secgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; align-items: start; }
+.whs-sec { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: var(--surface); }
+.whs-sec-wide { grid-column: 1 / -1; }
+.whs-sec h4 { font-size: 13px; font-weight: 800; margin: 0 0 12px; display: flex; align-items: center; gap: 7px; color: var(--text); }
+.whs-sec h4 svg { width: 15px; height: 15px; color: var(--brand); }
+.whs-sec-head { display: flex; align-items: center; justify-content: space-between; }
+
+/* generic row (label + control) */
+.whs-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-2); }
+.whs-row:last-child { border-bottom: none; }
+.whs-row .num-in { width: 76px; text-align: center; }
+.whs-row .num-in.sm { width: 62px; }
+
+/* real switch (persists state) */
+.whs-switch { width: 42px; height: 24px; border-radius: 999px; background: var(--border); border: none; position: relative; cursor: pointer; flex: none; transition: background .15s; }
+.whs-switch-dot { position: absolute; top: 3px; inset-inline-end: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: inset-inline-end .15s; }
+.whs-switch.on { background: var(--brand); }
+.whs-switch.on .whs-switch-dot { inset-inline-end: 21px; }
+
+/* breaks panel */
+.whs-breakdef { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; background: var(--surface-2); }
+.whs-breakdef input[type=time] { border: none; background: transparent; font: inherit; font-size: 14px; font-weight: 600; color: var(--text); }
+.whs-breakdef .wh-seg-clk svg { width: 14px; height: 14px; color: var(--text-3); }
+.whs-block-btn { display: flex; width: 100%; justify-content: center; margin-top: 10px; }
+
+/* holidays add form */
+.whs-exform { display: grid; grid-template-columns: 1fr 1.4fr 1fr auto auto; gap: 8px; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed var(--border); }
+.whs-exright { display: inline-flex; align-items: center; gap: 8px; }
+.whs-del { width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-3); border-radius: 7px; cursor: pointer; }
+.whs-del:hover { background: var(--red-bg); color: var(--red); }
+.whs-del svg { width: 13px; height: 13px; }
+.whs-fuwin { display: inline-flex; align-items: center; gap: 8px; }
+
+/* editable criteria pills (routing / priority) */
+.pill.editable { display: inline-flex; align-items: center; gap: 5px; padding-inline-end: 5px; }
+.pill-x { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: none; background: rgba(0,0,0,.08); color: var(--text-2); border-radius: 50%; cursor: pointer; padding: 0; }
+.pill-x svg { width: 9px; height: 9px; }
+.pill-x:hover { background: var(--red); color: #fff; }
+.pill-add { display: inline-flex; align-items: center; gap: 4px; border: 1px dashed var(--brand); background: var(--brand-soft-2); color: var(--brand-600); border-radius: 999px; padding: 5px 11px; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.pill-add svg { width: 12px; height: 12px; }
+.pill-add:hover { background: var(--brand-soft); }
+
+/* keep copy-days / day / rule popups above the window */
+.copy-days-pop, .day-pop { z-index: 430 !important; }
+
+@media (max-width: 720px) {
+  .whs-window { max-width: 100%; max-height: 96vh; border-radius: 12px; }
+  .whs-side { width: 64px; }
+  .whs-nav span { display: none; }
+  .whs-exform { grid-template-columns: 1fr 1fr; }
+}
+
+/* כרטיס-שער במסך הגדרות-העובד (פותח את החלון המלא) */
+.wh-launch { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 18px; flex-wrap: wrap; }
+.wh-launch-info { display: flex; align-items: center; gap: 13px; }
+.wh-launch-ic { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 12px; background: var(--brand-soft); color: var(--brand); flex: none; }
+.wh-launch-ic svg { width: 22px; height: 22px; }
+.wh-launch-info b { display: block; font-size: 15px; }
+.wh-launch-info small { display: block; color: var(--text-3); font-size: 12px; margin-top: 3px; max-width: 560px; }
+
+/* טופס חריג (חגים וחופשות) — עם שעות מיוחדות והסבר */
+.whs-exform-box { border: 1px solid var(--brand); background: var(--brand-soft-2); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+.whs-exform2 { display: grid; grid-template-columns: 1fr 1.6fr 1fr; gap: 10px; }
+.exf { display: flex; flex-direction: column; gap: 5px; }
+.exf.full { margin-top: 10px; }
+.exf > span { font-size: 11.5px; font-weight: 700; color: var(--text-2); }
+.whs-ex-desc { display: flex; align-items: flex-start; gap: 6px; font-size: 12px; color: var(--text-2); line-height: 1.55; margin: 10px 0 0; background: var(--surface); border-radius: 9px; padding: 8px 10px; }
+.whs-ex-desc svg { width: 14px; height: 14px; color: var(--amber); flex: none; margin-top: 2px; }
+.whs-exhours { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.whs-exhours .exh-lbl { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: var(--text); }
+.whs-exhours .exh-lbl svg { width: 14px; height: 14px; color: var(--brand); }
+.whs-exhours input[type=time] { border: 1px solid var(--border); border-radius: 8px; padding: 5px 8px; font: inherit; font-size: 13px; font-weight: 600; background: var(--surface); }
+.whs-exform-foot { display: flex; gap: 8px; margin-top: 14px; }
+/* שורת חריג ברשימה */
+.whs-exrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border-2); }
+.whs-exrow:last-child { border-bottom: none; }
+.whs-exinfo { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.ex-hours { display: inline-flex; align-items: center; gap: 4px; margin-inline-start: 8px; font-size: 12px; font-weight: 700; color: var(--brand-600); }
+.ex-hours svg { width: 12px; height: 12px; }
+.ex-note { color: var(--text-3); font-size: 11.5px; }
+
+/* כפתור עריכת חריג + כותרת טופס */
+.whs-edit { width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); border-radius: 8px; cursor: pointer; }
+.whs-edit:hover { border-color: var(--brand); color: var(--brand-600); background: var(--brand-soft-2); }
+.whs-edit svg { width: 13px; height: 13px; }
+.whs-exform-title { font-size: 13px; font-weight: 800; color: var(--brand-600); display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+.whs-exform-title svg { width: 15px; height: 15px; }

@@ -1,0 +1,318 @@
+/* ===== מסך האוטומציות ===== */
+.auto-note { display: flex; align-items: flex-start; gap: 10px; border: 1px solid #F5D9A0; background: #FEF9EF;
+  border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; }
+.auto-note.on { border-color: #C7D2FE; background: #F5F7FF; }
+.auto-note > svg { width: 18px; height: 18px; flex: none; color: #B45309; margin-top: 1px; }
+.auto-note.on > svg { color: #4F46E5; }
+.auto-note b { display: block; font-size: 13.5px; color: var(--text); margin-bottom: 3px; }
+.auto-note small { font-size: 11.8px; color: var(--text-2); line-height: 1.55; }
+.auto-note .btn { flex: none; margin-inline-start: auto; }
+
+.auto-cols { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 14px; align-items: start; }
+.auto-main { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.auto-area .card-head .chip { flex: none; }
+.auto-list { display: flex; flex-direction: column; }
+.auto-item { display: flex; align-items: flex-start; gap: 12px; padding: 13px 15px; border-top: 1px solid var(--line); }
+.auto-item:first-child { border-top: 0; }
+.auto-item.is-on { background: #F7F9FF; }
+.auto-item > .toggle { flex: none; margin-top: 2px; }
+.auto-body { flex: 1 1 auto; min-width: 0; }
+.auto-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
+.auto-top b { font-size: 13.5px; }
+.auto-desc { font-size: 12.3px; color: var(--text-2); line-height: 1.6; }
+.auto-hook { display: flex; align-items: center; gap: 5px; margin-top: 6px; font-size: 10.8px; font-weight: 700; color: var(--text-3, #9AA1AC); }
+.auto-hook svg { width: 11px; height: 11px; flex: none; }
+.auto-item.is-on .auto-hook { color: #4F46E5; }
+.auto-acts { display: flex; align-items: center; gap: 6px; flex: none; }
+
+.auto-side { position: sticky; top: 14px; }
+.auto-log { max-height: 62vh; overflow-y: auto; padding: 4px 14px 14px; }
+.alog { border-inline-start: 3px solid var(--brand); padding: 8px 10px; margin-bottom: 8px; background: var(--surface-2, #FAFBFC); border-radius: 0 10px 10px 0; }
+.alog-h { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 3px; }
+.alog-h b { font-size: 12.3px; }
+.alog-by { font-size: 9.5px; font-weight: 800; background: #EEF2FF; color: #3730A3; border-radius: 999px; padding: 1px 7px; }
+.alog-by.manual { background: #FEF6E7; color: #92400E; }
+.alog-w { font-size: 11.8px; color: var(--text-2); line-height: 1.55; }
+.alog-at { display: flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 10.3px; color: var(--text-3, #9AA1AC); }
+.alog-at svg { width: 10px; height: 10px; }
+.auto-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 26px 14px; text-align: center; color: var(--text-3, #9AA1AC); }
+.auto-empty svg { width: 26px; height: 26px; opacity: .7; }
+.auto-empty p { margin: 0; font-size: 12.5px; font-weight: 700; }
+.auto-empty small { font-size: 11px; }
+
+/* פירוט חוק */
+.ai-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--text-2); }
+.ai-on { color: #1B7F45; } .ai-off { color: var(--text-3, #9AA1AC); }
+.ai-what { display: flex; gap: 9px; margin: 12px 0; padding: 11px 12px; background: var(--surface-2, #FAFBFC); border: 1px solid var(--line); border-radius: 12px; }
+.ai-what svg { width: 15px; height: 15px; flex: none; color: var(--brand); margin-top: 1px; }
+.ai-what b { font-size: 12.5px; } .ai-what p { margin: 4px 0 0; font-size: 12.3px; color: var(--text-2); line-height: 1.6; }
+.ai-hook { display: flex; align-items: center; gap: 6px; font-size: 11.3px; font-weight: 700; color: #3730A3; background: #EEF2FF;
+  border: 1px solid #C7D2FE; border-radius: 10px; padding: 7px 10px; }
+.ai-hook svg { width: 12px; height: 12px; flex: none; }
+.ai-runs { margin-top: 12px; font-size: 12px; }
+.ai-runs > b { display: flex; align-items: center; gap: 5px; margin-bottom: 6px; }
+.ai-runs > b svg { width: 13px; height: 13px; color: var(--brand); }
+.ai-run { display: flex; gap: 8px; font-size: 11.5px; color: var(--text-2); padding: 4px 0; border-bottom: 1px dashed var(--line); }
+.ai-run span { flex: none; color: var(--text-3, #9AA1AC); font-size: 10.5px; }
+
+/* הגדרות חלוקת לידים בתוך פאנל האוטומציה */
+.auto-note-acts { display: flex; gap: 6px; flex: none; margin-inline-start: auto; }
+.ai-cfg { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 12px; }
+.rt-h { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text); margin: 10px 0 7px; }
+.rt-h:first-child { margin-top: 0; }
+.rt-h svg { width: 13px; height: 13px; color: var(--brand); }
+.rt-methods { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.rt-m { display: flex; flex-direction: column; gap: 2px; text-align: start; padding: 8px 10px; border: 1px solid var(--line);
+  background: var(--surface); border-radius: 10px; cursor: pointer; font: inherit; color: var(--text); }
+.rt-m b { font-size: 12px; } .rt-m small { font-size: 10.5px; color: var(--text-2); line-height: 1.35; }
+.rt-m:hover { border-color: var(--brand); }
+.rt-m.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+.rt-m.on small { color: rgba(255,255,255,.85); }
+.rt-m.sm { flex-direction: row; align-items: center; font-size: 11.5px; font-weight: 700; padding: 6px 11px; }
+.rt-fb { display: flex; gap: 6px; flex-wrap: wrap; }
+.rt-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-2); padding: 5px 0; }
+.rt-row input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--brand); }
+.rt-row.num .cc-inp { width: 70px; }
+.rt-sim { display: flex; align-items: flex-start; gap: 6px; flex-wrap: wrap; margin-top: 11px; padding: 9px 11px;
+  background: #F5F7FF; border: 1px solid #C7D2FE; border-radius: 11px; font-size: 11.5px; color: #3730A3; }
+.rt-sim svg { width: 13px; height: 13px; flex: none; }
+.rt-sim span { color: var(--text-2); flex: 1 1 100%; }
+
+/* ===== הגדרות כלליות (חל על כל האוטומציות) ===== */
+.auto-global { margin-bottom: 14px; }
+.ag-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; padding: 0 15px 15px; }
+.ag-box { border: 1px solid var(--line); border-radius: 13px; padding: 12px; background: var(--surface-2, #FAFBFC); }
+.ag-box.on { border-color: #C7D2FE; background: #F5F7FF; }
+.ag-top { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+.ag-top b { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.ag-top svg { width: 14px; height: 14px; color: var(--brand); }
+.ag-box p { margin: 7px 0 0; font-size: 11.8px; color: var(--text-2); line-height: 1.55; }
+.ag-quiet { margin-top: 9px; }
+.ag-qstat { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 8px; font-size: 11.5px; color: var(--text-2); }
+.ag-qstat svg { width: 13px; height: 13px; }
+.ag-qn { background: #FEF6E7; border: 1px solid #F5D9A0; color: #92400E; border-radius: 999px; padding: 1px 9px; font-size: 10.5px; font-weight: 800; }
+
+/* תגיות תנאים/שרשור על כרטיס החוק */
+.auto-tag { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 1px 8px; font-size: 10px; font-weight: 800; margin-inline-start: 6px; }
+.auto-tag svg { width: 10px; height: 10px; }
+.auto-tag.cond { background: #EEF2FF; color: #3730A3; border: 1px solid #C7D2FE; }
+.auto-tag.chain { background: #E8F7EE; color: #1B7F45; border: 1px solid #BEE6C8; }
+
+/* עורך תנאים ושרשור */
+.ar-extra { margin-top: 4px; }
+.ar-conds { display: flex; flex-wrap: wrap; gap: 6px; }
+.ar-cond { display: inline-flex; align-items: center; gap: 6px; background: #EEF2FF; border: 1px solid #C7D2FE; color: #3730A3;
+  border-radius: 999px; padding: 3px 10px; font-size: 11.3px; font-weight: 700; }
+.ar-cond button { background: none; border: 0; cursor: pointer; color: inherit; display: flex; padding: 0; opacity: .7; }
+.ar-cond button svg { width: 11px; height: 11px; }
+.ar-none { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-2); margin: 0; }
+.ar-none svg { width: 12px; height: 12px; color: #1B7F45; }
+.ar-add { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.ar-add .cc-inp { flex: 1 1 110px; min-width: 0; }
+.ar-chain { display: flex; flex-wrap: wrap; gap: 5px; }
+.alog.blocked { border-inline-start-color: #E8B44A; background: #FEF9EF; }
+.alog-by.blk { background: #FDF3F3; color: #B42318; border: 1px solid #F3B9B9; }
+
+/* ===== שכבה מתקדמת ===== */
+.auto-sw { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: none; }
+.auto-swl { font-size: 9.5px; font-weight: 800; color: var(--text-3, #9AA1AC); }
+.auto-item.is-on .auto-swl { color: var(--brand); }
+.auto-tag.lim { background: #FEF6E7; color: #92400E; border: 1px solid #F5D9A0; }
+.auto-tag.stat { background: var(--surface-2, #F3F4F6); color: var(--text-2); border: 1px solid var(--line); }
+
+.ap-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 13px; padding: 9px 12px; margin-bottom: 14px; }
+.ap-search { display: flex; align-items: center; gap: 6px; flex: 1 1 220px; border: 1px solid var(--line); border-radius: 10px; padding: 5px 10px; }
+.ap-search svg { width: 14px; height: 14px; color: var(--text-3, #9AA1AC); flex: none; }
+.ap-search input { border: 0; outline: 0; background: none; font: inherit; font-size: 12.5px; width: 100%; color: var(--text); }
+.ap-filters { display: flex; gap: 4px; flex: none; }
+.ap-f { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 5px 11px; font: inherit;
+  font-size: 11.5px; font-weight: 700; color: var(--text-2); cursor: pointer; }
+.ap-f.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+.ap-dry { display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 10px; padding: 5px 11px;
+  font-size: 11.5px; color: var(--text-2); cursor: pointer; flex: none; }
+.ap-dry svg { width: 13px; height: 13px; }
+.ap-dry input { width: 14px; height: 14px; accent-color: var(--brand); }
+.ap-dry.on { border-color: #E8B44A; background: #FEF9EF; color: #92400E; }
+.ap-io { display: flex; gap: 5px; flex: none; }
+
+.ap-stats { display: flex; flex-wrap: wrap; gap: 7px; }
+.ap-st { display: flex; flex-direction: column; align-items: center; gap: 1px; border: 1px solid var(--line); border-radius: 10px;
+  padding: 6px 12px; background: var(--surface-2, #FAFBFC); min-width: 62px; }
+.ap-st b { font-size: 15px; } .ap-st small { font-size: 9.5px; color: var(--text-2); }
+.ap-st.ok b { color: #1B7F45; } .ap-st.fail b { color: #B42318; } .ap-st.blk b { color: #92400E; }
+.ap-st.wide { flex: 1 1 130px; } .ap-st.wide b { font-size: 11.5px; font-weight: 700; }
+.ap-dates { display: flex; gap: 8px; flex-wrap: wrap; }
+.ap-dates label { display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--text-2); flex: 1 1 130px; }
+.ap-dates input { font: inherit; font-size: 12px; border: 1px solid var(--line); border-radius: 9px; padding: 6px 8px; background: var(--surface); color: var(--text); }
+.ap-days { display: flex; gap: 4px; margin: 8px 0; }
+.ap-day { width: 30px; height: 30px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface);
+  font: inherit; font-size: 11.5px; font-weight: 800; color: var(--text-3, #9AA1AC); cursor: pointer; }
+.ap-day.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+.alog.dry { border-inline-start-color: #9AA1AC; opacity: .85; }
+.alog-by.dry { background: var(--surface-2, #F3F4F6); color: var(--text-2); border: 1px solid var(--line); }
+.aw-acts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; margin-bottom: 10px; }
+.aw-sum { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.aw-row { display: flex; justify-content: space-between; gap: 10px; padding: 8px 11px; font-size: 12.5px; border-bottom: 1px solid var(--line); }
+.aw-row:last-child { border-bottom: 0; }
+.aw-row span { color: var(--text-2); }
+.ap-edit { border: 1px solid #C7D2FE; background: #F5F7FF; border-radius: 12px; padding: 11px 12px; margin-bottom: 12px; }
+.ap-edit .rt-h { margin-top: 0; }
+.ap-edit .exf { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; font-size: 11.5px; color: var(--text-2); }
+.ap-edit .exf:last-child { margin-bottom: 0; }
+.ap-edit-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.ap-edit-row .exf { flex: 1 1 150px; min-width: 0; }
+#aeTitle { font-weight: 700; font-size: 13.5px; }
+
+/* אייקון ההגדרות מפורט — גודל אחיד ומעט גדול יותר בכל המערכת (נטען אחרון, גובר) */
+svg.ic-settings { width: 20px !important; height: 20px !important; }
+svg.ic-manage { width: 19px !important; height: 19px !important; }
+svg.ic-copy, svg.ic-manage { width: 18px !important; height: 18px !important; }
+.ap-q { display: inline-flex; align-items: center; gap: 6px; background: #EEF2FF; border: 1px solid #C7D2FE; color: #3730A3;
+  border-radius: 999px; padding: 4px 11px; font-size: 11.5px; font-weight: 700; flex: none; }
+.ap-q svg { width: 12px; height: 12px; }
+.ap-q button { background: none; border: 0; cursor: pointer; color: inherit; display: flex; padding: 0; opacity: .75; }
+.ap-q button svg { width: 11px; height: 11px; }
+.ap-bar { justify-content: flex-start; }
+
+/* ===== חלון החוק: היררכיה ומקטעים ===== */
+.ai-box { max-height: 80vh; overflow-y: auto; }
+.ai-box .cbc-head { position: relative; }
+.ai-state { margin-inline-start: auto; flex: none; font-size: 10.5px; font-weight: 800; border-radius: 999px;
+  padding: 2px 10px; background: var(--surface-2, #F3F4F6); color: var(--text-3, #9AA1AC); border: 1px solid var(--line); }
+.ai-state.on { background: #E8F7EE; color: #1B7F45; border-color: #BEE6C8; }
+.ai-trig { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-size: 12px; font-weight: 700; color: var(--text-2); margin-bottom: 6px; }
+.ai-trig svg { width: 13px; height: 13px; color: var(--brand); flex: none; }
+.ai-trig small { font-weight: 500; color: var(--text-3, #9AA1AC); }
+.ai-what2 { margin: 0 0 12px; font-size: 12.3px; color: var(--text-2); line-height: 1.6; }
+
+.ai-secs { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 13px; overflow: hidden; }
+.ai-sec-h { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 12px; background: var(--surface);
+  border: 0; border-top: 1px solid var(--line); cursor: pointer; font: inherit; text-align: start; color: var(--text); }
+.ai-sec-h:first-child { border-top: 0; }
+.ai-sec-h:hover { background: var(--surface-2, #FAFBFC); }
+.ai-sec-h.open { background: #F5F7FF; }
+.ai-sec-t { display: flex; align-items: center; gap: 7px; flex: none; font-size: 12.8px; }
+.ai-sec-t svg { width: 14px; height: 14px; color: var(--brand); }
+.ai-sec-s { flex: 1 1 auto; min-width: 0; font-size: 11.5px; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-sec-s b { color: var(--text); }
+.ai-sec-a { display: flex; align-items: center; gap: 7px; flex: none; }
+.ai-sec-a svg { width: 13px; height: 13px; color: var(--text-3, #9AA1AC); }
+.ai-edit { font-size: 11px; font-weight: 800; color: var(--brand); }
+.ai-sec-b { padding: 11px 12px 13px; border-top: 1px solid var(--line); background: #FBFCFF; }
+
+/* פעולות: רק "הפעל" מודגש */
+.ai-foot { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+.ai-foot .btn.primary { margin-inline-start: auto; }
+.ai-link { display: inline-flex; align-items: center; gap: 5px; background: none; border: 0; padding: 0; cursor: pointer;
+  font: inherit; font-size: 12px; font-weight: 700; color: var(--text-2); }
+.ai-link svg { width: 13px; height: 13px; }
+.ai-link:hover { color: var(--brand); }
+.ai-link.danger:hover { color: var(--red, #D92D20); }
+
+/* בורר שרשור */
+.ac-pick { margin-top: 8px; }
+.ap-search.sm { padding: 4px 9px; }
+.ac-opts { display: flex; flex-direction: column; gap: 4px; margin-top: 7px; max-height: 170px; overflow-y: auto; }
+.ac-opt { display: flex; align-items: center; gap: 8px; width: 100%; border: 1px solid var(--line); background: var(--surface);
+  border-radius: 10px; padding: 7px 10px; cursor: pointer; font: inherit; text-align: start; color: var(--text); }
+.ac-opt b { font-size: 12.3px; }
+.ac-opt small { color: var(--text-2); font-size: 11px; flex: 1 1 auto; }
+.ac-opt svg { width: 13px; height: 13px; color: var(--brand); flex: none; }
+.ac-opt:hover { border-color: var(--brand); background: #F5F7FF; }
+.ar-cond.chain { background: #E8F7EE; border-color: #BEE6C8; color: #1B7F45; }
+
+/* ===== פישוט: כרטיס בסיסי + "התאם אישית" ===== */
+.auto-item { align-items: center; }
+.auto-top { gap: 9px; margin-bottom: 3px; }
+.auto-top b { font-size: 14px; }
+.auto-when { font-size: 11px; font-weight: 700; color: var(--text-2); background: var(--surface-2, #F3F4F6);
+  border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; }
+.auto-item.is-on .auto-when { background: #EEF2FF; border-color: #C7D2FE; color: #3730A3; }
+.auto-desc { font-size: 12.5px; }
+.auto-acts .btn { position: relative; white-space: nowrap; }
+.ac-dot { position: absolute; top: -3px; inset-inline-start: -3px; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--brand); border: 1.5px solid var(--surface); }
+.btn.has-custom { border-color: var(--brand); color: var(--brand); }
+
+/* תפריט "עוד" */
+.ap-more { position: relative; flex: none; }
+.ap-more-menu { position: absolute; top: calc(100% + 6px); inset-inline-end: 0; z-index: 30; min-width: 200px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-lg);
+  padding: 6px; display: flex; flex-direction: column; gap: 2px; }
+.ap-more-menu[hidden] { display: none; }
+.ap-more-i, .ap-more-menu .ap-dry { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: none;
+  border-radius: 9px; padding: 8px 10px; font: inherit; font-size: 12.3px; color: var(--text); cursor: pointer; text-align: start; }
+.ap-more-i:hover, .ap-more-menu .ap-dry:hover { background: var(--surface-2, #F3F4F6); }
+.ap-more-menu .ap-dry.on { color: #92400E; }
+.ap-more-i svg, .ap-more-menu .ap-dry svg { width: 14px; height: 14px; color: var(--text-2); }
+
+/* ===== הגדרה = כותרת פשוטה + משפט הסבר + פקד ===== */
+.ap-set { padding: 11px 0; border-bottom: 1px solid var(--line); }
+.ap-set:last-child { border-bottom: 0; }
+.ap-set-h { margin-bottom: 8px; }
+.ap-set-h b { display: block; font-size: 13px; color: var(--text); margin-bottom: 3px; }
+.ap-set-h small { display: block; font-size: 11.5px; color: var(--text-2); line-height: 1.55; }
+.ap-set-c { display: flex; flex-direction: column; gap: 7px; }
+.ap-set-c > .cc-inp, .ap-set-c > select { max-width: 240px; }
+.ap-hours { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--text-2); }
+.ap-hours .cc-inp { width: 70px; }
+.ap-vars { padding-top: 11px; }
+.ap-vars b { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin-bottom: 3px; }
+.ap-vars b svg { width: 13px; height: 13px; color: var(--brand); }
+.ap-vars small { display: block; font-size: 11.3px; color: var(--text-2); margin-bottom: 7px; }
+.ap-varlist { display: flex; flex-wrap: wrap; gap: 5px; }
+.ap-varlist code { background: #F5F7FF; border: 1px solid #C7D2FE; color: #3730A3; border-radius: 7px;
+  padding: 2px 8px; font-size: 11px; font-family: inherit; font-weight: 700; }
+.rt-cfg .ap-set-c .rt-methods, .rt-cfg .ap-set-c .rt-fb { width: 100%; }
+
+/* סרגל האוטומציות — שורה אחת: פילטרים מימין, "עוד" בקצה */
+.ap-bar { flex-wrap: nowrap; gap: 8px; align-items: center; }
+.ap-filters { flex: 0 1 auto; gap: 5px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.ap-filters::-webkit-scrollbar { display: none; }
+.ap-f { flex: none; white-space: nowrap; }
+.ap-more { margin-inline-start: auto; }
+
+/* ===== תנאים: וגם / או ===== */
+.ac-groups { display: flex; flex-direction: column; }
+.ac-group { border: 1px solid var(--line); border-radius: 12px; padding: 10px 11px; background: var(--surface); }
+.ac-group.new { border-style: dashed; background: var(--surface-2, #FAFBFC); }
+.ac-group-h { font-size: 12px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.ac-group-h small { display: block; font-weight: 500; font-size: 10.8px; color: var(--text-2); margin-top: 2px; }
+.ac-or { display: flex; align-items: center; gap: 8px; margin: 9px 0; }
+.ac-or::before, .ac-or::after { content: ''; flex: 1 1 auto; height: 1px; background: var(--line); }
+.ac-or span { flex: none; background: #FEF6E7; border: 1px solid #F5D9A0; color: #92400E;
+  border-radius: 999px; padding: 2px 14px; font-size: 11px; font-weight: 800; }
+.ac-and { display: inline-flex; align-items: center; color: var(--text-2); font-size: 10.5px; font-weight: 800;
+  background: var(--surface-2, #F3F4F6); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; }
+.ac-group .ar-conds { align-items: center; }
+.ac-group .ar-add { margin-top: 9px; }
+
+/* ===== הוספת תנאי: בחירה מפורשת בין וגם ל־או ===== */
+.ac-add-box { border: 1px dashed var(--line); border-radius: 12px; padding: 11px; margin-top: 10px; background: var(--surface-2, #FAFBFC); }
+.ac-add-h { display: flex; align-items: center; gap: 6px; font-size: 12.3px; color: var(--text); margin-bottom: 9px; }
+.ac-add-h svg { width: 13px; height: 13px; color: var(--brand); }
+.ac-target { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--text-2); margin-top: 8px; }
+.ac-target select { width: auto; }
+.ac-add-btns { display: flex; gap: 8px; margin-top: 9px; }
+.ac-add-btns .btn { flex: 1 1 0; flex-direction: column; align-items: center; gap: 1px; padding: 8px 10px; line-height: 1.3; }
+.ac-add-btns .btn small { font-size: 10px; font-weight: 500; opacity: .8; }
+.ac-add-btns .btn.primary small { color: rgba(255,255,255,.85); }
+
+
+/* אפשרויות נוספות — שדות בגובה קבוע, בלי חורים בפריסה */
+.ap-dates input[type="date"] { min-height: 34px; max-height: 34px; box-sizing: border-box; }
+.ap-hours select.cc-inp { width: auto; min-width: 88px; }
+.ap-hours span { white-space: nowrap; }
+.ap-day { min-width: 30px; }
+.ap-day:not(.on) { background: var(--surface); color: var(--text-2); }
+
+/* תג "מומלץ" על אוטומציה כבויה שכדאי להדליק */
+.auto-rec { font-size: 10.5px; font-weight: 700; color: var(--brand); background: color-mix(in srgb, var(--brand) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand) 30%, transparent); border-radius: 999px; padding: 1px 7px; }
+
+/* סימולציית התזמון בהגדרות שיחת ההמשך */
+.rt-sim { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 10px; padding: 9px 11px;
+  border: 1px dashed var(--line); border-radius: 10px; font-size: 12px; color: var(--text-2); }
+.rt-sim b { color: var(--text); }
+.rt-sim span { font-weight: 700; color: var(--brand); }

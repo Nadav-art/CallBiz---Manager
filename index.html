@@ -6,27 +6,67 @@
   <title>CallBiz Manager – מסך עבודה אחוד</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=39">
-  <link rel="stylesheet" href="css/v2.css?v=39">
-  <link rel="stylesheet" href="css/v3.css?v=39">
-  <link rel="stylesheet" href="css/v4.css?v=39">
-  <link rel="stylesheet" href="css/v5.css?v=39">
-  <link rel="stylesheet" href="css/v6.css?v=39">
-  <link rel="stylesheet" href="css/v7.css?v=39">
-  <link rel="stylesheet" href="css/v8.css?v=39">
-  <link rel="stylesheet" href="css/v9.css?v=39">
-  <link rel="stylesheet" href="css/v10.css?v=39">
-  <link rel="stylesheet" href="css/v11.css?v=39">
-  <link rel="stylesheet" href="css/v12.css?v=39">
-  <link rel="stylesheet" href="css/platform.css?v=39">
-  <link rel="stylesheet" href="css/dock.css?v=39">
-  <link rel="stylesheet" href="css/v13.css?v=39">
-  <link rel="stylesheet" href="css/v14.css?v=39">
-  <link rel="stylesheet" href="css/v15.css?v=39">
-  <link rel="stylesheet" href="css/v16.css?v=39">
-  <link rel="stylesheet" href="css/v17.css?v=39">
+  <link rel="stylesheet" href="css/styles.css?v=311">
+  <link rel="stylesheet" href="css/v2.css?v=311">
+  <link rel="stylesheet" href="css/v3.css?v=311">
+  <link rel="stylesheet" href="css/v4.css?v=311">
+  <link rel="stylesheet" href="css/v5.css?v=311">
+  <link rel="stylesheet" href="css/v6.css?v=311">
+  <link rel="stylesheet" href="css/v7.css?v=311">
+  <link rel="stylesheet" href="css/v8.css?v=311">
+  <link rel="stylesheet" href="css/v9.css?v=311">
+  <link rel="stylesheet" href="css/v10.css?v=311">
+  <link rel="stylesheet" href="css/v11.css?v=311">
+  <link rel="stylesheet" href="css/v12.css?v=311">
+  <link rel="stylesheet" href="css/platform.css?v=311">
+  <link rel="stylesheet" href="css/dock.css?v=311">
+  <link rel="stylesheet" href="css/v13.css?v=311">
+  <link rel="stylesheet" href="css/v14.css?v=311">
+  <link rel="stylesheet" href="css/v15.css?v=311">
+  <link rel="stylesheet" href="css/v16.css?v=311">
+  <link rel="stylesheet" href="css/v17.css?v=311">
+  <link rel="stylesheet" href="css/v18.css?v=311">
+  <link rel="stylesheet" href="css/v19.css?v=311">
+  <link rel="stylesheet" href="css/v20.css?v=311">
+  <link rel="stylesheet" href="css/meetings.css?v=311">
+  <link rel="stylesheet" href="css/workhours-settings.css?v=311">
+  <link rel="stylesheet" href="css/permissions.css?v=311">
+  <link rel="stylesheet" href="css/branch-settings.css?v=311">
+  <link rel="stylesheet" href="css/contracts.css?v=311">
+  <link rel="stylesheet" href="css/criteria-rules.css?v=311">
+  <link rel="stylesheet" href="css/automations.css?v=311">
+  <link rel="stylesheet" href="css/shift-branch.css?v=311">
+  <link rel="stylesheet" href="css/contract-wizard.css?v=311">
+  <link rel="stylesheet" href="css/mobile.css?v=311">
+  <!-- ===== ext: סגנונות ההרחבות — למחיקה יחד עם בלוק הסקריפטים ===== -->
+  <link rel="stylesheet" href="css/ext/ext.css?v=311">
 </head>
 <body>
+  <script>
+  /* מבטיח viewport רספונסיבי גם כשהעמוד מוגש בתוך מעטפת (Artifact) שלא מגדירה אותו —
+     בלי זה הדפדפן בנייד מרנדר ברוחב דסקטופ וגורם לגלישה אופקית ולשטח מת. */
+  (function () { try {
+    var m = document.querySelector('meta[name="viewport"]');
+    if (!m) { m = document.createElement('meta'); m.name = 'viewport'; (document.head || document.documentElement).appendChild(m); }
+    m.setAttribute('content', 'width=device-width, initial-scale=1, viewport-fit=cover');
+  } catch (e) {} })();
+  /* זיהוי מובייל לפי הרוחב האמיתי + חיווי דיבאג (מופיע רק במסך צר) — משלים את ה-@media */
+  (function () {
+    var DBG_SHOW = false;   /* רצועת הדיבאג מוסתרת — להחזרה לבקרת מסכים: שנה ל-true */
+    function upd() { try {
+      var cw = document.documentElement.clientWidth, ww = window.innerWidth, sw = document.body ? document.body.scrollWidth : 0;
+      var mobile = cw <= 820;
+      document.documentElement.classList.toggle('cb-mobile', mobile);
+      document.documentElement.classList.toggle('cb-portrait', (window.innerHeight || 0) >= cw);
+      var d = document.getElementById('cbdbg');
+      if (d) { d.textContent = 'DBG · client=' + cw + ' win=' + ww + ' scroll=' + sw + ' · mobile=' + mobile; d.style.display = (DBG_SHOW && mobile) ? 'block' : 'none'; }
+    } catch (e) {} }
+    window.addEventListener('resize', upd); window.addEventListener('orientationchange', upd);
+    window.addEventListener('load', upd); document.addEventListener('DOMContentLoaded', upd);
+    setTimeout(upd, 200); setTimeout(upd, 800); upd();
+  })();
+  </script>
+  <div id="cbdbg"></div>
   <div class="app">
     <!-- סרגל ניווט ימני -->
     <aside class="sidebar">
@@ -41,12 +81,12 @@
     <!-- אזור ראשי -->
     <div class="main">
       <header class="topbar">
-        <div class="page-title">פגישות ותורים</div>
+        <div class="page-title">פניות</div>
         <div class="proc-tabs" id="procTabs"></div>
         <div class="top-actions">
-          <div class="search"><span id="searchIc"></span><input placeholder="חיפוש לקוח, טלפון, הערות…"></div>
+          <div class="search"><span id="searchIc"></span><input placeholder="חיפוש לקוח, טלפון, הערות…"><button class="smart-toggle" id="smartToggle" title="חיפוש חכם — בכל המערכת" aria-pressed="false"><span id="smartIc"></span></button></div>
           <button class="bell" id="tasksBtn" title="משימות פתוחות"><span id="tasksIc"></span><span class="badge-count" id="tasksCount">0</span></button>
-          <button class="bell" id="bell"><span id="bellIc"></span><span class="badge-count">18</span></button>
+          <button class="bell" id="bell"><span id="bellIc"></span><span class="badge-count" id="bellCount">0</span></button>
         </div>
       </header>
 
@@ -62,13 +102,72 @@
   <div class="modal-wrap" id="modalWrap"><div class="modal" id="modal"></div></div>
   <div class="toast-host" id="toastHost"></div>
 
-  <script src="js/data.js?v=39"></script>
-  <script src="js/app.js?v=39"></script>
-  <script src="js/flows.js?v=39"></script>
-  <script src="js/views.js?v=39"></script>
-  <script src="js/views2.js?v=39"></script>
-  <script src="js/chat.js?v=39"></script>
-  <script src="js/platform.js?v=39"></script>
-  <script src="js/dock.js?v=39"></script>
+  <script src="js/data.js?v=311"></script>
+  <script src="js/clock.js?v=311"></script>
+  <script src="js/app.js?v=311"></script>
+  <script src="js/flows.js?v=311"></script>
+  <script src="js/views.js?v=311"></script>
+  <script src="js/workhours-settings.js?v=311"></script>
+  <script src="js/shift-branch.js?v=311"></script>
+  <script src="js/shift-rotation.js?v=311"></script>
+  <script src="js/permissions.js?v=311"></script>
+  <script src="js/hr.js?v=311"></script>
+  <script src="js/branch-settings.js?v=311"></script>
+  <script src="js/contracts.js?v=311"></script>
+  <script src="js/contracts-registry.js?v=311"></script>
+  <script src="js/contract-wizard.js?v=311"></script>
+  <script src="js/contract-terms.js?v=311"></script>
+  <script src="js/contracts-audience.js?v=311"></script>
+  <script src="js/views2.js?v=311"></script>
+  <script src="js/coord.js?v=311"></script>
+  <script src="js/chat.js?v=311"></script>
+  <script src="js/platform.js?v=311"></script>
+  <script src="js/meetings.js?v=311"></script>
+  <script src="js/schedule.js?v=311"></script>
+  <script src="js/services.js?v=311"></script>
+  <script src="js/geo.js?v=311"></script>
+  <script src="js/criteria-rules.js?v=311"></script>
+  <script src="js/criteria-derived.js?v=311"></script>
+  <script src="js/criteria-gap.js?v=311"></script>
+  <script src="js/criteria-fit.js?v=311"></script>
+  <script src="js/criteria-sync.js?v=311"></script>
+  <script src="js/lead-routing.js?v=311"></script>
+  <script src="js/automations.js?v=311"></script>
+  <script src="js/automations-rules.js?v=311"></script>
+  <script src="js/automations-pro.js?v=311"></script>
+  <script src="js/automations-pro-ui.js?v=311"></script>
+  <script src="js/automations-patch.js?v=311"></script>
+  <script src="js/automations-ui.js?v=311"></script>
+  <script src="js/needs-criteria.js?v=311"></script>
+  <script src="js/stage-profiles.js?v=311"></script>
+  <script src="js/dock.js?v=311"></script>
+  <script src="js/keep-scroll.js?v=311"></script>
+
+  <!-- ============================================================
+       ext: הרחבות המערכת — בלוק עצמאי
+       למחיקה מלאה: מוחקים את הבלוק הזה ואת שורת ה-CSS למעלה.
+       שום קובץ ליבה לא מזכיר את ההרחבות — דבר לא יישבר.
+       ============================================================ -->
+  <script src="js/ext/ext-core.js?v=311"></script>
+  <script src="js/ext/inventory.js?v=311"></script>
+  <script src="js/ext/shop.js?v=311"></script>
+  <script src="js/ext/billing.js?v=311"></script>
+  <script src="js/ext/audit.js?v=311"></script>
+  <script src="js/ext/packages.js?v=311"></script>
+  <script src="js/ext/fields.js?v=311"></script>
+  <script src="js/ext/reports.js?v=311"></script>
+  <script src="js/ext/tickets.js?v=311"></script>
+  <script src="js/ext/ats.js?v=311"></script>
+  <script src="js/ext/person.js?v=311"></script>
+  <script src="js/ext/club.js?v=311"></script>
+  <script src="js/ext/sign-security.js?v=311"></script>
+  <script src="js/ext/hr-fields.js?v=311"></script>
+  <script src="js/ext/territory.js?v=311"></script>
+  <script src="js/ext/advisor.js?v=311"></script>
+  <script src="js/ext/repurchase.js?v=311"></script>
+  <script src="js/ext/scope.js?v=311"></script>
+  <script src="js/ext/ats-fields.js?v=311"></script>
+  <script>CBX.boot();</script>
+  <!-- ===== סוף ext ===== -->
 </body>
 </html>

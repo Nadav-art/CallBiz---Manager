@@ -49,6 +49,8 @@
 }
 
 * { box-sizing: border-box; }
+/* ברירת מחדל לאייקוני SVG — מונע התנפחות של אייקון ללא width/height מוגדר */
+svg { width: 16px; height: 16px; flex-shrink: 0; }
 html, body { margin: 0; padding: 0; }
 body {
   font-family: var(--font);
@@ -304,7 +306,7 @@ table.list tbody tr.sel { background: var(--brand-soft); }
    Modal (יומן מלא / כללי)
    ============================================================ */
 .modal-wrap {
-  position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center;
+  position: fixed; inset: 0; z-index: 320; display: none; align-items: center; justify-content: center;
   background: rgba(20,22,34,.4); padding: 24px;
 }
 .modal-wrap.open { display: flex; }
@@ -336,6 +338,34 @@ table.list tbody tr.sel { background: var(--brand-soft); }
 }
 .toast svg { width: 16px; height: 16px; color: #6EE7A8; }
 @keyframes slideup { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ---- מסך "שדות פנייה" (עדכון שדות) ---- */
+.fld-list { display: flex; flex-direction: column; gap: 8px; }
+.fld-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.fld-row.is-hidden { opacity: .62; background: var(--surface-2); }
+.fld-ord { display: flex; flex-direction: column; align-items: center; gap: 1px; flex-shrink: 0; }
+.fld-ord .fld-mv { width: 26px; height: 20px; border: none; background: transparent; color: var(--text-2); cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px; }
+.fld-ord .fld-mv:hover:not(:disabled) { background: var(--brand-soft); color: var(--brand); }
+.fld-ord .fld-mv:disabled { opacity: .3; cursor: default; }
+.fld-ord .fld-mv svg { width: 15px; height: 15px; }
+.fld-ord .fld-mv.dn svg { transform: rotate(180deg); }
+.fld-idx { font-size: 11px; color: var(--text-3); font-weight: 700; }
+.fld-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.fld-main b { font-size: 14px; }
+.fld-tags { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.fld-tags .muted { font-size: 11px; }
+.fld-ctl { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.fld-tgl { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--text-2); cursor: pointer; }
+.fld-edit { flex-shrink: 0; }
+@media (max-width: 760px) {
+  .fld-row { flex-wrap: wrap; gap: 8px; }
+  .fld-ord { flex-direction: row; order: 2; margin-inline-start: auto; }
+  .fld-ord .fld-mv.dn svg { transform: rotate(90deg); }
+  .fld-ord .fld-mv svg { transform: rotate(-90deg); }
+  .fld-main { order: 1; flex-basis: 60%; }
+  .fld-ctl { order: 3; width: 100%; justify-content: flex-start; gap: 20px; border-top: 1px dashed var(--border); padding-top: 8px; }
+  .fld-tgl { flex-direction: row; gap: 7px; }
+}
 
 /* עזרי תצוגה */
 .muted { color: var(--text-3); }

@@ -10,6 +10,13 @@
 .nav-item.sub { width: 52px; padding: 6px 3px; font-size: 9.5px; background: var(--surface-2); border-radius: 9px; }
 .nav-item.sub svg { width: 17px; height: 17px; }
 .nav-item.sub.active { background: var(--brand-soft); }
+/* עטיפת תתי-הפריטים של "ניהול" — נפתחת בהחלקה רכה */
+.nav-sub-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px;
+  width: 100%; max-height: 0; opacity: 0; overflow: hidden; transform: translateY(-6px);
+  margin-top: -6px;
+  transition: max-height .38s cubic-bezier(.4,0,.2,1), opacity .28s ease,
+    transform .38s cubic-bezier(.4,0,.2,1), margin-top .38s cubic-bezier(.4,0,.2,1); }
+.nav-sub-wrap.open { max-height: 340px; opacity: 1; transform: none; margin-top: 0; }
 
 /* ---- מסכים קטנים: הסרגל הימני נגלל במקום להיחתך ---- */
 .sidebar { overflow: hidden; }
@@ -202,8 +209,31 @@
 .wa-preview small { display: block; margin-top: 6px; color: #4F7A55; font-size: 10.5px; }
 
 /* עין התאמת פעולות מהירות */
-.q-btn.qa-eye { border-style: dashed; color: var(--text-3); }
-.q-btn.qa-eye.on { background: var(--brand-soft); color: var(--brand-600); border-color: var(--brand); border-style: solid; }
+/* עין להתאמת פעולות — אייקון נקי בלי מסגרת, בקצה שורת המטא */
+.head-meta .qa-eye-mini { margin-inline-start: auto; background: none; border: none;
+  padding: 2px; cursor: pointer; color: var(--text-3); display: inline-flex;
+  align-items: center; transition: color .15s, transform .15s; }
+.head-meta .qa-eye-mini svg { width: 17px; height: 17px; }
+/* hover רק במכשירים עם עכבר — במגע ה-hover "נדבק" והעין נשארת צבועה אחרי היציאה מהמצב */
+@media (hover: hover) { .head-meta .qa-eye-mini:hover { color: var(--brand-600); transform: scale(1.1); } }
+.head-meta .qa-eye-mini.on { color: var(--brand); }   /* פעילה — בצבע המסגרת המקווקוות של האייקונים */
+.head-meta .qa-eye-mini:not(.on) { color: var(--text-3); }   /* סגורה → אפור */
+/* מצב התאמת פעולות: מסגרת מקווקוות (קבועה) + שיקשוק עדין חד-פעמי בפתיחת המצב בלבד */
+#quickRow.qa-editing .q-btn { border-style: dashed; border-color: var(--brand); transform-origin: center; }
+#quickRow.qa-open-anim .q-btn { animation: qa-shake .5s ease-in-out 1; }
+#quickRow.qa-open-anim .q-btn:nth-child(2) { animation-delay: .04s; }
+#quickRow.qa-open-anim .q-btn:nth-child(3) { animation-delay: .08s; }
+#quickRow.qa-open-anim .q-btn:nth-child(4) { animation-delay: .12s; }
+#quickRow.qa-open-anim .q-btn:nth-child(5) { animation-delay: .16s; }
+#quickRow.qa-open-anim .q-btn:nth-child(6) { animation-delay: .20s; }
+#quickRow.qa-open-anim .q-btn:nth-child(7) { animation-delay: .24s; }
+@keyframes qa-shake {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-1.2deg); }
+  50% { transform: rotate(0.9deg); }
+  75% { transform: rotate(-0.5deg); }
+}
+@media (prefers-reduced-motion: reduce) { #quickRow.qa-open-anim .q-btn { animation: none; } }
 .q-btn.qa-off { opacity: .45; }
 .q-btn.qa-off::after { content: ''; position: absolute; left: 7px; right: 7px; top: 50%; height: 2px; background: var(--red); transform: rotate(-14deg); border-radius: 2px; }
 
@@ -220,6 +250,15 @@
 /* הערה פתוחה ב-hover card */
 .hc-open-note { color: var(--amber) !important; background: var(--amber-bg); border-radius: 8px; padding: 6px 8px; font-size: 11.5px; }
 .hc-open-note svg { color: var(--amber) !important; }
+
+/* חיווי SLA ב-hover card — צבע לפי דחיפות */
+.hc-sla { font-weight: 600; }
+.hc-sla.green  { color: var(--green); }
+.hc-sla.green  svg { color: var(--green); }
+.hc-sla.amber, .hc-sla.orange { color: var(--amber); }
+.hc-sla.amber svg, .hc-sla.orange svg { color: var(--amber); }
+.hc-sla.red    { color: var(--red); }
+.hc-sla.red    svg { color: var(--red); }
 
 /* ---- בורר דקות בתוך שעה (דיוק תזמון) ---- */
 .minute-pop { position: fixed; z-index: 75; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;

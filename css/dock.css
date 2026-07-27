@@ -65,6 +65,10 @@
 .dock-split .dock-list-col { border-inline-start: 1px solid oklch(93% 0.006 250); }
 .dock-conv-col { display: flex; flex-direction: column; min-height: 0; height: 100%; overflow: hidden; background: oklch(98.5% 0.004 250); }
 .dock-conv.on { background: var(--pblue-soft, oklch(96% 0.03 262)); box-shadow: inset -3px 0 0 oklch(52% 0.2 262); }
+.cc-send { width: 40px; height: 40px; border-radius: 50%; border: none; background: oklch(52% 0.18 250); color: #fff;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.cc-send svg { width: 18px; height: 18px; transform: scaleX(-1); }   /* חץ שליחה לכיוון RTL */
+.cc-send:hover { filter: brightness(1.06); }
 .cc-send.txt { width: auto; padding: 0 20px; font-family: inherit; font-size: 13px; font-weight: 700; }
 @media (max-width: 720px) { .dock-panel.wide { width: calc(100vw - 40px); } .dock-split { grid-template-columns: 1fr; } .dock-split .dock-list-col { display: none; } }
 

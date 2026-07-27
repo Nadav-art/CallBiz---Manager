@@ -1,0 +1,97 @@
+/* ============================================================
+   CallBiz Manager – v18: יומן חכם (הרשאות, שיוך, הזזה) + תיקוני אייקונים
+   ============================================================ */
+
+/* אייקון בכותרת כרטיס — בלי גודל מוגדר ה-SVG מתנפח */
+.card-head .title > svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* ---- אירוע חסוי ביומן של עובד אחר ---- */
+.mcal-ev.busy { background: repeating-linear-gradient(45deg, var(--surface-2), var(--surface-2) 6px, var(--bg) 6px, var(--bg) 12px);
+  color: var(--text-3); border-inline-start: 3px solid var(--border-2); cursor: default; }
+.mcal-ev.busy .ev-t { font-weight: 600; }
+
+/* ---- מצב הזזת אירוע: משבצות פנויות מודגשות ---- */
+.slot-free.move-target { outline: 2px dashed var(--brand); outline-offset: -3px;
+  background: var(--brand-soft); cursor: copy; }
+.slot-free.move-target:hover { background: var(--brand-soft-2); }
+.cal-move-note { display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+  color: var(--brand-700); background: var(--brand-soft); border: 1px solid var(--brand);
+  border-radius: 20px; padding: 4px 10px; }
+.cal-move-note svg { width: 13px; height: 13px; }
+
+/* ---- פופאובר פנייה מקושרת ---- */
+.ev-pop { width: 260px; }
+.evp-body { display: flex; flex-direction: column; gap: 8px; padding: 4px 2px 2px; }
+.evp-body > b { font-size: 14px; }
+.evp-badges { display: flex; flex-wrap: wrap; gap: 5px; }
+.evp-meta { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-2); }
+.evp-meta span { display: inline-flex; align-items: center; gap: 5px; }
+.evp-meta svg { width: 13px; height: 13px; flex-shrink: 0; }
+.evp-meta .green { color: var(--green); } .evp-meta .orange { color: var(--orange); } .evp-meta .red { color: var(--red); }
+.evp-actions { display: flex; gap: 6px; margin-top: 2px; }
+.evp-actions .btn { flex: 1; justify-content: center; }
+
+/* ---- מודל "קביעה חדשה" במשבצת פנויה ---- */
+.slot-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.slot-type-grid button { display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+  cursor: pointer; text-align: start; font-family: inherit; transition: border-color .15s, background .15s; }
+.slot-type-grid button:hover, .slot-type-grid button.on { border-color: var(--brand); background: var(--brand-soft); }
+.slot-type-grid button svg { width: 20px; height: 20px; color: var(--brand-600); }
+.slot-type-grid button b { font-size: 13px; }
+.slot-type-grid button small { color: var(--text-3); font-size: 11px; }
+.sc-input { width: 100%; padding: 8px 12px; margin-top: 12px; border: 1px solid var(--border);
+  border-radius: 10px; font-family: inherit; font-size: 13px; background: var(--surface); }
+.sc-input:focus { outline: none; border-color: var(--brand); }
+.sc-form { display: flex; flex-direction: column; gap: 0; }
+.sc-form .btn { margin-top: 10px; align-self: flex-start; }
+.sc-list { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.sc-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--border);
+  border-radius: 10px; background: var(--surface); cursor: pointer; transition: border-color .15s, background .15s; }
+.sc-item:hover { border-color: var(--brand); background: var(--brand-soft); }
+.sc-item b { font-size: 13px; }
+.sc-item small { margin-inline-start: auto; }
+.sc-empty { padding: 16px; text-align: center; color: var(--text-3); font-size: 12px; }
+
+/* ---- עורך שלבים: סדר, הוספה, הסרה ---- */
+.se-list { display: flex; flex-direction: column; gap: 6px; }
+.se-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border);
+  border-radius: 10px; background: var(--surface); transition: border-color .15s, box-shadow .15s, opacity .15s; }
+.se-row[draggable="true"] { cursor: grab; }
+.se-row.dragging { opacity: .45; }
+.se-row.drag-over { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand-soft); }
+.se-row.locked { background: var(--surface-2); }
+.se-grip { color: var(--text-3); display: flex; }
+.se-grip svg { width: 14px; height: 14px; }
+.se-num { width: 20px; height: 20px; border-radius: 50%; background: var(--brand-soft); color: var(--brand-600);
+  font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.se-title { font-size: 13px; flex: 1; }
+.se-lock { color: var(--text-3); font-size: 11px; }
+.se-btn { width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+  cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-2);
+  transition: border-color .15s, color .15s, background .15s; }
+.se-btn svg { width: 13px; height: 13px; }
+.se-btn.dn svg { transform: rotate(180deg); }
+.se-btn:hover:not(:disabled) { border-color: var(--brand); color: var(--brand-600); }
+.se-btn.rm:hover:not(:disabled) { border-color: var(--red); color: var(--red); background: var(--red-bg); }
+.se-btn:disabled { opacity: .35; cursor: default; }
+.se-add { display: flex; flex-wrap: wrap; gap: 6px; }
+.se-add-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border: 1px dashed var(--border-2);
+  border-radius: 20px; background: var(--surface); font-size: 12px; cursor: pointer; color: var(--text-2);
+  transition: border-color .15s, color .15s, background .15s; }
+.se-add-btn svg { width: 12px; height: 12px; }
+.se-add-btn:hover { border-color: var(--brand); color: var(--brand-600); background: var(--brand-soft); }
+
+/* ---- תפריט קליק ימני על שלב ---- */
+.stage-ctx { width: 200px; padding: 8px; }
+.ctx-item { display: flex; align-items: center; gap: 7px; width: 100%; padding: 7px 10px; border: none;
+  background: none; border-radius: 8px; font-size: 12.5px; font-family: inherit; cursor: pointer; color: var(--text); text-align: start; }
+.ctx-item svg { width: 13px; height: 13px; color: var(--text-3); }
+.ctx-item:hover:not(:disabled) { background: var(--brand-soft); }
+.ctx-item:disabled { opacity: .4; cursor: default; }
+.ctx-item.rm { color: var(--red); }
+.ctx-item.rm svg { color: var(--red); }
+.ctx-item.rm:hover { background: var(--red-bg); }
+.ctx-item[data-ctx="dn"] svg { transform: rotate(180deg); }
+.ctx-lock { display: flex; align-items: center; gap: 6px; padding: 7px 10px; font-size: 12px; color: var(--text-3); }
+.ctx-lock svg { width: 13px; height: 13px; }

@@ -131,7 +131,7 @@ function openTasksDrawer() {
     </div>
     <div class="drawer-foot"><button class="btn primary block" id="taskAddD">${ic('plus')} משימה חדשה</button></div>`;
   $('#closeDrawer').addEventListener('click', closeDrawer);
-  $('#taskAddD').addEventListener('click', () => toast('משימה חדשה — דרך כרטיס הליד'));
+  $('#taskAddD').addEventListener('click', () => openAddTask());
   $$('[data-task-d]').forEach(c => c.addEventListener('change', () => {
     TASKS[+c.dataset.taskD].done = c.checked;
     updateTasksBadge(); openTasksDrawer();
@@ -139,7 +139,7 @@ function openTasksDrawer() {
   }));
   $$('[data-taskopen-d]').forEach(b => b.addEventListener('click', () => {
     const r = RECORDS.find(x => x.id === +b.dataset.taskopenD);
-    if (r) openDrawer(r);
+    if (r) openDrawer(r, openTasksDrawer);   // חזרה לרשימת המשימות במקום יציאה מלאה
   }));
   $('#drawer').classList.add('open'); $('#drawer').setAttribute('aria-hidden', 'false');
   $('#overlay').classList.add('open');
@@ -161,7 +161,50 @@ function renderTasksView() {
     </section>`;
   $$('[data-task]').forEach(c => c.addEventListener('change', () => { TASKS[+c.dataset.task].done = c.checked; renderTasksView(); toast(c.checked ? 'המשימה הושלמה ✓' : 'המשימה נפתחה מחדש'); }));
   $$('[data-taskopen]').forEach(b => b.addEventListener('click', () => { const r = RECORDS.find(x => x.id === +b.dataset.taskopen); if (r) openDrawer(r); }));
-  $('#taskAdd').addEventListener('click', () => toast('משימה חדשה — בטופס הרשומה'));
+  $('#taskAdd').addEventListener('click', () => openAddTask());
+}
+
+/* --- הוספת משימה חדשה (עובד מכל מקום: מגירת המשימות + מסך המשימות) --- */
+let addTaskState = { prio: 'medium', recId: '' };
+function openAddTask() {
+  addTaskState = { prio: 'medium', recId: '' };
+  const fromDrawer = $('#drawer') && $('#drawer').classList.contains('open');
+  renderAddTask(fromDrawer);
+  $('#modalWrap').classList.add('open');
+}
+function renderAddTask(fromDrawer) {
+  const prios = [['high', 'גבוהה'], ['medium', 'בינונית'], ['low', 'נמוכה']];
+  const recs = (typeof RECORDS !== 'undefined') ? RECORDS : [];
+  $('#modal').style.maxWidth = '460px'; $('#modal').style.height = '';
+  $('#modal').innerHTML = `
+    <div class="modal-head"><div class="title"><span class="num">${ic('tasks')}</span> משימה חדשה</div>
+      <button class="close-btn" id="closeModal">${ic('close')}</button></div>
+    <div class="modal-body add-task">
+      <div class="field"><label>תיאור המשימה *</label><input class="cc-inp" id="atTitle" placeholder="מה צריך לעשות…" autocomplete="off"></div>
+      <div class="field"><label>מועד</label><input class="cc-inp" id="atDue" placeholder="למשל: היום 14:00 · מחר · שישי 10:00"></div>
+      <div class="field"><label>עדיפות</label>
+        <div class="at-prio">${prios.map(([k, l]) => `<button type="button" class="at-prio-btn ${addTaskState.prio === k ? 'on ' + k : ''}" data-atprio="${k}">${l}</button>`).join('')}</div></div>
+      <div class="field"><label>שיוך לליד (אופציונלי)</label>
+        <select class="cc-inp" id="atRec"><option value="">— ללא —</option>${recs.map(r => `<option value="${r.id}" ${String(addTaskState.recId) === String(r.id) ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}</select></div>
+    </div>
+    <div class="modal-foot"><button class="btn ghost" id="atCancel">ביטול</button>
+      <button class="btn primary" id="atSave">${ic('check')} הוסף משימה</button></div>`;
+  $('#closeModal').addEventListener('click', closeModal);
+  $('#atCancel').addEventListener('click', closeModal);
+  $$('[data-atprio]').forEach(b => b.addEventListener('click', () => { addTaskState.prio = b.dataset.atprio; $$('[data-atprio]').forEach(x => x.className = 'at-prio-btn' + (x === b ? ' on ' + b.dataset.atprio : '')); }));
+  $('#atSave').addEventListener('click', () => {
+    const title = ($('#atTitle').value || '').trim();
+    if (!title) { toast('הזן תיאור למשימה'); $('#atTitle').focus(); return; }
+    const due = ($('#atDue').value || '').trim() || 'ללא מועד';
+    const recId = $('#atRec').value ? +$('#atRec').value : undefined;
+    TASKS.unshift({ t: title, due, prio: addTaskState.prio, done: false, recId });
+    if (typeof updateTasksBadge === 'function') updateTasksBadge();
+    closeModal();
+    toast('המשימה נוספה ✓');
+    if (fromDrawer && typeof openTasksDrawer === 'function') openTasksDrawer();
+    else if ($('#viewHost') && $('#viewHost').querySelector('.task-list')) renderTasksView();
+  });
+  setTimeout(() => { const ti = $('#atTitle'); if (ti) ti.focus(); }, 60);
 }
 
 const CALLS_LOG = [

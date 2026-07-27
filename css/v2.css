@@ -43,8 +43,9 @@
 .next-cell { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
 .next-cell small { color: var(--text-3); font-size: 10.5px; }
 .next-cell .chip svg { width: 12px; height: 12px; }
-tr.row-over { background: #FEF6F6 !important; }
-tr.row-over:hover { background: #FDECEC !important; }
+/* שורה שהזמן שלה עבר — גוון ורוד עדין, זהה בנייד ובמחשב (בולט מצד אחד, לא מוגזם מהשני) */
+tr.row-over { background: #FCEAEA !important; }
+tr.row-over:hover { background: #FADEDE !important; }
 
 /* ---- Work Queue ---- */
 .queue { padding: 8px; display: flex; flex-direction: column; gap: 7px; max-height: 460px; overflow-y: auto; }

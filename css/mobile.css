@@ -1,0 +1,523 @@
+/* ============================================================
+   CallBiz Manager – ממשק מותאם למובייל (Responsive, ≤ 820px)
+   נשמר על אותו קו עיצובי — רק פריסה מותאמת למגע וגלילה אנכית
+   ============================================================ */
+/* חיווי דיבאג — מוצג רק במובייל (ה-JS שולט ב-display) */
+#cbdbg { display: none; position: fixed; top: 0; inset-inline: 0; z-index: 99999;
+  background: #111; color: #6ee7b7; font: 700 11px/1.6 monospace; text-align: center; padding: 3px 6px; direction: ltr; }
+.cb-mobile .main { padding-top: 0; }
+/* מסך הגדרות: מעבר אזורים עבר לבורר העליון בטופבר — מסתירים את שורת הכפתורים בתוך המסך */
+.cb-mobile .set-mode-toggles { display: none; }
+/* ניהול סניפים: סרגל המיון/תצוגה/הוספה — פריסה נקייה בנייד */
+.cb-mobile .list-toolbar { flex-wrap: wrap; gap: 8px; align-items: stretch; }
+.cb-mobile .list-toolbar .lt-sort, .cb-mobile .list-toolbar .lt-view { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; width: 100%; }
+.cb-mobile .list-toolbar .lt-sort > span, .cb-mobile .list-toolbar .lt-view > span { font-size: 12px; color: var(--text-2); font-weight: 700; width: 100%; }
+.cb-mobile .list-toolbar .seg-btn { flex: 1; min-width: 0; font-size: 12px; padding: 8px 10px; justify-content: center; }
+.cb-mobile .list-toolbar #addBranch { margin-inline-start: 0 !important; width: 100%; justify-content: center; }
+.cb-mobile .match-note:not(.collapsible) { font-size: 12px; line-height: 1.5; padding: 10px 12px; }
+/* תצוגת טבלה של סניפים בנייד — טבלה אמיתית עם גלילה אופקית (לא פריסת הכרטיסים של רשימת הלידים) */
+.cb-mobile .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+.cb-mobile .workspace .table-wrap.scroll-x, .cb-mobile .table-wrap.scroll-x { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+.cb-mobile .branch-list-table.list { display: table; width: auto; min-width: 820px; max-width: none; }
+.cb-mobile .branch-list-table.list thead { display: table-header-group; }
+.cb-mobile .branch-list-table.list tbody { display: table-row-group; }
+.cb-mobile .branch-list-table.list tr { display: table-row; grid-template-columns: none; border: none; box-shadow: none; border-radius: 0; margin: 0; }
+.cb-mobile .branch-list-table.list th { display: table-cell; text-align: right; font-size: 11px; padding: 8px 10px; white-space: nowrap; }
+.cb-mobile .branch-list-table.list td { display: table-cell; grid-column: auto !important; padding: 8px 10px !important; border: none; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: normal; }
+.cb-mobile .branch-list-table.list td:nth-child(3), .cb-mobile .branch-list-table.list td:nth-child(5), .cb-mobile .branch-list-table.list td:nth-child(7) { display: table-cell; }
+/* סרגל בקרת סניפים — שורה אחת קומפקטית (בוררים + כפתור הוספה בשמאל) */
+.cb-mobile .branch-controls { flex-wrap: nowrap; gap: 6px; }
+.cb-mobile .branch-controls .bc-sel { flex: 1; min-width: 0; }
+.cb-mobile .branch-controls .bc-sel > span { display: none; }
+.cb-mobile .branch-controls .bc-sel select { width: 100%; min-width: 0; }
+.cb-mobile .branch-controls .bc-add { flex-shrink: 0; padding: 8px 11px; }
+/* (כרטיסי עובדים אוחדו ל-CSS רספונסיבי משותף ב-meetings.css) */
+/* מסך ניהול וואטסאפ — כרטיסי ה-KPI גלשו לרוחב וגרמו לגלילה אופקית; מתאימים לרוחב המסך */
+.cb-mobile .plat-admin { padding: 14px 12px; overflow-x: hidden; max-width: 100vw; }
+.cb-mobile .plat-kpis, .cb-mobile .plat-kpis.seven { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.cb-mobile .plat-kpi { padding: 10px; gap: 8px; min-width: 0; }
+.cb-mobile .plat-kpi > div { min-width: 0; }
+.cb-mobile .plat-kpi b { font-size: 18px; }
+.cb-mobile .ad-filters { flex-wrap: wrap; }
+.cb-mobile .ad-search { width: 100%; min-width: 0; }
+.cb-mobile .ad-chips { flex-wrap: wrap; }
+.cb-mobile .plat-admin .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+/* פעולות מהירות ב-Drawer — כל האייקונים בשורה אחת בנייד (בלי שבירת שורה) */
+.cb-mobile #quickRow { flex-wrap: nowrap; gap: 4px; }
+.cb-mobile #quickRow .q-btn { flex: 1 1 0; min-width: 0; padding: 8px 2px; font-size: 9px; gap: 3px; }
+.cb-mobile #quickRow .q-btn svg { width: 16px; height: 16px; }
+.cb-mobile #quickRow .q-btn span { font-size: 8.8px; line-height: 1.1; text-align: center; white-space: nowrap; }
+/* יעדי קליק-ימני (לחיצה ארוכה בנייד) — למנוע גם את תפריט ההעתקה וגם את בחירת הטקסט של iOS */
+.cb-mobile [data-field], .cb-mobile [data-field] *,
+.cb-mobile .acc-item, .cb-mobile .acc-item * {
+  -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
+}
+/* תפריט בורר התצוגה בנייד — מיושר לימין, נקי */
+.proc-menu { position: fixed; z-index: 300; direction: rtl; text-align: right;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-lg, 0 18px 50px rgba(20,22,40,.28)); padding: 5px; }
+.proc-menu-item { display: flex; align-items: center; gap: 9px; width: 100%; text-align: right;
+  background: transparent; border: none; padding: 10px 12px; border-radius: 8px; font: inherit; font-size: 13px; color: var(--text); cursor: pointer; white-space: nowrap; }
+.proc-menu-item > svg:first-child { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-2); }
+.proc-menu-item > span { flex: 1; }
+.proc-menu-item > svg:last-child { width: 15px; height: 15px; flex-shrink: 0; color: var(--brand); margin-inline-start: auto; }
+.proc-menu-item.on { color: var(--brand); font-weight: 700; background: var(--brand-soft, oklch(96% 0.03 262)); }
+.proc-menu-item.on > svg:first-child { color: var(--brand); }
+.proc-menu-item:active { background: oklch(96% 0.01 250); }
+/* תפריט "עמוד פתיחה" (לחיצה ארוכה על טאב) + חיווי על הטאב */
+.nav-home-menu { position: fixed; z-index: 320; direction: rtl; text-align: right; min-width: 190px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-lg, 0 18px 50px rgba(20,22,40,.28)); padding: 6px; }
+.nav-home-menu .nhm-title { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--text-2); padding: 6px 10px 4px; }
+.nav-home-menu .nhm-title svg { width: 14px; height: 14px; }
+.nav-home-menu .nhm-item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: right; background: transparent; border: none; padding: 10px 12px; border-radius: 8px; font: inherit; font-size: 13px; color: var(--text); cursor: pointer; }
+.nav-home-menu .nhm-item svg { width: 15px; height: 15px; color: var(--brand); }
+.nav-home-menu .nhm-item:active { background: oklch(96% 0.01 250); }
+.nav-item.is-home { position: relative; }
+.nav-home-dot { position: absolute; top: 3px; inset-inline-end: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--brand); }
+/* צ'יפ מחלקה בשורת הליד — מוצג רק בנייד (מוסתר בדסקטופ) */
+.dept-chip { display: none; align-items: center; font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+.dept-chip.blue  { background: oklch(95% 0.04 255); color: oklch(45% 0.15 262); }
+.dept-chip.red   { background: oklch(95% 0.05 25);  color: oklch(50% 0.18 25); }
+.dept-chip.amber { background: oklch(95% 0.07 75);  color: oklch(45% 0.13 70); }
+
+@media (max-width: 950px) {
+  :root { --drawer-w: 100vw; }
+
+  /* מניעת גלישה אופקית ושטח מת גם אם ה-viewport לא אידאלי */
+  html, body { overflow-x: hidden; max-width: 100%; }
+
+  .app { flex-direction: column; max-width: 100%; overflow-x: hidden; }
+
+  /* ---- סרגל ניווט → בר תחתון קבוע ---- */
+  .sidebar {
+    width: 100%; height: auto; position: fixed; bottom: 0; top: auto; inset-inline: 0;
+    flex-direction: row; align-items: center; padding: 4px 6px;
+    border-top: 1px solid var(--border); border-inline-start: none;
+    z-index: 60; box-shadow: 0 -2px 14px rgba(0,0,0,.08);
+  }
+  .sidebar .logo, .sidebar .user { display: none; }
+  /* כל הטאבים נכנסים לרוחב המסך בלי גלילה — כך שטאב "ניהול" תמיד נגיש */
+  .sidebar .nav { flex-direction: row; overflow: visible;
+    gap: 0; justify-content: space-between; padding-bottom: 0; }
+  .sidebar .nav::-webkit-scrollbar { display: none; }
+  .nav-item { width: auto; min-width: 0; flex: 1 1 0; padding: 6px 2px; font-size: 8.6px; flex-shrink: 1; text-align: center; }
+  .nav-item svg { width: 18px; height: 18px; }
+  .nav-item span { white-space: nowrap; }
+  /* קבוצת "ניהול" → פופ-אפ מעל הבר (fixed כדי שלא ייחתך ע"י גבולות הבר) */
+  .nav-manage .nm-chev { display: none; }
+  .nav-sub-wrap { position: fixed; bottom: 66px; inset-inline-start: 8px; inset-inline-end: auto;
+    flex-direction: row; flex-wrap: wrap; max-width: calc(100vw - 16px); background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 7px; box-shadow: var(--shadow-lg); z-index: 62;
+    max-height: none !important; margin: 0 !important; opacity: 1; transform: none; }
+  .nav-sub-wrap .nav-item { flex: 0 0 auto; min-width: 66px; }
+  .nav-sub-wrap:not(.open) { display: none; }
+  .nav-sub-wrap.open { transform-origin: bottom right; animation: navSubIn .22s cubic-bezier(.2,.9,.3,1); }
+  @keyframes navSubIn { from { opacity: 0; transform: translateY(10px) scale(.95); } to { opacity: 1; transform: none; } }
+
+  .main { min-height: 100vh; padding-bottom: 64px; }
+  .summary .sum-card { min-height: 0; padding: 10px 12px; }
+
+  /* כפתור הוואטסאפ מעל הבר התחתון */
+  #chatDock { bottom: 76px; left: 10px; z-index: 61; }
+  /* התזכורת בנייד — למעלה (כמו התראה), לא מסתירה את התוכן למטה */
+  .reminder-bar { top: 28px; bottom: auto; left: 50%; width: calc(100vw - 16px); min-width: 0;
+    padding: 8px 10px; gap: 6px 8px; font-size: 12px; z-index: 90; }
+  .reminder-bar .rb-ic { display: none; }
+  .reminder-bar .rb-text b { font-size: 12px; }
+  .reminder-bar .btn, .reminder-bar .icon-btn { padding: 5px 8px; font-size: 11px; }
+
+  /* רשימת הלידים → כל ליד בשורה אחת (כמו רשימת אנשי קשר), בלי גלילה צידית */
+  /* list-card הוא flex-item בשרשרת flex מקוננת שלא מתכווצת — לכן נועלים אותו לרוחב ה-viewport */
+  .work-row { min-width: 0; }
+  .work-row .list-card, .workspace .list-card { min-width: 0; max-width: calc(100vw - 28px); overflow: hidden; }
+  .workspace .table-wrap, .work-row .table-wrap { overflow-x: hidden; min-width: 0; max-width: 100%; }
+  table.list, table.list tbody, table.list tr { max-width: calc(100vw - 30px); }
+  /* ביטול ה-min-width:900 של הטבלה כדי שהשורה תתכווץ לרוחב המסך */
+  table.list, table.list tbody, table.list td { display: block; width: auto; min-width: 0; max-width: 100%; }
+  table.list { width: 100%; min-width: 0; }
+  table.list thead { display: none; }
+  /* גריד עם עמודות ברוחב קבוע → כל שדה מיושר אנכית בין השורות (חיוג | לקוח | מחלקה | שלב+תאריך) */
+  table.list tr { display: grid; align-items: center;
+    grid-template-columns: auto minmax(0, 1fr) 52px 82px; gap: 6px;
+    box-sizing: border-box; width: 100%;
+    border: 1px solid var(--border); border-radius: 12px;
+    margin-bottom: 8px; padding: 9px 10px; background: var(--surface); }
+  table.list tr.sel { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand) inset; }
+  table.list tbody td { padding: 0; border: none; min-width: 0; }                  /* ביטול ה-padding של הדסקטופ (מקור החריגה) */
+  table.list td:nth-child(1) { grid-column: 1; }                                  /* חיוג+וואטסאפ — הכי ימני */
+  table.list td:nth-child(2) { grid-column: 2; min-width: 0; }                     /* לקוח / ליד */
+  table.list td:nth-child(4) { grid-column: 3; display: flex; justify-content: center; } /* מחלקה — עמודה מיושרת וממורכזת */
+  table.list td:nth-child(4) .badge { display: none; }
+  table.list td:nth-child(4) .dept-chip { display: inline-flex; padding: 3px 7px; }
+  table.list td:nth-child(6) { grid-column: 4; }                                  /* עמודה: השלב הבא (מעל) + תאריך (מתחת) */
+  table.list .client-cell .meta b { font-size: 12.5px; }
+  table.list .client-cell { gap: 7px; }
+  table.list .client-cell .av { width: 26px !important; height: 26px !important; font-size: 11px !important; }
+  table.list .ent-dot { display: none; }                                          /* חוסך רוחב לשם */
+  table.list .row-actions { gap: 4px; }
+  table.list .row-actions .icon-btn { width: 26px; height: 26px; padding: 0; }
+  table.list .row-actions .icon-btn svg { width: 14px; height: 14px; }
+  /* הפעולה הבאה = עמודה: השלב הבא (צ'יפ) מעל · תאריך הפולואפ מתחת */
+  table.list .next-cell { flex-direction: column; align-items: flex-start; gap: 3px; white-space: nowrap; text-align: right; max-width: 100%; min-width: 0; }
+  table.list .next-cell .chip { display: inline-flex; align-items: center; gap: 3px; width: auto; height: auto; min-width: 0;
+    padding: 2px 7px; border-radius: 999px; font-size: 9.5px; font-weight: 700; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  table.list .next-cell .chip svg { display: inline-block; width: 10px; height: 10px; flex-shrink: 0; }
+  table.list .next-cell small { font-size: 10px; color: var(--text-2); white-space: nowrap; padding-inline-start: 2px; }
+  /* נושא / סטטוס / עדיפות — נראים בפתיחת הליד, לא בשורה (מחלקה כן מוצגת) */
+  table.list td:nth-child(3), table.list td:nth-child(5), table.list td:nth-child(7) { display: none; }
+  table.list .client-cell { display: flex; align-items: center; gap: 9px; min-width: 0; }
+  table.list .client-cell .meta { min-width: 0; }
+  table.list .client-cell .meta b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12.5px; }
+  table.list .client-cell .meta small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-2); }
+  table.list .row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  table.list .chip, table.list .badge { font-size: 10.5px; padding: 3px 8px; line-height: 1.35; white-space: nowrap; }
+  table.list .chip .dot { width: 5px; height: 5px; }
+
+  /* סרגל הפילטרים — שורה אחת עם גלילה אופקית (בלי לשבור לשתי שורות) */
+  .list-toolbar { display: flex; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 6px; padding-bottom: 2px; }
+  .list-toolbar::-webkit-scrollbar { display: none; }
+  .list-toolbar .btn, .list-toolbar .select, .list-toolbar .icon-btn { flex: 0 0 auto; white-space: nowrap; font-size: 12px; padding: 7px 10px; }
+  .list-toolbar .spacer, .list-toolbar > .muted { display: none; }   /* התאריך/spacer דחפו לשורה שנייה */
+
+  /* ---- כותרת עליונה — שורה אחת; החיפוש קטן ומתרחב בלחיצה ---- */
+  .topbar { flex-wrap: nowrap; align-items: center; padding: 8px 10px; gap: 6px; position: sticky; top: 0; z-index: 40; }
+  .topbar .page-title { display: none; }   /* מיותר בנייד — חוסך מקום */
+  .proc-tabs { order: 2; flex: 0 0 auto; overflow: hidden; max-width: 160px; opacity: 1;
+    transition: max-width .25s ease, opacity .2s ease, margin .2s ease; }
+  .proc-mob-btn { display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 7px 10px;
+    font: inherit; font-size: 12.5px; color: var(--text); cursor: pointer; white-space: nowrap; }
+  .proc-mob-btn > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .proc-mob-btn > svg:first-child { width: 15px; height: 15px; flex-shrink: 0; color: var(--brand); }
+  .proc-mob-btn > svg:last-child { width: 13px; height: 13px; flex-shrink: 0; color: var(--text-2); margin-inline-start: auto; }
+  .top-actions { order: 3; flex: 1 1 auto; min-width: 0; margin: 0; gap: 5px; display: flex; align-items: center; justify-content: flex-end; }
+  .top-actions .search { flex: 1 1 auto; min-width: 34px; width: auto; overflow: hidden; }
+  .top-actions .search input { flex: 1 1 auto; min-width: 0; width: auto; font-size: 16px; }   /* 16px מונע זום-אוטומטי של iOS בפוקוס; ממלא את השארית */
+  /* חשוב: בלי overflow:hidden במצב רגיל — אחרת מספרי ההתראות (badge) נחתכים */
+  .top-actions .bell { flex: 0 0 auto; transition: max-width .25s ease, opacity .2s ease, margin .2s ease, padding .2s ease; max-width: 40px; }
+  /* לחיצה על החיפוש → החיפוש (וכפתור החיפוש-החכם) תופסים את כל השורה; כל השאר מתכווץ בו-זמנית */
+  .topbar:focus-within .proc-tabs { max-width: 0; opacity: 0; margin-inline: -3px; overflow: hidden; pointer-events: none; }
+  .topbar:focus-within .top-actions .bell { max-width: 0; opacity: 0; margin: 0; padding: 0; border-width: 0; overflow: hidden; pointer-events: none; }
+  .workspace { padding: 12px 14px; }
+
+  /* סיכום → רצועה אופקית קומפקטית (במקום 2 עמודות שדוחפות את הלידים למטה) */
+  .summary { display: flex !important; grid-template-columns: none !important; flex-wrap: nowrap;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 8px; padding-bottom: 4px; scroll-snap-type: x proximity; }
+  .summary::-webkit-scrollbar { display: none; }
+  .summary .sum-card { flex: 0 0 auto; width: auto; min-height: 0; padding: 8px 11px 8px 12px;
+    flex-direction: row; align-items: center; gap: 8px; scroll-snap-align: start; }
+  .summary .sum-card .sc-head { margin: 0; order: 1; }
+  .summary .sum-card .sc-ic { width: 28px; height: 28px; }
+  .summary .sum-card .sc-ic svg { width: 15px; height: 15px; }
+  .summary .sum-card .v { order: 2; font-size: 17px; line-height: 1; }
+  .summary .sum-card .l { order: 3; font-size: 11px; white-space: nowrap; }
+  .summary .sum-card .delta { display: none; }
+
+  /* מסך לקוחות — הגדרה דינמית מכווצת בנייד (חוסך מקום מעל הרשימה) */
+  .clients-def { margin-bottom: 8px; }
+  .cd-active-row { padding: 11px 12px; }
+  .cda-txt { font-size: 12.5px; }
+  .cd-head { font-size: 12.5px; }
+  .cd-head small { display: none; }
+  .cd-chips { gap: 6px; }
+  .cd-chip { padding: 6px 10px; font-size: 12px; }
+  .cd-chip .cd-n { min-width: 17px; height: 17px; font-size: 10px; }
+
+  /* ---- Drawer של הליד + מודלים = מסך מלא ---- */
+  .drawer { width: 100vw; }
+  .modal { max-width: 100vw !important; width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+  .modal-wrap { padding: 0; align-items: stretch; z-index: 300; }   /* מעל ה-Drawer (220) — אחרת המודלים נפתחים מאחוריו */
+  .modal-body { max-height: none; }
+  .sched { flex-direction: column; }
+
+  /* ---- לוח תיאום — הערמה אנכית ---- */
+  .coord-top { flex-wrap: wrap; gap: 10px; }
+  .ct-title { width: 100%; }
+  .ct-mid { width: 100%; margin-inline-start: 0; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .coord-top > [data-cnew] { width: 100%; justify-content: center; }
+  .coord-body { flex-direction: column; }
+  .coord-slots { width: 100%; flex-shrink: 0; max-height: 200px; }
+  .coord-cal { width: 100%; flex: 1; min-height: 340px; }
+  .coord-legend { font-size: 10px; gap: 10px; }
+
+  /* חלון הליד (Drawer) — מסך מלא בנייד, מעל הבר התחתון */
+  /* כל הדראוור הוא אזור-הגלילה: מגע בכל מקום (כולל הכותרת) גולל בתוך הליד, לא את הרקע */
+  .drawer { width: 100vw; height: 100dvh; z-index: 220; display: block; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+  .drawer .drawer-body { overflow: visible; flex: none; height: auto; }
+  .drawer .drawer-tabs { position: sticky; top: 0; z-index: 6; background: var(--surface); }
+  .drawer .drawer-foot { position: sticky; bottom: 0; z-index: 6; background: var(--surface); }
+  .overlay { z-index: 210; }
+
+  /* פאנל התיאום נפתח כמסך-מלא */
+  .coord-open-col { position: fixed; inset: 0; width: auto !important; z-index: 220;
+    display: flex; justify-content: flex-start; overflow: visible;
+    background: rgba(15,18,30,.42); opacity: 0; pointer-events: none; transition: opacity .25s; }
+  .coord-open-col.open { opacity: 1; pointer-events: auto; }
+  .coord-panel { width: 100% !important; max-width: 100%; height: 100dvh; border-radius: 0; }
+  .cp-quick .q-btn { padding: 9px 4px; }   /* יעד מגע גדול יותר */
+
+  /* לוח תיאום בנייד: מתג רשימה/יומן — אחד בכל פעם על כל המסך */
+  .ct-mobtoggle { display: flex; gap: 6px; width: 100%; order: 2; }
+  .ct-mobtoggle .seg-btn { flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+  .ct-mobtoggle .seg-btn svg { width: 14px; height: 14px; }
+  .ct-mobtoggle .seg-btn.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .coord.m-list .coord-cal { display: none; }
+  .coord.m-cal .coord-slots { display: none; }
+  .coord-slots { width: 100%; max-height: none; flex: 1; }
+  .coord-cal { width: 100%; min-height: 60vh; }
+
+  /* צ'אט הצוות — מסך מלא בנייד, כמו וואטסאפ */
+  #chatDock .dock-panel { position: fixed; inset: 0; width: 100vw; height: 100dvh; max-width: 100vw; max-height: 100dvh; border-radius: 0; z-index: 250; overscroll-behavior: contain; touch-action: pan-y; }
+  #chatDock .dp-body, #chatDock .dock-thread, #chatDock .dock-list { overscroll-behavior: contain; }
+  #chatDock .dock-panel.wide { width: 100vw; }
+  .dock-split { grid-template-columns: 1fr; }
+  .dock-split .dock-list-col { display: none; }   /* בשיחה — מסך מלא לשיחה בלבד, חזרה בכפתור Back */
+  /* כפתור ה-X בפינה השמאלית העליונה (במקום הגדלה) */
+  #chatDock .dp-head { position: relative; }
+  #chatDock #dockClose { position: absolute; left: 10px; top: 8px; width: 34px; height: 34px; z-index: 3; }
+  #chatDock #dockClose svg { width: 18px; height: 18px; }
+
+  #pushHost, #pushHostReminder { padding-top: max(8px, env(safe-area-inset-top)); }   /* אזור בטוח עליון */
+  #pushHostReminder { z-index: 301; }
+
+  /* טפסים — שדה בשורה מלאה במסכים צרים מאוד */
+}
+@media (max-width: 470px) {
+  .field-row { flex-direction: column; gap: 0; }
+  .cc-inp-row { flex-wrap: wrap; }
+  .cp-quick { flex-wrap: wrap; }
+}
+
+/* ============================================================
+   שעות פעילות בנייד — כרטיס ליום, אחד מתחת לשני
+   (בדסקטופ נשארת רשת 7 עמודות; כאן היא נמחצת ולכן נפרסת לאורך)
+   ============================================================ */
+.cb-mobile .wh-daysgrid { grid-template-columns: 1fr; gap: 10px; padding: 12px; }
+.cb-mobile .wh-daysgrid .wh-day { padding: 11px 12px; }
+
+/* כותרת היום — שם בולט מימין, מתג וקבב משמאל */
+.cb-mobile .wh-day-head { gap: 10px; margin-bottom: 0; }
+.cb-mobile .wh-day-head .wh-name { font-size: 15px; }
+.cb-mobile .wh-day-head .wh-kebab { width: 30px; height: 30px; }
+.cb-mobile .wh-day-head .wh-kebab svg { width: 17px; height: 17px; }
+.cb-mobile .wh-day-head .wh-toggle { transform: scale(1.06); transform-origin: center; }
+
+/* יום לא פעיל — שורה דקה במקום קופסה ענקית */
+.cb-mobile .wh-day.off .wh-day-empty { flex-direction: row; justify-content: flex-start; gap: 8px; padding: 8px 2px 2px; }
+.cb-mobile .wh-day.off .wh-empty-ic svg { width: 18px; height: 18px; }
+.cb-mobile .wh-day.off .wh-day-empty span:last-child { font-size: 12px; }
+
+/* ציר הזמן — נשאר, אבל דק יותר */
+.cb-mobile .wh-tl { margin: 9px 0 2px; }
+.cb-mobile .wh-tl-track { height: 10px; }
+
+/* מקטע משמרת/הפסקה — שורה אחת ברורה: תווית · שעות · סניף · תדירות */
+.cb-mobile .wh-daysgrid .wh-segs { gap: 9px; margin-top: 10px; }
+.cb-mobile .wh-seg { padding: 10px 11px; }
+.cb-mobile .wh-seg-top { justify-content: flex-start; margin-bottom: 8px; }
+.cb-mobile .wh-seg-lbl { font-size: 12.5px; text-align: start; }
+.cb-mobile .wh-seg-x { width: 26px; height: 26px; }
+.cb-mobile .wh-seg-x svg { width: 14px; height: 14px; }
+.cb-mobile .wh-seg-time { justify-content: flex-start; gap: 6px; }
+.cb-mobile .wh-seg-time input[type=time] { width: 62px; font-size: 15px; padding: 5px 4px; background: var(--surface);
+  border: 1px solid var(--border); text-align: center; }
+.cb-mobile .wh-seg-time input[type=time][readonly] { background: var(--surface-2); color: var(--text-2); }
+.cb-mobile .wh-seg-dash { width: 10px; }
+
+/* סניף המשמרת + תדירות — כל אחד בשורה מלאה, נוח ללחיצה */
+.cb-mobile .wh-seg-br { margin-top: 9px; font-size: 12.5px; }
+.cb-mobile .wh-seg-br svg { width: 14px; height: 14px; }
+.cb-mobile .wh-seg-br select { padding: 7px 8px; font-size: 12.5px; border-radius: 9px; }
+.cb-mobile .wh-seg-rot { margin-top: 7px; padding: 7px 9px; font-size: 12px; border-radius: 9px; }
+.cb-mobile .wh-seg-rot svg { width: 13px; height: 13px; }
+
+.cb-mobile .wh-dayadd .wh-add { padding: 10px; font-size: 12.5px; }
+
+/* באנר שיוך הסניפים — צ׳יפים נושמים */
+.cb-mobile .wh-brbar { margin: 0 12px 10px; }
+.cb-mobile .whb-h { font-size: 13px; }
+.cb-mobile .whb-miss, .cb-mobile .whb-quick, .cb-mobile .whb-sum, .cb-mobile .whb-rot { gap: 5px; }
+.cb-mobile .whb-chip { font-size: 11.5px; padding: 3px 10px; }
+.cb-mobile .whb-quick .btn { padding: 5px 12px; font-size: 12px; }
+
+/* סרגל הפעולות המהירות — גלילה אופקית במקום דחיסה */
+.cb-mobile .wh-quickbar { flex-wrap: wrap; gap: 6px; }
+.cb-mobile .wh-quickbar .wh-qa { font-size: 11.5px; padding: 6px 10px; }
+
+/* בורר התדירות — קרוב לרוחב המסך */
+.cb-mobile .rot-pop { width: calc(100vw - 20px); inset-inline-start: 10px !important; }
+
+/* ============================================================
+   נייד — טבלת הקריטריונים ככרטיסים, ופאנל הקריטריון במסך מלא
+   (בלי זה הטבלה מותחת את הכרטיס ל-1000px+ והכפתורים יוצאים מהמסך)
+   ============================================================ */
+.cb-mobile .set-card, .cb-mobile .nc-card { max-width: 100%; }
+.cb-mobile .card-head { flex-wrap: wrap; gap: 8px; }
+.cb-mobile .card-head .btn { width: 100%; justify-content: center; }
+.cb-mobile .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+
+/* כל קריטריון = כרטיס */
+.cb-mobile .nc-table { min-width: 0; }
+.cb-mobile .nc-table thead { display: none; }
+.cb-mobile .nc-table, .cb-mobile .nc-table tbody, .cb-mobile .nc-table tr, .cb-mobile .nc-table td { display: block; width: 100%; }
+.cb-mobile .nc-table tr { border: 1px solid var(--border); border-radius: 13px; padding: 11px 12px; margin-bottom: 10px; background: var(--surface); }
+.cb-mobile .nc-table td { border: 0; padding: 0; margin-bottom: 9px; }
+.cb-mobile .nc-table td:last-child { margin-bottom: 0; }
+.cb-mobile .nc-table td[data-l]::before { content: attr(data-l); display: block; font-size: 10.5px; font-weight: 800;
+  color: var(--text-3, #9AA1AC); margin-bottom: 4px; }
+.cb-mobile .nc-table td:first-child { font-size: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.cb-mobile .nc-table .nc-seg { width: 100%; }
+.cb-mobile .nc-table .nc-seg button { flex: 1 1 auto; font-size: 11.5px; padding: 7px 6px; }
+.cb-mobile .nc-table .nc-acts { display: flex; gap: 8px; align-items: center; }
+.cb-mobile .nc-table .nc-acts .btn { flex: 1 1 auto; justify-content: center; }
+.cb-mobile .cq-cell { flex-wrap: wrap; min-width: 0; }
+.cb-mobile .cq-chip { font-size: 11.5px; padding: 4px 10px; }
+.cb-mobile .cq-all { padding: 4px 9px; font-size: 11px; }
+
+/* פאנל הקריטריון — כמעט מסך מלא */
+.cb-mobile .cbc-wrap { padding: 10px; align-items: flex-end; }
+.cb-mobile .cr-box { max-width: 100% !important; max-height: 92vh; border-radius: 16px; }
+.cb-mobile .cr-tabs { gap: 5px; }
+.cb-mobile .cr-tab { flex: 1 1 auto; justify-content: center; padding: 8px 8px; font-size: 11.5px; }
+.cb-mobile .cr-val-body { grid-template-columns: 1fr; }
+.cb-mobile .cd-kinds, .cb-mobile .cd-basis, .cb-mobile .fit-tiers, .cb-mobile .gap-vals { grid-template-columns: 1fr; }
+.cb-mobile .cr-matrix { min-width: 420px; }
+.cb-mobile .nc-new-row { flex-direction: column; gap: 8px; }
+.cb-mobile .cbc-actions { flex-wrap: wrap; gap: 8px; }
+.cb-mobile .cbc-actions .btn { flex: 1 1 130px; justify-content: center; }
+.cb-mobile .cd-box-m { max-width: 100% !important; }
+.cb-mobile .cq-audit { font-size: 12px; }
+.cb-mobile .cqa-row { flex-direction: column; align-items: stretch; gap: 5px; }
+.cb-mobile .cqa-row .btn { margin-inline-start: 0; width: 100%; justify-content: center; }
+
+/* אשף הקריטריון בנייד */
+.cb-mobile .cr-steps { gap: 4px; }
+.cb-mobile .cr-stepbtn { padding: 7px 4px; font-size: 10.5px; }
+.cb-mobile .cr-stepbtn .crs-l { display: none; }
+.cb-mobile .cr-stepbtn.on .crs-l { display: inline; }
+.cb-mobile .cr-fam { padding: 12px 11px; gap: 10px; }
+.cb-mobile .crf-ic { width: 34px; height: 34px; }
+.cb-mobile .cr-nav { flex-wrap: wrap; }
+.cb-mobile .cr-miss { flex: 1 1 100%; order: 3; }
+
+/* תיק העובד בנייד */
+.cb-mobile .emp-file-bar { gap: 8px; }
+.cb-mobile .emp-file-bar > .btn { width: 100%; justify-content: center; }
+.cb-mobile .efb-who { flex: 1 1 100%; }
+.cb-mobile .efb-nav { flex: 1 1 100%; }
+.cb-mobile .efb-nav select { flex: 1 1 auto; max-width: none; }
+.cb-mobile .hr-tabs { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+.cb-mobile .hr-tab { flex: none; }
+.cb-mobile .hr-grid { grid-template-columns: 1fr; }
+
+/* אוטומציות בנייד */
+.cb-mobile .auto-cols { grid-template-columns: 1fr; }
+.cb-mobile .auto-side { position: static; }
+.cb-mobile .auto-item { flex-wrap: wrap; }
+.cb-mobile .auto-acts { width: 100%; margin-top: 8px; }
+.cb-mobile .auto-acts .btn { flex: 1 1 auto; justify-content: center; }
+.cb-mobile .auto-note { flex-wrap: wrap; }
+.cb-mobile .auto-note .btn { width: 100%; margin-inline-start: 0; justify-content: center; }
+.cb-mobile .auto-log { max-height: none; }
+.cb-mobile .ag-body { grid-template-columns: 1fr; }
+
+/* ============================================================
+   נייד — פופ-אפים: גלילה פנימית, פעולות דביקות, ושדות בגובה נכון
+   הבאג שתוקן: flex:1 1 110px בתוך flex-direction:column הפך את
+   ה-basis לגובה — ולכן שדות הבחירה נמתחו ל-110px+ לגובה.
+   ============================================================ */
+.cb-mobile .cbc-wrap { align-items: flex-end; padding: 8px; }
+.cb-mobile .cbc-box {
+  max-width: 100% !important; width: 100%;
+  max-height: 88vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;                 /* הגלילה לא "בורחת" לרקע */
+  border-radius: 18px 18px 12px 12px; padding-bottom: 0;
+}
+/* פעולות תמיד נגישות בתחתית הפופ-אפ */
+.cb-mobile .cbc-box .cbc-actions {
+  position: sticky; bottom: 0; z-index: 2; margin: 12px -20px 0; padding: 12px 20px;
+  background: var(--surface); border-top: 1px solid var(--line);
+  box-shadow: 0 -6px 14px rgba(20,22,34,.06);
+}
+.cb-mobile .cbc-box .cbc-actions .btn { flex: 1 1 130px; justify-content: center; }
+/* הרקע לא נגלל כשפופ-אפ פתוח */
+body:has(.cbc-wrap) { overflow: hidden; }
+
+/* שדות בתוך פופ-אפים — רוחב מלא, גובה טבעי */
+.cb-mobile .ar-add,
+.cb-mobile .cd-itemadd,
+.cb-mobile .cd-bandadd,
+.cb-mobile .gap-row,
+.cb-mobile .cre-extra-add { flex-direction: column; align-items: stretch; gap: 8px; }
+.cb-mobile .ar-add > *,
+.cb-mobile .cd-itemadd > *,
+.cb-mobile .cd-bandadd > *,
+.cb-mobile .gap-row > *,
+.cb-mobile .cre-extra-add > * { flex: 0 0 auto !important; width: 100%; min-width: 0; }
+.cb-mobile .ar-add .cc-inp,
+.cb-mobile .cd-itemadd .cc-inp,
+.cb-mobile .cd-bandadd .cc-inp,
+.cb-mobile .cre-extra-add .cc-inp { width: 100%; height: auto; padding: 9px 10px; font-size: 13px; }
+.cb-mobile .ar-add select, .cb-mobile .cd-itemadd select { height: auto; }
+.cb-mobile .gap-n { width: 100% !important; }
+.cb-mobile .cre-f, .cb-mobile .cre-f.wide { flex: 0 0 auto !important; width: 100%; }
+.cb-mobile .cre-fields { flex-direction: column; align-items: stretch; }
+.cb-mobile .rt-row.num { flex-wrap: wrap; }
+.cb-mobile .rt-row.num .cc-inp { width: 100%; }
+.cb-mobile .cd-units.sm { width: 100%; }
+.cb-mobile .cd-unit { flex: 1 1 auto; }
+
+/* פאנל הקריטריון + שאלונים — אותו טיפול */
+.cb-mobile .cr-box { max-height: 90vh; }
+.cb-mobile .cr-body { overflow-y: auto; overscroll-behavior: contain; }
+.cb-mobile .cd-box-m { max-height: 88vh; }
+.cb-mobile .ai-box .ai-cfg { overflow-x: hidden; }
+.cb-mobile .ap-bar { flex-direction: row; align-items: center; flex-wrap: nowrap; padding: 8px 10px; }
+.cb-mobile .ap-filters { flex: 1 1 auto; min-width: 0; }
+.cb-mobile .ap-f { flex: none; font-size: 11px; padding: 5px 9px; }
+.cb-mobile .ap-more { flex: none; }
+.cb-mobile .ap-stats { justify-content: space-between; }
+.cb-mobile .ap-dates { flex-direction: column; }
+.cb-mobile .ap-dates label { flex: 0 0 auto; width: 100%; }
+.cb-mobile .ap-dates input { width: 100%; box-sizing: border-box; min-height: 34px; }
+.cb-mobile .ap-hours { flex-wrap: wrap; }
+.cb-mobile .ap-hours .cc-inp { flex: 0 0 auto; width: auto; min-width: 88px; }
+.cb-mobile .ap-days { flex-wrap: wrap; }
+.cb-mobile .aw-acts { grid-template-columns: 1fr; }
+.cb-mobile .ap-edit-row { flex-direction: column; }
+.cb-mobile .ap-edit-row .exf { flex: 0 0 auto; width: 100%; }
+.cb-mobile .ai-box { max-height: 88vh; }
+.cb-mobile .ai-sec-s { display: none; }
+.cb-mobile .ai-foot { flex-wrap: wrap; }
+.cb-mobile .ai-foot .btn.primary { width: 100%; justify-content: center; margin-inline-start: 0; order: -1; }
+.cb-mobile .auto-item { align-items: flex-start; }
+.cb-mobile .auto-acts .btn { width: 100%; justify-content: center; }
+
+/* ===== נייד: סרגל האוטומציות — פילטרים על כל הרוחב, "עוד" בתוך המסגרת ===== */
+.cb-mobile .ap-bar { position: relative; gap: 6px; }
+.cb-mobile .ap-filters { flex: 1 1 auto; min-width: 0; overflow: visible; }
+.cb-mobile .ap-f { flex: 1 1 0; min-width: 0; text-align: center; justify-content: center;
+  padding: 6px 4px; font-size: 11px; white-space: nowrap; }
+.cb-mobile .ap-more { position: static; flex: none; margin-inline-start: 0; }
+.cb-mobile .ap-more > .btn { padding: 6px 8px; }
+/* התפריט נפרס לרוחב הכרטיס ולא גולש החוצה */
+.cb-mobile .ap-more-menu { position: absolute; top: calc(100% - 2px);
+  inset-inline-start: 8px; inset-inline-end: 8px; width: auto; max-width: none; }
+.cb-mobile .ap-more-i, .cb-mobile .ap-more-menu .ap-dry { padding: 10px 12px; font-size: 13px; }
+.cb-mobile .ac-add-btns { flex-direction: column; }
+.cb-mobile .ac-add-btns .btn { width: 100%; }
+
+
+/* ============================================================
+   יומן במובייל — הסרגל נגלש מהמסך (הכפתורים היו בלתי נגישים)
+   ============================================================ */
+.cb-mobile .cal-toolbar { flex-wrap: wrap; row-gap: 8px; }
+.cb-mobile .cal-toolbar .seg { flex: 1 1 100%; display: flex; }
+.cb-mobile .cal-toolbar .seg .seg-btn { flex: 1 1 0; }
+.cb-mobile .cal-toolbar .cal-nav { flex: 0 0 auto; }
+.cb-mobile .cal-toolbar .cal-label { flex: 1 1 auto; text-align: center; }
+.cb-mobile .cal-toolbar .spacer { display: none; }
+.cb-mobile .cal-toolbar > .btn { flex: 1 1 auto; justify-content: center; white-space: nowrap; }
+.cb-mobile .cal-move-note { flex: 1 1 100%; }
+/* לוח החודש רחב מהמסך — גלילה אופקית בתוך הכרטיס, לא חיתוך */
+.cb-mobile .card:has(> .mcal) { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.cb-mobile .mcal { min-width: 430px; }

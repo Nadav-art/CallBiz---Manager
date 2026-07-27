@@ -1,0 +1,71 @@
+/* ===== שיוך משמרת לסניף (shift-branch.js) ===== */
+.wh-seg-br { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 11.3px; color: var(--text-2); }
+.wh-seg-br svg { width: 12px; height: 12px; color: var(--brand); flex: none; }
+.wh-seg-br select { flex: 1 1 auto; min-width: 0; font: inherit; font-size: 11.3px; font-weight: 600; color: var(--text);
+  border: 1px solid var(--line); border-radius: 8px; padding: 3px 6px; background: var(--surface); cursor: pointer; }
+.wh-seg-br select:hover { border-color: var(--brand); }
+.wh-seg-br.miss select { border-color: #E8B44A; background: #FEF9EF; color: #92400E; }
+.wh-seg-br.one span, .wh-seg-br.none span { font-weight: 700; }
+.wh-seg-br.none { color: #92400E; } .wh-seg-br.none svg { color: #B45309; }
+.wh-seg.br-miss { border-color: #E8B44A; }
+
+.wh-brbar { border: 1px solid var(--line); border-radius: 13px; padding: 10px 12px; margin: 0 0 12px; background: var(--surface); }
+.wh-brbar.warn { border-color: #F5D9A0; background: #FEF9EF; }
+.wh-brbar.ok { border-color: #BEE6C8; background: #F3FBF6; }
+.whb-h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; }
+.whb-h svg { width: 15px; height: 15px; flex: none; }
+.wh-brbar.warn .whb-h svg { color: #B45309; } .wh-brbar.ok .whb-h svg { color: #1B7F45; }
+.whb-h span { color: var(--text-2); font-size: 11.8px; }
+.whb-miss, .whb-quick, .whb-sum { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 8px; font-size: 11.5px; color: var(--text-2); }
+.whb-sum svg { width: 13px; height: 13px; color: var(--brand); flex: none; }
+.whb-chip { display: inline-flex; align-items: center; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 999px; padding: 2px 10px; font-size: 11px; font-weight: 700; color: var(--text); }
+.whb-chip.miss { border-color: #E8B44A; color: #92400E; background: #FEF6E7; }
+
+/* ===== תדירות משמרת (shift-rotation.js) ===== */
+.wh-seg-rot { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; width: 100%; margin-top: 5px;
+  border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 3px 7px;
+  font: inherit; font-size: 11px; font-weight: 600; color: var(--text-2); cursor: pointer; text-align: start; }
+.wh-seg-rot svg { width: 11px; height: 11px; flex: none; color: var(--text-3, #9AA1AC); }
+.wh-seg-rot:hover { border-color: var(--brand); color: var(--text); }
+.wh-seg-rot.on { border-color: #C7D2FE; background: #F5F7FF; color: #3730A3; }
+.wh-seg-rot.on svg { color: #4F46E5; }
+.wh-seg-rot small { font-size: 10px; font-weight: 700; opacity: .85; }
+.wh-seg-rot .rot-win { display: inline-flex; align-items: center; gap: 3px; flex: 1 1 100%; }
+
+.rot-pop { position: fixed; z-index: 480; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 13px; box-shadow: var(--shadow-lg); padding: 12px; width: 300px; max-width: calc(100vw - 24px); }
+.rot-h { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 800; color: var(--text); margin-bottom: 9px; }
+.rot-h svg { width: 14px; height: 14px; color: var(--brand); }
+.rot-every { display: flex; gap: 5px; flex-wrap: wrap; }
+.rot-e { flex: 1 1 auto; border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 6px 8px;
+  font: inherit; font-size: 11.3px; font-weight: 700; color: var(--text-2); cursor: pointer; white-space: nowrap; }
+.rot-e:hover { border-color: var(--brand); }
+.rot-e.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+.rot-pick { margin-top: 10px; font-size: 11.3px; color: var(--text-2); }
+.rot-pick > span { display: block; margin-bottom: 6px; }
+.rot-pick small { font-size: 10.3px; }
+.rot-dates { display: flex; gap: 5px; flex-wrap: wrap; }
+.rot-d { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 5px 9px;
+  font: inherit; font-size: 11.3px; font-weight: 700; color: var(--text-3, #9AA1AC); cursor: pointer; }
+.rot-d.on { background: #E8F7EE; border-color: #7FC79A; color: #1B7F45; }
+.rot-d:not(.on) { text-decoration: line-through; }
+.rot-note { display: flex; align-items: flex-start; gap: 5px; font-size: 10.8px; color: var(--text-2); margin: 8px 0 0; line-height: 1.45; }
+.rot-note svg { width: 12px; height: 12px; flex: none; color: var(--brand); margin-top: 1px; }
+.rot-win-f { display: flex; gap: 7px; align-items: flex-end; flex-wrap: wrap; margin-top: 10px;
+  border-top: 1px solid var(--line); padding-top: 10px; }
+.rot-win-f label { display: flex; flex-direction: column; gap: 3px; font-size: 10.8px; color: var(--text-2); flex: 1 1 110px; }
+.rot-win-f input { font: inherit; font-size: 11.3px; border: 1px solid var(--line); border-radius: 8px; padding: 4px 6px;
+  background: var(--surface); color: var(--text); width: 100%; min-width: 0; }
+.rot-foot { display: flex; justify-content: flex-end; margin-top: 10px; }
+.whb-rot { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 8px; font-size: 11.5px; color: var(--text-2); }
+.whb-rot svg { width: 13px; height: 13px; color: #4F46E5; flex: none; }
+.whb-chip.rot { border-color: #C7D2FE; background: #F5F7FF; color: #3730A3; }
+
+/* ===== מונה התראות: חדש מאז הפתיחה האחרונה ===== */
+.task-row.is-new { background: #F5F7FF; border-color: #C7D2FE; }
+.new-tag { display: inline-flex; align-items: center; background: var(--red, #D92D20); color: #fff; border-radius: 999px;
+  padding: 1px 7px; font-size: 9.5px; font-weight: 800; margin-inline-start: 5px; vertical-align: 1px; }
+.sec-count { display: inline-flex; align-items: center; background: var(--surface-2, #F3F4F6); color: var(--text-2);
+  border-radius: 999px; padding: 0 7px; font-size: 10.5px; font-weight: 700; margin-inline-start: 5px; }
+.bell.has-new { position: relative; }
