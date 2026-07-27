@@ -261,6 +261,8 @@
       else if (k === 'cal') {
         const rd = readiness(r);
         if (!rd.ok) { toast(rd.blame === 'product' ? 'המוצר שנבחר אינו מתאים — יש לבחור חלופה' : 'צריך לעדכן קריטריונים — אין מועד מתאים'); return; }
+        /* התיאום הוא שלב בתוך אותו חלון — לא פותחים מסך זמנים נפרד */
+        if (window.FLOWSTEPS) return FLOWSTEPS.open(r, 'cal');
         if (typeof closeModal === 'function') closeModal();
         if (typeof openProposedTimes === 'function') openProposedTimes(r);
       }
@@ -492,6 +494,7 @@
                 const rd2 = readiness(rec);
                 if (!rd2.ok) { toast(rd2.blame === 'product' ? 'המוצר שנבחר אינו מתאים — יש לבחור חלופה' : 'אין מועד בקריטריונים שנבחרו');
                   return swapStep(() => { if (typeof openServiceSelect === 'function') openServiceSelect(rec); }); }
+                if (window.FLOWSTEPS) return FLOWSTEPS.open(rec, 'cal');
                 if (typeof closeModal === 'function') closeModal();
                 setTimeout(() => { if (typeof openProposedTimes === 'function') openProposedTimes(rec); }, 60);
               }

@@ -162,13 +162,40 @@
     if (calDay !== 'all') list = list.filter(s => s.date === calDay);
     return list.slice(0, 40);
   }
+  let swapTo = null;          // מועד שנבחר להחלפה וממתין לאישור
+
+  /* המועד הנוכחי — פגישה קבועה, שיריון, או מועד שממתין לתשלום */
+  function currentSlot(r) {
+    if (r.meeting) return { kind: 'set', label: r.meeting.date + ' · ' + r.meeting.time,
+      who: r.meeting.with || '', tag: 'נקבע' };
+    if (r.slotHold) return { kind: 'hold',
+      label: ((typeof cDayLbl === 'function') ? cDayLbl(r.slotHold.date) : '') + ' · ' + ((typeof fmtH === 'function') ? fmtH(r.slotHold.h) : ''),
+      who: r.slotHold.staffName || '', tag: 'בשיריון זמני' };
+    if (r.pendingSlot) return { kind: 'pending',
+      label: ((typeof cDayLbl === 'function') ? cDayLbl(r.pendingSlot.date) : '') + ' · ' + ((typeof fmtH === 'function') ? fmtH(r.pendingSlot.h) : ''),
+      who: r.pendingSlot.staffName || '', tag: 'ממתין לתשלום' };
+    return null;
+  }
+
   function openCal(r) {
     const q = reqsOf(r);
     const all = slotsFor(r);
     const days = [];
     (slotsFor(r) || []).forEach(s => { if (days.indexOf(s.date) < 0) days.push(s.date); });
     const hold = q.on.billing && holdAllowed();
+    const cur = currentSlot(r);
+    const sw = swapTo ? (typeof coordPool === 'function' ? coordPool().find(x => x.id === swapTo) : null) : null;
     const body = `
+      ${cur ? `<div class="fs-cur ${cur.kind}">
+        <div class="fs-cur-h">${ic('calendar')} <b>המועד הקיים</b><span class="fs-cur-tag">${esc(cur.tag)}</span></div>
+        <div class="fs-cur-b"><b>${esc(cur.label)}</b>${cur.who ? `<small>${esc(cur.who)}</small>` : ''}</div>
+        <small class="fs-cur-n">בחירת מועד אחר מהרשימה תחליף אותו — נדרש אישור.</small>
+      </div>` : ''}
+      ${sw ? `<div class="fs-swap">${ic('sync')}
+        <div><b>להחליף את המועד?</b>
+          <small>${esc(cur ? cur.label : '')} ← <b>${(typeof cDayLbl === 'function') ? esc(cDayLbl(sw.date)) : ''} · ${(typeof fmtH === 'function') ? esc(fmtH(sw.h)) : ''}</b></small></div>
+        <button class="btn sm primary" data-fsswapok>${ic('check')} החלף</button>
+        <button class="btn sm ghost" data-fsswapx>ביטול</button></div>` : ''}
       ${q.on.billing ? `<div class="fs-hold ${hold ? '' : 'warn'}">${ic(hold ? 'lock' : 'alert')}
         <div><b>${hold ? 'המועד ייכנס לשיריון זמני' : 'לא ניתן לשריין'}</b>
           <small>${hold ? 'השירות דורש תשלום — המועד נשמר ל' + holdMins() + ' דקות עד להשלמת הסליקה'
@@ -183,13 +210,42 @@
               ${s.reason ? ' · ' + esc(s.reason) : ''}</small></span>
           <span class="fs-go">${ic('chevronL')}</span></button>`).join('')
         : `<div class="fs-empty2">${ic('alert')} אין מועדים פנויים בקריטריונים שנבחרו</div>`}</div>`;
-    shell(r, 'cal', 'תיאום מועד', body,
-      `${backBtn(r, 'cal')}<span class="fs-foot-n">${all.length} מועדים מתאימים</span>`);
+    shell(r, 'cal', cur ? 'עדכון פגישה' : 'תיאום מועד', body,
+      `${backBtn(r, 'cal')}<span class="fs-foot-n">${all.length} מועדים מתאימים</span>
+       ${cur ? `<button class="btn primary" data-fskeep>${ic('check')} להשאיר את המועד ולהמשיך</button>` : ''}`);
     const host = document.querySelector('#modal .fs-step');
     host.querySelectorAll('[data-fsday]').forEach(b => b.addEventListener('click', () => { calDay = b.dataset.fsday; openCal(r); }));
-    host.querySelectorAll('[data-fsslot]').forEach(b => b.addEventListener('click', () => pickSlot(r, b.dataset.fsslot)));
+    host.querySelectorAll('[data-fsslot]').forEach(b => b.addEventListener('click', () => {
+      /* יש כבר מועד — לא מחליפים בלי אישור */
+      if (currentSlot(r)) { swapTo = b.dataset.fsslot; openCal(r); return; }
+      pickSlot(r, b.dataset.fsslot);
+    }));
+    const okb = document.querySelector('#modal [data-fsswapok]');
+    if (okb) okb.addEventListener('click', () => { const id = swapTo; swapTo = null; releaseCurrent(r); pickSlot(r, id); });
+    const xb = document.querySelector('#modal [data-fsswapx]');
+    if (xb) xb.addEventListener('click', () => { swapTo = null; openCal(r); });
+    const kp = document.querySelector('#modal [data-fskeep]');
+    if (kp) kp.addEventListener('click', () => { swapTo = null; const nx = nextStep(r, 'cal'); if (nx) open(r, nx); });
     bindBack(r, 'cal');
   }
+  /* משחררים את המועד הקודם לפני שתופסים חדש — אחרת המשבצת נשארת תפוסה */
+  function releaseCurrent(r) {
+    const pool = (typeof coordPool === 'function') ? coordPool() : [];
+    if (r.slotHold) {
+      const s = pool.find(x => x.id === r.slotHold.slotId);
+      if (s) { s.held = false; s.heldBy = null; }
+      if (typeof SLOT_HOLDS !== 'undefined') SLOT_HOLDS = SLOT_HOLDS.filter(x => x.id !== r.slotHold.id);
+      r.slotHold = null;
+    }
+    if (r.pendingSlot) { const s = pool.find(x => x.id === r.pendingSlot.id); if (s) s.held = false; r.pendingSlot = null; }
+    if (r.meeting) {
+      const s = pool.find(x => (typeof ptFmtDate === 'function' ? ptFmtDate(x.date) : x.date) === r.meeting.date
+        && (typeof fmtH === 'function' ? fmtH(x.h) : '') === r.meeting.time);
+      if (s) s.booked = false;
+      r.meeting = null;
+    }
+  }
+
   /* בחירת מועד — קביעה, או שיריון זמני כשנדרשת סליקה */
   function pickSlot(r, id) {
     const s = (typeof coordPool === 'function') ? coordPool().find(x => x.id === id) : null;

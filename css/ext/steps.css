@@ -123,3 +123,29 @@
 .fs-foot-n { margin-inline-start: auto; font-size: 11.5px; color: var(--text-2); }
 .fs-wide { width: 100%; justify-content: center; margin-top: 4px; }
 .fs-hold > div { flex: 1 1 auto; }
+
+
+/* ---------- עדכון פגישה: המועד הקיים ואישור החלפה ---------- */
+.fs-cur { border: 1px solid color-mix(in srgb, var(--ok, #16a34a) 40%, transparent);
+  background: color-mix(in srgb, var(--ok, #16a34a) 6%, transparent);
+  border-radius: 12px; padding: 11px 12px; margin-bottom: 11px; }
+.fs-cur.hold { border-color: var(--amber, #B7791F); background: color-mix(in srgb, var(--amber, #B7791F) 8%, transparent); }
+.fs-cur.pending { border-color: var(--danger, #dc2626); background: color-mix(in srgb, var(--danger, #dc2626) 6%, transparent); }
+.fs-cur-h { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.fs-cur-h svg { width: 13px; height: 13px; color: var(--ok, #16a34a); }
+.fs-cur.hold .fs-cur-h svg { color: var(--amber, #B7791F); }
+.fs-cur.pending .fs-cur-h svg { color: var(--danger, #dc2626); }
+.fs-cur-tag { margin-inline-start: auto; font-size: 10.5px; padding: 1px 8px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--line); color: var(--text-2); }
+.fs-cur-b { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; }
+.fs-cur-b b { font-size: 15px; }
+.fs-cur-b small { font-size: 11.5px; color: var(--text-2); }
+.fs-cur-n { display: block; font-size: 11px; color: var(--text-2); margin-top: 5px; }
+
+.fs-swap { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 11px;
+  padding: 10px 12px; border-radius: 12px; border: 1px solid var(--brand);
+  background: color-mix(in srgb, var(--brand) 8%, transparent); }
+.fs-swap > svg { width: 14px; height: 14px; color: var(--brand); }
+.fs-swap > div { flex: 1 1 190px; min-width: 0; }
+.fs-swap b { font-size: 12.5px; }
+.fs-swap small { display: block; font-size: 11.5px; color: var(--text-2); margin-top: 2px; }
