@@ -1,0 +1,113 @@
+/* ============================================================
+   CallBiz Desktop · מסך ניתוח התקשורת
+   ============================================================ */
+
+.pa { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+.pa-h { display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 14px 20px; border-bottom: 1px solid var(--line, #e5e7eb); background: var(--card, #fff); }
+.pa-h b { display: block; font-size: 16px; }
+.pa-h small { color: var(--muted, #6b7280); font-size: 12px; }
+.pa-h-a { display: flex; align-items: center; gap: 8px; margin-inline-start: auto; }
+.swx.live span b { font-size: 12px; }
+.pa-body { flex: 1; overflow-y: auto; padding: 16px 20px 40px; }
+
+/* ---------- מסקנה ---------- */
+.vd { display: flex; gap: 14px; padding: 16px 18px; border-radius: 14px; margin-bottom: 18px;
+  border: 1px solid var(--line, #e5e7eb); }
+.vd.ok { background: #f0fdf4; border-color: #bbf7d0; }
+.vd.bad { background: #fef2f2; border-color: #fecaca; }
+.vd-i { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; flex: none; }
+.vd.ok .vd-i { background: #dcfce7; color: #16a34a; }
+.vd.bad .vd-i { background: #fee2e2; color: #dc2626; }
+.vd-i svg { width: 19px; height: 19px; }
+.vd-t { min-width: 0; }
+.vd-t > b { font-size: 16px; display: inline-block; }
+.vd-w { font-size: 11px; padding: 2px 9px; border-radius: 20px; background: rgba(0,0,0,.06);
+  margin-inline-start: 8px; vertical-align: 2px; }
+.vd-t p { font-size: 13px; line-height: 1.7; color: #4b5563; margin: 6px 0 0; }
+.vd-f { margin-top: 10px; padding: 9px 12px; border-radius: 9px; background: rgba(255,255,255,.75);
+  font-size: 12.5px; line-height: 1.65; }
+.vd-f b { display: block; font-size: 11px; color: var(--muted, #6b7280); margin-bottom: 2px; }
+
+/* ---------- השרשרת ---------- */
+.zone { margin-bottom: 6px; }
+.zone-l { font-size: 11px; font-weight: 700; color: var(--muted, #9ca3af); margin-bottom: 6px;
+  letter-spacing: .04em; }
+.zone-c { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; }
+.zone-gap { height: 10px; }
+
+.nd { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  min-width: 128px; padding: 11px 13px; border: 1.5px solid var(--line, #e5e7eb);
+  border-radius: 12px; background: var(--card, #fff); cursor: pointer; font: inherit;
+  text-align: start; transition: transform .12s, box-shadow .12s; }
+.nd:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,.07); }
+.nd.open { border-color: var(--accent, #4f46e5); }
+.nd-i { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center;
+  background: var(--bg, #f3f4f6); margin-bottom: 3px; }
+.nd-i svg { width: 13px; height: 13px; }
+.nd b { font-size: 12.5px; font-weight: 600; }
+.nd small { font-size: 11px; color: var(--muted, #6b7280); max-width: 150px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nd.ok   { border-color: #bbf7d0; } .nd.ok .nd-i   { background: #dcfce7; color: #16a34a; }
+.nd.warn { border-color: #fde68a; } .nd.warn .nd-i { background: #fef3c7; color: #b45309; }
+.nd.bad  { border-color: #fecaca; background: #fffafa; } .nd.bad .nd-i { background: #fee2e2; color: #dc2626; }
+.nd.idle { opacity: .55; }
+.nd.culprit { border-color: #dc2626; border-width: 2px; box-shadow: 0 0 0 4px rgba(220,38,38,.1); }
+.nd-flag { position: absolute; top: -9px; inset-inline-start: 10px; font-size: 10px; font-weight: 700;
+  background: #dc2626; color: #fff; padding: 1px 8px; border-radius: 20px; }
+.nd-m { display: block; width: 100%; height: 3px; border-radius: 3px; background: var(--bg, #eef0f3);
+  margin-top: 5px; overflow: hidden; }
+.nd-m i { display: block; height: 100%; background: #16a34a; transition: width .1s linear; }
+
+/* הצינור בין החוליות */
+.pipe { display: flex; align-items: center; width: 26px; flex: none; }
+.pipe i { display: block; width: 100%; height: 3px; border-radius: 3px; background: #d1d5db; }
+.pipe.ok i { background: linear-gradient(90deg, #86efac, #16a34a); }
+.pipe.warn i { background: #fbbf24; }
+.pipe.bad i { background: repeating-linear-gradient(90deg, #dc2626 0 5px, transparent 5px 10px); }
+.pipe.idle i { background: #e5e7eb; }
+
+/* ---------- פירוט ---------- */
+.dt { margin: 16px 0 18px; border: 1px solid var(--line, #e5e7eb); border-radius: 13px;
+  padding: 15px 17px; background: var(--card, #fff); }
+.dt.bad { border-color: #fecaca; }
+.dt-h { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.dt-h b { display: flex; align-items: center; gap: 7px; font-size: 14px; }
+.dt-h b svg { width: 15px; height: 15px; }
+.dt-h .btn { margin-inline-start: auto; }
+.dt-s { font-size: 11px; padding: 2px 9px; border-radius: 20px; background: var(--bg, #f3f4f6); }
+.dt-s.ok { background: #dcfce7; color: #15803d; }
+.dt-s.warn { background: #fef3c7; color: #b45309; }
+.dt-s.bad { background: #fee2e2; color: #b91c1c; }
+.dt-v { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.dt-w { font-size: 12.5px; color: var(--muted, #6b7280); line-height: 1.7; margin: 0 0 10px; }
+.dt-f { padding: 9px 12px; border-radius: 9px; background: var(--accent-soft, #eef2ff);
+  font-size: 12.5px; line-height: 1.65; color: #3730a3; }
+.dt-f b { display: block; font-size: 11px; opacity: .7; margin-bottom: 2px; }
+.dt-r { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: 12px; }
+.dt-r th { text-align: start; font-weight: 500; color: var(--muted, #6b7280); padding: 5px 0; }
+.dt-r td { text-align: end; font-family: ui-monospace, Menlo, Consolas, monospace; padding: 5px 0; }
+.dt-r tr + tr th, .dt-r tr + tr td { border-top: 1px solid var(--line, #f2f2f2); }
+
+/* ---------- ציר זמן ---------- */
+.pa-tl { margin-top: 8px; }
+.pa-tl-h { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.pa-tl-h b { font-size: 13px; }
+.pa-tl-h span { font-size: 11px; color: var(--muted, #9ca3af); }
+.tl { border-inline-start: 2px solid var(--line, #e5e7eb); padding-inline-start: 0; }
+.tl-r { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0 6px 0; position: relative; }
+.tl-t { font-size: 11px; color: var(--muted, #9ca3af); width: 62px; flex: none;
+  font-family: ui-monospace, Menlo, Consolas, monospace; }
+.tl-d { width: 8px; height: 8px; border-radius: 50%; background: #d1d5db; flex: none; margin: 5px -5px 0 0;
+  inset-inline-start: -5px; position: relative; }
+.tl-r.ok .tl-d { background: #16a34a; }
+.tl-r.warn .tl-d { background: #f59e0b; }
+.tl-r.bad .tl-d { background: #dc2626; }
+.tl-c b { display: block; font-size: 12.5px; font-weight: 600; }
+.tl-c small { display: block; font-size: 11.5px; color: var(--muted, #6b7280); line-height: 1.5; }
+
+@media (max-width: 760px) {
+  .nd { min-width: 108px; padding: 9px 10px; }
+  .pipe { width: 14px; }
+  .pa-h-a { width: 100%; margin-inline-start: 0; }
+}

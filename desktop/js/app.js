@@ -8,9 +8,72 @@
    ============================================================ */
 (async function () {
 
-  /* 1. זהות והרשאות — לפני הכל */
-  await CRM.connect();
+  /* 1. זהות והרשאות — לפני הכל.
+     קודם מנסים חיבור אוטומטי מפורטל הנציגים; אם הוא הצליח, הסשן
+     כבר בפנים ו-CRM.connect לא ידרוס אותו. */
+  if (window.SSO) { try { await SSO.boot(); } catch (e) {} }
+  if (!CRM.ready()) await CRM.connect();
   UIX.rail(); UIX.stage();
+
+  /* 1ב. חיבור למרכזייה — אוטומטי אם כך הוגדר */
+  if (window.SIPCFG) {
+    SIPCFG.on('state', st => {
+      UIX.rail();
+      if (st.state === 'registered') UIX.alert2({ t: 'מחובר למרכזייה', kind: 'info', icon: 'check',
+        why: 'שלוחה ' + (SIPCFG.get().user || '') + ' · שיחות נכנסות ינותבו לכאן' });
+      if (st.state === 'failed') UIX.alert2({ t: 'החיבור למרכזייה נכשל', kind: 'bad', icon: 'alert',
+        why: st.error, sticky: true, action: 'בדיקת מוכנות',
+        onAction: () => { UIX.go('set'); if (window.SETUI) SETUI.preflight(); } });
+    });
+    SIPCFG.on('voicemail', v => { if (v.count) UIX.alert2({ t: v.count + ' הודעות בתא הקולי', kind: 'info', icon: 'alert' }); });
+    /* מתחברים לבד רק כשבאמת יש עם מה — אחרת הנציג מקבל שגיאה
+       בהפעלה ראשונה, לפני שהספיק להגדיר משהו. */
+    const c0 = SIPCFG.get();
+    const ready = c0.mode === 'managed'
+      ? (window.PROV && PROV.requirement().need === 'nothing')
+      : !!(c0.wss && c0.user);
+    if (c0.autoStart && ready && !SIPCFG.connected()) SIPCFG.connect();
+  }
+  /* 1ג. Check-in אוטומטי — הנציג לא נוגע בזה
+     ------------------------------------------------------------
+     במרכזייה, מכשיר שאינו משויך לנציג לא יכול לחייג ולא מקבל
+     שיחות מהתור (FACILITY_NOT_SUBSCRIBED). בממשק של הספק זה
+     נעשה ידנית: הנציג מקבל קוד ‎**NNNN ומחייג אליו.
+
+     כאן זה קורה לבד: פתיחת הדסקטופ = check-in, סגירה = check-out.
+     forceCheckOut משחרר את הנציג ממכשיר קודם — למשל אם נשאר
+     מחובר בחייגן הווב מאתמול. */
+  if (window.PBXAPI && CRM.session()) {
+    const ses = CRM.session(), emp = ses.employee || {};
+    const uid = emp.pbxUserId || emp.id, did = emp.pbxDeviceId;
+    if (uid) {
+      PBXAPI.configure({ userId: uid, deviceId: did });
+      const r = await PBXAPI.checkIn({ force: true });
+      if (r && r.success) {
+        UIX.alert2({ t: 'מחובר למוקד', kind: 'info', icon: 'check',
+          why: 'המכשיר שויך אליך — שיחות מהתור ינותבו לכאן' });
+      } else if (r && r.data) {
+        /* המרכזייה ביקשה אישור בחיוג — עושים גם את זה לבד */
+        UIX.alert2({ t: 'משלים חיבור למוקד…', kind: 'info', icon: 'phone' });
+        TEL.dial(r.data, { silent: true });
+      } else {
+        UIX.alert2({ t: 'לא בוצע חיבור למוקד', kind: 'warn', sticky: true,
+          why: 'בלי זה לא ניתן לחייג ולא יתקבלו שיחות מהתור.',
+          fix: (r && r.msg) || 'בדוק שהנציג משויך למכשיר במרכזייה',
+          action: 'נסה שוב', onAction: () => PBXAPI.checkIn({ force: true }) });
+      }
+      /* שחרור בסגירה — כדי שהמכשיר לא יישאר תפוס */
+      window.addEventListener('pagehide', () => {
+        try { navigator.sendBeacon && PBXAPI.checkOut(); } catch (e) {}
+      });
+    }
+  }
+
+  /* שיחה נכנסת אמיתית מהמרכזייה → למנוע הטלפוניה */
+  if (window.SIPCFG) SIPCFG.on('incoming', d => {
+    if (window.TEL && TEL.adoptSip) TEL.adoptSip(d.dialog);
+    UIX.go('phone');
+  });
 
   if (!CRM.isActive()) {
     UIX.alert2({ t: 'העובד אינו מסומן כפעיל ב-CRM', kind: 'warn', sticky: true,

@@ -167,22 +167,68 @@
     /* זיהוי הלקוח — מפעיל screen-pop */
     if (window.CRM) CRM.lookup(call.phone).then(c => { if (S.call === call) { call.contact = c; emit('contact', c); } });
 
+    /* ---- מסלול אמיתי: יש רישום למרכזייה ---- */
+    if (!opts.sipDialog && sipUp() && opts.dir !== 'in') {
+      const num = window.SIPCFG ? SIPCFG.rewrite(call.phone) : call.phone;
+      const d = await SIPCFG.ua().invite(num);
+      if (d) { bindSip(call, d); S.statTimer = setInterval(sample, 1000); return call; }
+      emit('error', { kind: 'sip', msg: 'לא ניתן להתחיל שיחה' });
+      S.call = null; emit('call', null);
+      return null;
+    }
+    if (opts.sipDialog) { bindSip(call, opts.sipDialog); S.statTimer = setInterval(sample, 1000); return call; }
+
+    /* ---- מסלול הדגמה: אין מרכזייה מוגדרת ---- */
     try { await startMedia(); } catch (e) { emit('error', { kind: 'mic', msg: 'אין גישה למיקרופון' }); }
     S.statTimer = setInterval(sample, 1000);
-
-    /* TODO(server): כאן נשלח INVITE אמיתי דרך ה-SIP/WebRTC gateway.
-       בהדגמה השיחה נענית לבד אחרי רגע. */
     if (opts.dir !== 'in') setTimeout(() => { if (S.call === call && call.state === 'dialing') answer(); }, 1400);
     return call;
   }
-  function answer() {
+
+  /* ============================================================
+     גשר למחסנית ה-SIP
+     ------------------------------------------------------------
+     כשיש רישום אמיתי למרכזייה, השיחה היא דיאלוג SIP והמדידה
+     נעשית על ה-RTCPeerConnection שלו — אותם מספרים, מקור אמיתי.
+     ============================================================ */
+  const sipUp = () => !!(window.SIPCFG && SIPCFG.connected() && SIPCFG.ua());
+  function bindSip(call, d) {
+    call.sip = d;
+    S.pcA = d.pc;                       /* הדגימה קוראת מכאן */
+    S.stream = d.localStream || null;
+    if (!d._bound) {
+      d._bound = true;
+      const ua = SIPCFG.ua();
+      ua.on('call', e => {
+        if (!S.call || e.dialog !== S.call.sip) return;
+        const c = S.call;
+        S.pcA = e.dialog.pc || S.pcA; S.stream = e.dialog.localStream || S.stream;
+        if (e.state === 'active' && c.state !== 'active') answer(true);
+        else if (e.state === 'ringing') { c.state = 'ringing'; emit('call', c); }
+        else if (e.state === 'failed') { emit('error', { kind: 'sip', msg: e.reason || 'השיחה נכשלה' }); hangup(e.reason); }
+        else if (e.state === 'ended') hangup(e.reason);
+      });
+    }
+    emit('call', call);
+  }
+  /* שיחה נכנסת אמיתית — נכנסת למחזור החיים הרגיל */
+  async function adoptSip(d) {
+    if (S.call) { emit('error', { kind: 'busy', msg: 'שיחה נוספת ממתינה' }); return null; }
+    const c = await dial(d.remote || d.remoteName || 'לא ידוע', { dir: 'in', sipDialog: d });
+    if (c) { c.sipIncoming = true; c.contactName = d.remoteName || ''; }
+    return c;
+  }
+  function answer(fromSip) {
     const c = S.call; if (!c) return;
+    if (!fromSip && c.sip && sipUp()) { SIPCFG.ua().answer(c.sip); return; }
+    if (c.state === 'active') return;
     c.state = 'active'; c.answeredAt = new Date().toISOString();
     S.timer = setInterval(() => { c.seconds++; emit('tick', c.seconds); }, 1000);
     emit('call', c);
   }
   function hangup(outcome) {
     const c = S.call; if (!c) return null;
+    if (c.sip && c.sip.state !== 'ended' && sipUp()) { const d = c.sip; c.sip = null; SIPCFG.ua().hangup(d); }
     clearInterval(S.timer); clearInterval(S.statTimer);
     S.timer = S.statTimer = null;
     c.state = 'ended'; c.endedAt = new Date().toISOString();
@@ -211,12 +257,14 @@
     const c = S.call; if (!c) return;
     /* המצב נשמר גם כשאין מיקרופון (הרשאה נדחתה) — אחרת הכפתור משקר */
     c.muted = on == null ? !c.muted : !!on;
+    if (c.sip && sipUp()) SIPCFG.ua().mute(c.sip, c.muted);
     if (S.stream) S.stream.getAudioTracks().forEach(t => { t.enabled = !c.muted && !c.held; });
     emit('call', c);
   }
   function hold(on) {
     const c = S.call; if (!c) return;
     c.held = on == null ? !c.held : !!on;
+    if (c.sip && sipUp()) SIPCFG.ua().hold(c.sip, c.held);
     if (S.stream) S.stream.getAudioTracks().forEach(t => { t.enabled = !c.held && !c.muted; });
     emit('call', c);
   }
@@ -249,7 +297,7 @@
       g.gain.value = 0.05; o.connect(g); g.connect(ctx.destination); o.start();
       setTimeout(() => { o.stop(); ctx.close(); }, 90);
     } catch (e) {}
-    /* TODO(server): RTCDTMFSender.insertDTMF(key) על הערוץ החי */
+    if (c.sip && sipUp()) { SIPCFG.ua().dtmf(c.sip, key); emit('dtmf', { key, all: c.dtmf }); emit('call', c); return; }
     if (S.pcA && S.pcA.getSenders) {
       const sd = S.pcA.getSenders().find(x => x.dtmf);
       if (sd && sd.dtmf) { try { sd.dtmf.insertDTMF(key, 100, 70); } catch (e) {} }
@@ -281,9 +329,14 @@
     transfer(to, 'attended');
   }
 
-  function transfer(to, kind) {   /* TODO(server): REFER (blind) / REPLACES (attended) */
+  function transfer(to, kind) {
     const c = S.call; if (!c) return;
     c.transferTo = to;
+    if (c.sip && sipUp()) {
+      const ua = SIPCFG.ua();
+      if (kind === 'attended' && c.consultSip) ua.transferAttended(c.sip, c.consultSip);
+      else ua.transfer(c.sip, window.SIPCFG ? SIPCFG.rewrite(to) : to);
+    }
     emit('transfer', { to, kind: kind || 'blind' });
     hangup((kind === 'attended' ? 'חוברה ל' : 'הועברה ל') + to);
   }
@@ -294,7 +347,7 @@
 
   window.TEL = {
     dial, answer, hangup, mute, hold, record, transfer, conference, incoming,
-    dtmf, consult, consultCancel, consultComplete, attachRecording,
+    dtmf, consult, consultCancel, consultComplete, attachRecording, adoptSip, sipUp,
     on, stats: () => S.stats, call: () => S.call, history: () => S.history,
     transport: () => S.transport, transports: () => TRANSPORTS, transportOf,
     setTransport, auto: v => { if (v != null) S.auto = !!v; return S.auto; },

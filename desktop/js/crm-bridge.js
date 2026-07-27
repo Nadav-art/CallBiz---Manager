@@ -105,22 +105,71 @@
     const rec = {
       phone: call.phone, dir: call.dir, startedAt: call.startedAt, seconds: call.seconds,
       outcome: call.outcome, quality: call.quality, transport: call.transport,
-      recorded: !!call.recorded, notes: call.notes || '', agent: (session && session.employee) ? session.employee.id : null,
+      recorded: !!call.recorded, notes: call.notes || '',
+      /* ההקלטה עצמה נשארת במרכזייה — נשמר רק המזהה שמאפשר לפתוח אותה */
+      recordingId: call.recordingId || null, recordingUrl: call.recordingUrl || null,
+      id: call.id, agent: (session && session.employee) ? session.employee.id : null,
     };
     if (mode === MODE.EMBED) send('logCall', rec);
     /* TODO(server): POST /calls */
     const all = JSON.parse(localStorage.getItem('cbd_calls') || '[]');
-    all.unshift(Object.assign({ id: 'c' + Date.now() }, rec));
+    all.unshift(Object.assign({ id: rec.id || ('c' + Date.now()) }, rec));
     localStorage.setItem('cbd_calls', JSON.stringify(all.slice(0, 200)));
     emit('logged', rec);
     return rec;
+  }
+  /* המרכזייה מחזירה קישור בסיום — מעדכנים את הרשומה השמורה */
+  function attachRecording(callId, url) {
+    const all = JSON.parse(localStorage.getItem('cbd_calls') || '[]');
+    const c = all.find(x => x.id === callId);
+    if (c) { c.recordingUrl = url; localStorage.setItem('cbd_calls', JSON.stringify(all)); }
+    if (mode === MODE.EMBED) send('recording', { callId, url });
+    emit('recording', { callId, url });
+    return c;
   }
   function screenPop(rec) { if (mode === MODE.EMBED) send('screenPop', rec); emit('screenPop', rec); }
 
   const can = k => !!(session && session.perms && session.perms[k]);
   const isActive = () => !!(session && session.active);
 
-  window.CRM = { connect, lookup, logCall, screenPop, on, can, isActive,
+  /* ---------------- אימוץ סשן מבחוץ (SSO) ----------------
+     כשפורטל הנציגים מזהה את העובד, הוא מוסר לנו את הסשן. משם
+     והלאה זה מקור האמת — בדיוק כמו סשן שהתקבל מהמנג׳ר. */
+  function adopt(s, via) {
+    if (!s) return null;
+    session = Object.assign({ source: via || 'sso' }, s);
+    if (via === 'embedded') mode = MODE.EMBED;
+    else if (window.CB_API || window.CB_CRM_ENDPOINT) mode = MODE.SERVER;
+    ready = true;
+    emit('session', session); emit('ready', session);
+    return session;
+  }
+
+  /* ---------------- פרטי חיבור למרכזייה ----------------
+     המקור היחיד לשלוחה של הנציג. שלושה מקורות אפשריים, לפי
+     מה שקיים: הסשן עצמו, המנג׳ר המשובץ, או נקודת קצה בשרת. */
+  async function pbxCreds(opts) {
+    if (session && session.pbx && session.pbx.user) return session.pbx;
+    if (mode === MODE.EMBED) {
+      const r = await send('pbx', opts || {});
+      if (r && r.user) { if (session) session.pbx = r; return r; }
+    }
+    const base = window.CB_API || window.CB_CRM_ENDPOINT;
+    if (base) {
+      try {
+        const r = await fetch(base + '/pbx/provision', {
+          method: 'POST', credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.assign({ employeeId: (session && session.employee || {}).id }, opts || {})),
+        });
+        if (r.ok) { const j = await r.json(); if (session) session.pbx = j; return j; }
+      } catch (e) {}
+    }
+    return null;
+  }
+
+  window.CRM = { connect, lookup, logCall, attachRecording, screenPop, on, can, isActive,
+    adopt, pbxCreds,
     session: () => session, mode: () => mode, ready: () => ready, MODE,
     calls: () => JSON.parse(localStorage.getItem('cbd_calls') || '[]') };
 })();

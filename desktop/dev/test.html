@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>CallBiz Desktop · בדיקות מחסנית SIP</title>
+<style>
+  body { font: 14px/1.6 ui-monospace, Consolas, monospace; margin: 0; padding: 20px; background: #0f1115; color: #d7dae0; }
+  h2 { font-size: 13px; color: #7dd3fc; margin: 18px 0 6px; border-bottom: 1px solid #23262e; padding-bottom: 4px; }
+  .r { padding: 2px 0; }
+  .p { color: #4ade80; } .f { color: #f87171; }
+  .d { color: #6b7280; padding-inline-start: 24px; font-size: 12px; }
+  #sum { position: sticky; top: 0; background: #0f1115; padding: 10px 0; font-size: 16px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="sum">מריץ…</div>
+<div id="out"></div>
+
+<script src="../js/sip.js?v=1785174906"></script>
+<script src="../js/settings.js?v=1785174906"></script>
+<script src="../js/provision.js?v=1785174906"></script>
+<script>
+/* בדיקות אמיתיות מול וקטורי התקן — לא בדיקות שמאשרות את עצמן */
+const out = document.getElementById('out');
+let pass = 0, fail = 0;
+const h = t => out.insertAdjacentHTML('beforeend', '<h2>' + t + '</h2>');
+const t = (name, got, want) => {
+  const ok = JSON.stringify(got) === JSON.stringify(want);
+  ok ? pass++ : fail++;
+  out.insertAdjacentHTML('beforeend',
+    `<div class="r ${ok ? 'p' : 'f'}">${ok ? '✓' : '✗'} ${name}</div>` +
+    (ok ? '' : `<div class="d">got:  ${JSON.stringify(got)}<br>want: ${JSON.stringify(want)}</div>`));
+};
+const S = window.SIPStack, C = window.SIPCFG, P = window.PROV;
+
+h('MD5 — וקטורי RFC 1321');
+t('md5("")', S.md5(''), 'd41d8cd98f00b204e9800998ecf8427e');
+t('md5("a")', S.md5('a'), '0cc175b9c0f1b6a831c399e269772661');
+t('md5("abc")', S.md5('abc'), '900150983cd24fb0d6963f7d28e17f72');
+t('md5("message digest")', S.md5('message digest'), 'f96b697d7cb7938d525a2f31aaf161d0');
+t('md5(a..z)', S.md5('abcdefghijklmnopqrstuvwxyz'), 'c3fcd3d76192e4007dfb496cca67e13b');
+t('md5(A-Za-z0-9)', S.md5('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'), 'd174ab98d277d9f5a5611c2c9f419d9f');
+t('md5(80 תווים — גלישה לבלוק שני)', S.md5('1234567890'.repeat(8)), '57edf4a22be3c955ac49da2e2107b67a');
+t('md5 עברית (UTF-8)', S.md5('סיסמה').length, 32);
+
+h('Digest — דוגמת RFC 2617 §3.5');
+const ha1 = S.md5('Mufasa:testrealm@host.com:Circle Of Life');
+t('HA1', ha1, '939e7578ed9e3c518a452acee763bce9');
+const ha2 = S.md5('GET:/dir/index.html');
+t('HA2', ha2, '39aff3a2bab6126f332b942af96d3366');
+t('response עם qop=auth',
+  S.md5(ha1 + ':dcd98b7102dd2f0e8b11d0f600bfb0c093:00000001:0a4f113b:auth:' + ha2),
+  '6629fae49393a05397450978507c4ef1');
+
+h('בניית כותרת Authorization');
+const a = S.digest({ realm: 'asterisk', nonce: 'N1', qop: 'auth', algorithm: 'MD5' },
+  { user: '201', pass: 'p', method: 'REGISTER', uri: 'sip:pbx.co.il', nc: 1 });
+t('מתחיל ב-Digest', /^Digest /.test(a), true);
+t('כולל username', /username="201"/.test(a), true);
+t('כולל realm', /realm="asterisk"/.test(a), true);
+t('כולל nonce', /nonce="N1"/.test(a), true);
+t('כולל uri', /uri="sip:pbx\.co\.il"/.test(a), true);
+t('כולל response באורך 32', (a.match(/response="([a-f0-9]+)"/) || [])[1].length, 32);
+t('qop=auth מוסיף nc', /nc=00000001/.test(a), true);
+t('qop=auth מוסיף cnonce', /cnonce="/.test(a), true);
+t('כולל algorithm', /algorithm=MD5/.test(a), true);
+const a2 = S.digest({ realm: 'r', nonce: 'n' }, { user: 'u', pass: 'p', method: 'INVITE', uri: 'sip:x', nc: 1 });
+t('בלי qop — אין nc', /nc=/.test(a2), false);
+t('בלי qop — response תקין', (a2.match(/response="([a-f0-9]+)"/) || [])[1],
+  S.md5(S.md5('u:r:p') + ':n:' + S.md5('INVITE:sip:x')));
+
+h('פרסור אתגר');
+const ch = S.parseAuth('Digest realm="asterisk", nonce="1e3d4f", qop="auth", algorithm=MD5, opaque="xyz"');
+t('realm', ch.realm, 'asterisk');
+t('nonce', ch.nonce, '1e3d4f');
+t('qop', ch.qop, 'auth');
+t('algorithm (בלי מרכאות)', ch.algorithm, 'MD5');
+t('opaque', ch.opaque, 'xyz');
+
+h('פרסור תשובת SIP');
+const m = S.parse(['SIP/2.0 401 Unauthorized',
+  'Via: SIP/2.0/WSS 1.2.3.4;branch=z9hG4bKabc;rport=5060',
+  'From: <sip:201@pbx.co.il>;tag=aaa',
+  'To: <sip:201@pbx.co.il>;tag=bbb',
+  'Call-ID: xyz@callbiz.desktop',
+  'CSeq: 42 REGISTER',
+  'WWW-Authenticate: Digest realm="asterisk", nonce="N1", qop="auth"',
+  'Content-Length: 0', '', ''].join('\r\n'));
+t('kind', m.kind, 'response');
+t('status', m.status, 401);
+t('reason', m.reason, 'Unauthorized');
+t('call-id', m.callId, 'xyz@callbiz.desktop');
+t('cseq', m.cseq, { num: 42, method: 'REGISTER' });
+t('from-tag', m.fromTag, 'aaa');
+t('to-tag', m.toTag, 'bbb');
+t('www-authenticate', m.h('www-authenticate'), 'Digest realm="asterisk", nonce="N1", qop="auth"');
+
+h('פרסור INVITE נכנס (כולל קיצורי כותרות)');
+const mi = S.parse(['INVITE sip:201@pbx.co.il SIP/2.0',
+  'v: SIP/2.0/WSS 5.6.7.8;branch=z9hG4bKq',
+  'f: "שרה לוי" <sip:0521234567@pbx.co.il>;tag=ccc',
+  't: <sip:201@pbx.co.il>',
+  'i: incoming-1@pbx',
+  'CSeq: 1 INVITE',
+  'm: <sip:0521234567@5.6.7.8;transport=ws>',
+  'Content-Type: application/sdp',
+  'Content-Length: 11', '', 'v=0\r\no=- 1 1'].join('\r\n'));
+t('method', mi.method, 'INVITE');
+t('uri', mi.uri, 'sip:201@pbx.co.il');
+t('v → via', !!mi.h('via'), true);
+t('f → from (שם בעברית)', mi.h('from'), '"שרה לוי" <sip:0521234567@pbx.co.il>;tag=ccc');
+t('i → call-id', mi.callId, 'incoming-1@pbx');
+t('m → contact', mi.h('contact'), '<sip:0521234567@5.6.7.8;transport=ws>');
+t('גוף ההודעה', mi.body, 'v=0\r\no=- 1 1');
+t('אין to-tag ב-INVITE ראשוני', mi.toTag, '');
+t('חילוץ מספר מתקשר', (mi.h('from').match(/sip:([^@>;]+)/) || [])[1], '0521234567');
+t('חילוץ שם מתקשר', (mi.h('from').match(/^"?([^"<]*)"?\s*</) || [])[1].trim(), 'שרה לוי');
+t('חילוץ contact להעברה', (mi.h('contact').match(/<([^>]+)>/) || [])[1], 'sip:0521234567@5.6.7.8;transport=ws');
+
+h('כותרות מרובות ושורות המשך');
+const mv = S.parse(['SIP/2.0 200 OK', 'Via: SIP/2.0/WSS a;branch=1', 'Via: SIP/2.0/WSS b;branch=2',
+  'Record-Route: <sip:p1;lr>', 'Record-Route: <sip:p2;lr>',
+  'Contact: <sip:x@y>', '  ;expires=300', 'CSeq: 1 REGISTER', 'Content-Length: 0', '', ''].join('\r\n'));
+t('שני Via נשמרים', mv.headers['via'].length, 2);
+t('שני Record-Route נשמרים', mv.headers['record-route'].length, 2);
+t('שורת המשך מתחברת', mv.h('contact'), '<sip:x@y> ;expires=300');
+t('h() מחזיר את הראשון', mv.h('via'), 'SIP/2.0/WSS a;branch=1');
+
+h('כתיבת מספרים מחדש');
+t('+972 → מקומי', C.rewrite('+972501234567'), '0501234567');
+t('00 → +', C.rewrite('0097235551234'), '+97235551234');
+t('מקומי נשאר', C.rewrite('03-5551234'), '035551234');
+t('שלוחה נשארת', C.rewrite('201'), '201');
+t('ניקוי רווחים ומקפים', C.rewrite('052-123 45 67'), '0521234567');
+t('בדיקה מזהה כלל', C.testRewrite('+972501234567').rule, 0);
+t('בדיקה מחזירה פלט', C.testRewrite('+972501234567').out, '0501234567');
+t('מספר ללא כלל תואם', C.testRewrite('0521234567').rule, -1);
+
+h('עמידות מול קלט שגוי');
+C.get().rewrite.unshift({ on: true, match: '[[[', to: 'x', note: 'שבור' });
+t('כלל לא תקין לא מפיל חיוג', C.rewrite('+972501234567'), '0501234567');
+t('הבדיקה מדווחת על הכלל', C.testRewrite('+972501234567').error, 'כלל 1 אינו תקין');
+C.get().rewrite.shift();
+t('הודעה ריקה לא מפילה', (() => { try { S.parse(''); return 'ok'; } catch (e) { return 'threw'; } })(), 'ok');
+t('הודעה חתוכה לא מפילה', (() => { try { S.parse('INVITE sip:x SIP/2.0'); return 'ok'; } catch (e) { return 'threw'; } })(), 'ok');
+
+h('אספקה אוטומטית');
+t('ניקוי דומיין (סכמה+נתיב)', P.clean('https://pbx.callbiz.co.il:8089/ws'), 'pbx.callbiz.co.il');
+t('ניקוי דומיין (פורט)', P.clean('pbx.callbiz.co.il:5060'), 'pbx.callbiz.co.il');
+t('7 מועמדי גילוי', P.CANDIDATES.length, 7);
+const urls = P.CANDIDATES.map(c => 'wss://d.co.il' + (c.port === 443 ? '' : ':' + c.port) + c.path);
+t('URL של Asterisk', urls[0], 'wss://d.co.il:8089/ws');
+t('URL של FreeSWITCH', urls[2], 'wss://d.co.il:7443');
+t('URL של Kamailio (443 ללא פורט)', urls[3], 'wss://d.co.il/ws');
+
+localStorage.removeItem('cbd_tenant_pbx');
+t('בלי פרופיל → צריך הכל', P.requirement().need, 'all');
+P.setProfile({ name: 'קולביז', domain: 'pbx.callbiz.co.il', passMode: 'agent' });
+t('עם פרופיל → שלוחה+סיסמה', P.requirement().need, 'ext+pass');
+P.setProfile({ passMode: 'shared', sharedPass: 's3cret' });
+t('סיסמה משותפת → רק שלוחה', P.requirement().need, 'ext');
+P.setProfile({ passMode: 'server' });
+t('סיסמה מהשרת → רק שלוחה', P.requirement().need, 'ext');
+
+h('הפרדת סודות');
+C.set('pass', 'my-secret'); C.set('user', '201');
+const saved = JSON.parse(localStorage.getItem('cbd_sip'));
+t('הסיסמה לא בהגדרות', 'pass' in saved, false);
+t('שם המשתמש כן נשמר', saved.user, '201');
+t('הסיסמה במפתח נפרד', localStorage.getItem('cbd_sip_secret'), 'my-secret');
+
+h('בדיקת מוכנות');
+(async () => {
+  const rows = await C.preflight();
+  t('מחזירה רשימת בדיקות', rows.length >= 4, true);
+  t('לכל בדיקה יש הסבר ותיקון', rows.every(r => r.t && r.why && r.fix), true);
+  t('מזהה HTTPS/localhost', rows[0].ok, location.protocol === 'https:' || /^(localhost|127\.0\.0\.1)$/.test(location.hostname));
+  t('מזהה תמיכת WebRTC', rows[1].ok, true);
+
+  document.getElementById('sum').innerHTML = fail
+    ? `<span class="f">${fail} נכשלו · ${pass} עברו</span>`
+    : `<span class="p">כל ${pass} הבדיקות עברו</span>`;
+  window.__RESULT__ = { pass, fail };
+  console.log('TESTS', JSON.stringify(window.__RESULT__));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CallBiz · מוקד תקלות</title>
+
+<!-- ============================================================
+     מוקד תקלות — קובץ אחד, עצמאי, לשתילה בפורטל הנציגים.
+
+     שימוש:
+       <iframe src="console.html?api=https://your-server/api"></iframe>
+     או להעתיק את התוכן לתוך עמוד קיים.
+
+     בלי שרת הוא רץ במצב הדגמה עם נתונים לדוגמה, כדי שאפשר
+     יהיה לראות ולעצב לפני שיש תשתית.
+
+     מה השרת צריך לחשוף:
+       GET  {api}/agents          → [ צילום אחרון לכל נציג ]
+       POST {api}/command         → { station, cmd, args }
+       GET  {api}/agent/{station} → היסטוריית צילומים
+     ============================================================ -->
+
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --line:#e5e7eb; --fg:#111827; --muted:#6b7280;
+    --ok:#16a34a; --okbg:#dcfce7; --warn:#d97706; --warnbg:#fef3c7;
+    --bad:#dc2626; --badbg:#fee2e2; --idle:#9ca3af; --acc:#2563eb; --accbg:#eff6ff;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0f1115; --card:#171a21; --line:#262a33; --fg:#e5e7eb; --muted:#9ca3af;
+           --okbg:#0d2818; --warnbg:#2a1f08; --badbg:#2a1113; --accbg:#111a2e; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font:14px/1.6 "Segoe UI",Heebo,system-ui,sans-serif}
+  .wrap{max-width:1200px;margin:0 auto;padding:18px}
+
+  /* ---------- כותרת וסיכום ---------- */
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  header h1{font-size:19px;margin:0;font-weight:700}
+  header .sub{color:var(--muted);font-size:12px}
+  .live{display:flex;align-items:center;gap:7px;margin-inline-start:auto;font-size:12px;color:var(--muted)}
+  .live i{width:8px;height:8px;border-radius:50%;background:var(--ok);
+    box-shadow:0 0 0 4px var(--okbg)}
+  .live.off i{background:var(--idle);box-shadow:none}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px 15px;cursor:pointer;
+    transition:border-color .15s}
+  .kpi:hover{border-color:var(--acc)}
+  .kpi.on{border-color:var(--acc);background:var(--accbg)}
+  .kpi b{display:block;font-size:26px;line-height:1.15;font-weight:700}
+  .kpi span{font-size:12px;color:var(--muted)}
+  .kpi.bad b{color:var(--bad)} .kpi.warn b{color:var(--warn)} .kpi.ok b{color:var(--ok)}
+
+  /* ---------- טבלה ---------- */
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .ptop{display:flex;align-items:center;gap:10px;padding:11px 15px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .ptop b{font-size:14px}
+  .search{margin-inline-start:auto;padding:6px 11px;border:1px solid var(--line);border-radius:9px;
+    background:var(--bg);color:inherit;font:inherit;font-size:13px;width:190px}
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .tbl th{text-align:start;font-size:11px;color:var(--muted);font-weight:600;
+    padding:9px 15px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .tbl td{padding:10px 15px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .tbl tr:last-child td{border-bottom:0}
+  .tbl tbody tr{cursor:pointer}
+  .tbl tbody tr:hover{background:var(--bg)}
+  .tbl tr.sel{background:var(--accbg)}
+
+  .who b{display:block;font-weight:600}
+  .who span{font-size:11px;color:var(--muted)}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:7px;vertical-align:-1px}
+  .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)}
+  .dot.bad{background:var(--bad)} .dot.idle{background:var(--idle)}
+
+  .verdict{font-size:12.5px}
+  .verdict small{display:block;color:var(--muted);font-size:11px}
+
+  /* רצועת החוליות — 11 ריבועים שמספרים את כל הסיפור במבט */
+  .chain{display:flex;gap:2px}
+  .chain i{width:11px;height:16px;border-radius:2px;background:var(--idle);opacity:.35}
+  .chain i.ok{background:var(--ok);opacity:1}
+  .chain i.warn{background:var(--warn);opacity:1}
+  .chain i.bad{background:var(--bad);opacity:1}
+  .ago{font-size:11px;color:var(--muted);white-space:nowrap}
+  .ago.stale{color:var(--bad)}
+
+  /* ---------- מגירת פירוט ---------- */
+  .drawer{position:fixed;inset-block:0;inset-inline-end:0;width:min(460px,100%);
+    background:var(--card);border-inline-start:1px solid var(--line);
+    transform:translateX(-100%);transition:transform .2s;overflow-y:auto;z-index:20;
+    box-shadow:-8px 0 28px rgba(0,0,0,.10)}
+  [dir=rtl] .drawer{transform:translateX(100%)}
+  .drawer.on{transform:none!important}
+  .dtop{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:var(--card)}
+  .dtop b{font-size:15px}
+  .x{margin-inline-start:auto;border:0;background:transparent;font-size:20px;cursor:pointer;color:var(--muted)}
+  .dsec{padding:14px 16px;border-bottom:1px solid var(--line)}
+  .dsec h3{margin:0 0 9px;font-size:12px;color:var(--muted);font-weight:600}
+  .row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:12.5px}
+  .row span{color:var(--muted)}
+  .row b{font-family:ui-monospace,Consolas,monospace;font-size:12px}
+  .lnk{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:12.5px;border-top:1px solid var(--line)}
+  .lnk:first-of-type{border-top:0}
+  .lnk .dot{margin:0}
+  .lnk em{margin-inline-start:auto;color:var(--muted);font-style:normal;font-size:11.5px;
+    max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .vbox{padding:11px 13px;border-radius:10px;font-size:13px;line-height:1.6}
+  .vbox.bad{background:var(--badbg);color:var(--bad)}
+  .vbox.ok{background:var(--okbg);color:var(--ok)}
+  .vbox small{display:block;margin-top:4px;opacity:.85}
+  .acts{display:flex;flex-wrap:wrap;gap:7px}
+  .btn{border:1px solid var(--line);background:var(--bg);color:inherit;border-radius:9px;
+    padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+  .btn:hover{border-color:var(--acc);color:var(--acc)}
+  .btn.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+  .trace{font-family:ui-monospace,Consolas,monospace;font-size:11px;line-height:1.75;
+    background:var(--bg);border-radius:9px;padding:9px 11px;max-height:180px;overflow:auto;white-space:pre-wrap}
+  .empty{padding:36px 20px;text-align:center;color:var(--muted);font-size:13px}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:19;display:none}
+  .scrim.on{display:block}
+  .demo{background:var(--warnbg);color:var(--warn);padding:7px 15px;font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+
+<div id="demoBar" class="demo" hidden>מצב הדגמה — לא מחובר לשרת. הוסיפו <code>?api=https://…</code> לכתובת.</div>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>מוקד תקלות</h1>
+      <div class="sub">מצב התקשורת של כל הנציגים, בזמן אמת</div>
+    </div>
+    <div class="live off" id="live"><i></i><span>מתחבר…</span></div>
+  </header>
+
+  <div class="cards" id="kpis"></div>
+
+  <div class="panel">
+    <div class="ptop">
+      <b>נציגים</b>
+      <span class="sub" id="count"></span>
+      <input class="search" id="q" placeholder="חיפוש לפי שם או שלוחה">
+    </div>
+    <div id="list"></div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer"></aside>
+
+<script>
+/* ============================================================
+   כל הלוגיקה. אין תלות בספריות חיצוניות.
+   ============================================================ */
+const API = new URLSearchParams(location.search).get('api') || '';
+const POLL = 10000;
+
+const LINKS = [
+  ['head','אוזניות'],['mic','מיקרופון'],['app','האפליקציה'],['codec','קידוד'],
+  ['lan','הרשת'],['fw','פורטים'],['sig','איתות'],['rtp','ערוץ הקול'],
+  ['pbx','מרכזייה'],['queue','תור'],['far','הצד השני']
+];
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = s => document.querySelector(s);
+
+let AGENTS = [], filter = 'all', query = '', selected = null;
+
+/* ---------------- שליפה ---------------- */
+async function fetchAgents(){
+  if(!API){ $('#demoBar').hidden=false; return demo(); }
+  try{
+    const r = await fetch(API.replace(/\/$/,'')+'/agents',{credentials:'include'});
+    if(!r.ok) throw 0;
+    setLive(true);
+    return await r.json();
+  }catch(e){ setLive(false); return AGENTS; }
+}
+function setLive(on){
+  const el=$('#live');
+  el.className = 'live'+(on?'':' off');
+  el.querySelector('span').textContent = on ? 'מחובר · מתעדכן כל 10 שניות' : 'אין חיבור לשרת';
+}
+
+/* ---------------- דירוג חומרה ---------------- */
+/* נציג עם תקלה מגיע ראשון, ואחריו לפי כמה זמן הוא לא דיווח.
+   העדיפות היא של מי שצריך טיפול, לא של סדר אלפביתי. */
+function sev(a){
+  if(stale(a)) return 3;
+  const v=a.verdict; if(!v) return 2;
+  return v.sev==='bad'?4 : v.sev==='warn'?2 : 0;
+}
+const stale = a => (Date.now()-new Date(a.at).getTime())>120000;
+function ago(a){
+  const s=Math.round((Date.now()-new Date(a.at).getTime())/1000);
+  if(s<60) return 'לפני '+s+' שנ׳';
+  if(s<3600) return 'לפני '+Math.round(s/60)+' דק׳';
+  return 'לפני '+Math.round(s/3600)+' שע׳';
+}
+
+/* ---------------- ציור ---------------- */
+function render(){
+  const bad=AGENTS.filter(a=>sev(a)===4).length;
+  const warn=AGENTS.filter(a=>sev(a)===2).length;
+  const off=AGENTS.filter(a=>stale(a)).length;
+  const ok=AGENTS.length-bad-warn-off;
+
+  $('#kpis').innerHTML=[
+    ['all','סה״כ נציגים',AGENTS.length,''],
+    ['bad','תקלה פעילה',bad,'bad'],
+    ['warn','דורש תשומת לב',warn,'warn'],
+    ['off','לא מדווח',off,''],
+    ['ok','תקין',ok,'ok'],
+  ].map(([k,label,n,cls])=>
+    `<div class="kpi ${cls} ${filter===k?'on':''}" data-f="${k}"><b>${n}</b><span>${label}</span></div>`).join('');
+  document.querySelectorAll('[data-f]').forEach(el=>
+    el.onclick=()=>{ filter = filter===el.dataset.f?'all':el.dataset.f; render(); });
+
+  let rows=AGENTS.slice().sort((a,b)=>sev(b)-sev(a)||(a.who.agentName||'').localeCompare(b.who.agentName||''));
+  if(filter==='bad') rows=rows.filter(a=>sev(a)===4);
+  if(filter==='warn') rows=rows.filter(a=>sev(a)===2);
+  if(filter==='off') rows=rows.filter(stale);
+  if(filter==='ok') rows=rows.filter(a=>sev(a)===0&&!stale(a));
+  if(query){
+    const q=query.toLowerCase();
+    rows=rows.filter(a=>((a.who.agentName||'')+' '+(a.who.ext||'')+' '+(a.who.station||'')).toLowerCase().includes(q));
+  }
+  $('#count').textContent = rows.length+' מוצגים';
+
+  $('#list').innerHTML = rows.length ? `<table class="tbl">
+    <thead><tr>
+      <th>נציג</th><th>מצב</th><th>שרשרת התקשורת</th><th>שיחה</th><th>דיווח אחרון</th>
+    </tr></thead><tbody>${rows.map(a=>{
+      const s=sev(a), cls=stale(a)?'idle':s===4?'bad':s===2?'warn':'ok';
+      const v=a.verdict||{};
+      return `<tr data-s="${esc(a.who.station)}" class="${selected===a.who.station?'sel':''}">
+        <td class="who"><b>${esc(a.who.agentName||'—')}</b>
+          <span>שלוחה ${esc(a.who.ext||'—')}</span></td>
+        <td class="verdict"><span class="dot ${cls}"></span>
+          ${stale(a)?'לא מדווח':esc(v.t||'—')}
+          ${v.where&&!stale(a)?`<small>חוליה: ${esc((LINKS.find(l=>l[0]===v.where)||[])[1]||v.where)}</small>`:''}</td>
+        <td><div class="chain" title="${LINKS.map(l=>l[1]).join(' · ')}">${
+          LINKS.map(([k])=>`<i class="${(a.links&&a.links[k]&&a.links[k].state)||'idle'}"></i>`).join('')}</div></td>
+        <td>${a.call?`<span class="dot ok"></span>${esc(a.call.state)}`:'<span style="color:var(--muted)">—</span>'}</td>
+        <td class="ago ${stale(a)?'stale':''}">${ago(a)}</td>
+      </tr>`;}).join('')}</tbody></table>`
+    : '<div class="empty">אין נציגים להצגה</div>';
+
+  document.querySelectorAll('tr[data-s]').forEach(tr=>
+    tr.onclick=()=>open(tr.dataset.s));
+}
+
+/* ---------------- מגירה ---------------- */
+function open(station){
+  const a=AGENTS.find(x=>x.who.station===station); if(!a) return;
+  selected=station;
+  const v=a.verdict||{};
+  $('#drawer').innerHTML=`
+    <div class="dtop"><b>${esc(a.who.agentName||'—')}</b>
+      <span class="sub">שלוחה ${esc(a.who.ext||'—')}</span>
+      <button class="x" id="dx">×</button></div>
+
+    <div class="dsec">
+      <div class="vbox ${v.sev==='ok'?'ok':'bad'}">${esc(v.t||'אין נתונים')}
+        ${v.where?`<small>החוליה: ${esc((LINKS.find(l=>l[0]===v.where)||[])[1]||v.where)}</small>`:''}</div>
+    </div>
+
+    <div class="dsec"><h3>שרשרת התקשורת</h3>
+      ${LINKS.map(([k,label])=>{
+        const l=(a.links||{})[k]||{state:'idle',value:'—'};
+        return `<div class="lnk"><span class="dot ${l.state}"></span>${esc(label)}
+          <em>${esc(l.value)}</em></div>`;}).join('')}
+    </div>
+
+    <div class="dsec"><h3>מדדים</h3>
+      ${row('חיבור לרשת',(a.net||{}).online?'מחובר':'מנותק')}
+      ${row('סוג רשת',(a.net||{}).type||'—')}
+      ${row('השהיית רשת',(a.net||{}).rtt!=null?(a.net.rtt+'ms'):'—')}
+      ${a.media?row('חבילות יוצאות/נכנסות',a.media.outPkts+' / '+a.media.inPkts):''}
+      ${a.media?row('אובדן',a.media.loss+'%'):''}
+      ${a.media?row('רעידה',a.media.jitter+'ms'):''}
+      ${a.media?row('קודק',a.media.codec||'—'):''}
+      ${a.ice?row('מסלולי ICE','host '+a.ice.host+' · srflx '+a.ice.srflx+' · relay '+a.ice.relay):''}
+      ${row('רישום SIP',(a.sip||{}).state||'—')}
+      ${(a.sip||{}).error?row('שגיאה',a.sip.error):''}
+    </div>
+
+    ${(a.sip&&a.sip.recent&&a.sip.recent.length)?`<div class="dsec"><h3>איתות אחרון</h3>
+      <div class="trace">${a.sip.recent.map(esc).join('\n')}</div></div>`:''}
+
+    <div class="dsec"><h3>פעולות מרחוק</h3>
+      <div class="acts">
+        <button class="btn pri" data-c="diagnose">אבחון מחדש</button>
+        <button class="btn" data-c="reregister">רישום מחדש</button>
+        <button class="btn" data-c="checkin">שיוך מכשיר</button>
+        <button class="btn" data-c="trace">משוך יומן</button>
+        <button class="btn" data-c="update">בדוק עדכון</button>
+        <button class="btn" data-c="notify">שלח הודעה</button>
+      </div>
+      <div id="cmdOut" style="margin-top:9px;font-size:12px;color:var(--muted)"></div>
+    </div>
+
+    <div class="dsec"><h3>עמדה</h3>
+      ${row('גרסה',a.who.app||'—')}
+      ${row('מערכת',a.who.platform||'—')}
+      ${row('מזהה עמדה',(a.who.station||'').slice(0,18))}
+      ${row('דיווח אחרון',ago(a))}
+    </div>`;
+  $('#drawer').classList.add('on'); $('#scrim').classList.add('on');
+  $('#dx').onclick=close;
+  document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>cmd(station,b.dataset.c));
+  render();
+}
+const row=(k,v)=>`<div class="row"><span>${esc(k)}</span><b>${esc(v)}</b></div>`;
+function close(){ selected=null; $('#drawer').classList.remove('on'); $('#scrim').classList.remove('on'); render(); }
+$('#scrim').onclick=close;
+
+async function cmd(station,c){
+  const out=$('#cmdOut');
+  if(!API){ out.textContent='מצב הדגמה — הפקודה לא נשלחה'; return; }
+  let args={};
+  if(c==='notify'){ const t=prompt('הודעה לנציג:'); if(!t) return; args={text:t}; }
+  out.textContent='שולח…';
+  try{
+    const r=await fetch(API.replace(/\/$/,'')+'/command',{method:'POST',credentials:'include',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify({station,cmd:c,args})});
+    const j=await r.json();
+    out.textContent = j.ok===false ? ('נכשל: '+(j.msg||'')) : 'בוצע · הנציג יתעדכן תוך שניות';
+  }catch(e){ out.textContent='אין תקשורת לשרת'; }
+}
+
+$('#q').oninput=e=>{ query=e.target.value; render(); };
+
+/* ---------------- מצב הדגמה ---------------- */
+function demo(){
+  const mk=(name,ext,verdict,over={},mins=0)=>{
+    const st={head:'ok',mic:'ok',app:'ok',codec:'ok',lan:'ok',fw:'ok',sig:'ok',
+              rtp:'ok',pbx:'ok',queue:'ok',far:'ok'};
+    Object.assign(st,over);
+    return {at:new Date(Date.now()-mins*60000).toISOString(),
+      who:{agentName:name,ext:ext,station:'st-'+ext,app:'1.1.0',platform:'Windows'},
+      verdict:verdict,
+      links:Object.keys(st).reduce((o,k)=>(o[k]={state:st[k],value:st[k]==='ok'?'תקין':'בעיה'},o),{}),
+      net:{online:true,type:'4g',rtt:38},
+      media:{outPkts:1420,inPkts:1418,loss:0.2,jitter:9,codec:'PCMU'},
+      ice:{host:2,srflx:1,relay:0},
+      sip:{state:'registered',recent:['>>> REGISTER sip:a1053.sip.io','<<< SIP/2.0 200 OK']}};
+  };
+  return [
+    mk('יוסי כהן','201',{id:'ok',t:'המערכת מוכנה לשיחות',sev:'ok'}),
+    mk('מיכל רוזן','202',{id:'oneway-in',t:'אתה לא שומע אותם',where:'rtp',sev:'bad'},
+       {rtp:'bad',fw:'warn'}),
+    mk('דנה לוי','203',{id:'micmuted',t:'המיקרופון מושתק מחוץ למערכת',where:'mic',sev:'bad'},
+       {mic:'bad'}),
+    mk('אבי רוזן','204',{id:'notactive',t:'הנציג לא מסומן כפעיל',where:'queue',sev:'bad'},
+       {queue:'bad'}),
+    mk('שרה גל','205',{id:'ok',t:'השיחה תקינה מקצה לקצה',sev:'ok'}),
+    mk('רון אבידן','206',{id:'ok',t:'המערכת מוכנה',sev:'ok'},{},9),
+  ];
+}
+
+/* ---------------- לולאה ---------------- */
+async function tick(){ AGENTS = await fetchAgents(); render(); }
+tick(); setInterval(tick, POLL);
+</script>
+</body>
+</html>

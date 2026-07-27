@@ -9,7 +9,8 @@
 
   const VIEWS = [
     { key: 'phone', label: 'טלפון',  icon: 'phone' },
-    { key: 'diag',  label: 'אבחון',  icon: 'tools' },
+    { key: 'diag',  label: 'ניתוח תקשורת',  icon: 'tools' },
+    { key: 'hist',  label: 'היסטוריה', icon: 'clock' },
     { key: 'stats', label: 'ביצועים', icon: 'chart' },
     { key: 'crm',   label: 'CRM',    icon: 'crm', web: true },
     { key: 'wa',    label: 'וואטסאפ', icon: 'wa', web: true },
@@ -17,7 +18,8 @@
     { key: 'cal',   label: 'יומן',   icon: 'cal', web: true },
     { key: 'set',   label: 'הגדרות', icon: 'gear' },
   ];
-  const UI = { view: 'phone', dial: '', badges: { wa: 3, mail: 1, cal: 2 }, checks: [], checking: false };
+  const UI = { view: 'phone', dial: '', badges: { wa: 3, mail: 1, cal: 2 }, checks: [], checking: false,
+    pad: false, histFilter: 'all' };
 
   /* ============================================================
      רצועת הניווט
@@ -51,6 +53,7 @@
     if (v.web) return webPane(v);
     if (v.key === 'phone') return phone();
     if (v.key === 'diag') return diag();
+    if (v.key === 'hist') return history();
     if (v.key === 'stats') return stats();
     if (v.key === 'set') return settings();
     host.innerHTML = '';
@@ -80,11 +83,26 @@
                 ${c.state === 'ringing' ? `<button class="act big ok" data-a="answer">${ic('phoneIn')}<span>ענה</span></button>` : ''}
                 <button class="act ${c.muted ? 'on' : ''}" data-a="mute">${ic(c.muted ? 'micOff' : 'mic')}<span>${c.muted ? 'בטל השתקה' : 'השתק'}</span></button>
                 <button class="act ${c.held ? 'on' : ''}" data-a="hold">${ic('pause')}<span>${c.held ? 'חזרה' : 'המתנה'}</span></button>
+                <button class="act ${UI.pad ? 'on' : ''}" data-a="pad">${ic('grid')}<span>הקשה</span></button>
                 <button class="act" data-a="transfer">${ic('transfer')}<span>העבר</span></button>
                 <button class="act" data-a="conf">${ic('users')}<span>ועידה</span></button>
                 <button class="act ${c.recorded ? 'on' : ''}" data-a="rec">${ic('rec')}<span>הקלטה</span></button>
                 <button class="act big bad" data-a="hangup">${ic('hangup')}<span>נתק</span></button>
               </div>
+              ${UI.pad && c.state === 'active' ? `<div class="ivr">
+                <div class="ivr-h">${ic('grid')} <b>הקשה בזמן שיחה</b>
+                  <small>לניווט בתפריט קולי או לבחירת שלוחה</small>
+                  ${c.dtmf ? `<span class="ivr-seq">${esc(c.dtmf)}</span>` : ''}</div>
+                <div class="ivr-k">${['1','2','3','4','5','6','7','8','9','*','0','#'].map(k =>
+                  `<button class="k sm" data-dt="${k}">${k}</button>`).join('')}</div>
+              </div>` : ''}
+              ${c.consult ? `<div class="cons">
+                <span class="cons-d ${c.consult.state}"></span>
+                <div><b>שיחה מקדימה · ${esc(c.consult.target)}</b>
+                  <small>${c.consult.state === 'ringing' ? 'מצלצל…' : 'מחובר — הלקוח בהמתנה'}</small></div>
+                <button class="btn xs" data-a="consDone">${ic('transfer')} חבר ביניהם</button>
+                <button class="btn xs ghost" data-a="consX">בטל</button>
+              </div>` : ''}
               ${contact ? `<button class="pop" data-a="pop">${ic('crm')} פתח את הכרטיס ב-CRM</button>` : ''}
             </div>`
           : `<div class="idle">
@@ -140,6 +158,9 @@
       mute: () => TEL.mute(), hold: () => TEL.hold(), rec: () => TEL.record(),
       hangup: () => TEL.hangup(),
       transfer: () => askTransfer(),
+      pad: () => { UI.pad = !UI.pad; phone(); },
+      consDone: () => TEL.consultComplete(),
+      consX: () => TEL.consultCancel(),
       conf: () => toast('ועידה — מחייב שרת שיחות. המתאם מוכן.'),
       pop: () => { const c = TEL.call(); if (c && c.contact) { CRM.screenPop(c.contact); go('crm'); } },
       sim: () => TEL.incoming(['052-1234567', '053-7654321', '054-1112222'][Math.floor(Math.random() * 3)]),
@@ -155,16 +176,49 @@
     $$('#stage [data-t]').forEach(b => b.addEventListener('click', () => { TEL.setTransport(b.dataset.t, true); phone(); }));
     const au = $('#autoT'); if (au) au.addEventListener('change', () => { TEL.auto(au.checked); phone(); });
     $$('#stage [data-redial]').forEach(b => b.addEventListener('click', () => TEL.dial(b.dataset.redial)));
+    $$('#stage [data-dt]').forEach(b => b.addEventListener('click', () => TEL.dtmf(b.dataset.dt)));
   }
-  function askTransfer() {
-    modal('העברת שיחה', `<p class="m-l">למי להעביר?</p>
-      <div class="m-list">${['מיכל רוזן · 202', 'אבי זוהר · 203', 'תור המכירות'].map(x =>
-        `<button class="m-i" data-tr="${esc(x)}">${esc(x)}</button>`).join('')}</div>`,
-      w => $$('[data-tr]', w).forEach(b => b.addEventListener('click', () => { TEL.transfer(b.dataset.tr); close(); })));
+  async function askTransfer() {
+    const list = await DIR.list();
+    modal('העברת שיחה', `
+      <p class="m-l">בחרו יעד. אפשר להעביר ישירות, או לדבר קודם עם היעד ורק אז לחבר.</p>
+      <input class="m-in" id="trQ" placeholder="חיפוש לפי שם או שלוחה…">
+      <div class="m-list" id="trL">${list.map(rowT).join('')}</div>`,
+      w => {
+        const q = $('#trQ', w), L = $('#trL', w);
+        const draw = () => {
+          const t = (q.value || '').trim();
+          L.innerHTML = list.filter(x => !t || x.name.includes(t) || x.ext.includes(t)).map(rowT).join('') ||
+            '<p class="empty sm">לא נמצא יעד</p>';
+          bindRows();
+        };
+        const bindRows = () => {
+          $$('[data-trx]', L).forEach(b => b.addEventListener('click', () => { TEL.transfer(b.dataset.trx, 'blind'); close(); }));
+          $$('[data-trc]', L).forEach(b => b.addEventListener('click', () => { TEL.consult(b.dataset.trc); close(); }));
+        };
+        q.addEventListener('input', draw); bindRows(); q.focus();
+      });
+  }
+  function rowT(x) {
+    const st = DIR.STATUS[x.status] || DIR.STATUS.system;
+    const label = x.name + ' · ' + x.ext;
+    return `<div class="tr-r">
+      <span class="tr-d ${st.dot}"></span>
+      <div class="tr-t"><b>${esc(x.name)}</b>
+        <small>שלוחה ${esc(x.ext)} · ${esc(x.role)} · ${esc(st.label)}${x.queue ? ' · ' + (x.waiting || 0) + ' ממתינים' : ''}</small></div>
+      <button class="btn xs" data-trc="${esc(label)}">דבר קודם</button>
+      <button class="btn xs primary" data-trx="${esc(label)}">העבר</button>
+    </div>`;
   }
 
   /* ---------------- אבחון ---------------- */
   function diag() {
+    /* מסך הניתוח החדש מחליף את רשימת הבדיקות — הוא מראה איפה
+       זה נשבר, לא רק שמשהו נשבר. */
+    if (window.PATHUI) return PATHUI.render();
+    return diagLegacy();
+  }
+  function diagLegacy() {
     $('#stage').innerHTML = `
       <div class="pane">
         <div class="pane-h"><b>${ic('tools')} אבחון ופתרון תקלות</b>
@@ -194,6 +248,90 @@
         ${r.fix ? `<div class="d-fix">${ic('alert')} ${esc(r.fix)}</div>` : ''}
       </div>`;
     }
+  }
+
+
+  /* ---------------- היסטוריית שיחות ---------------- */
+  function history() {
+    const all = CRM.calls();
+    const F = [
+      { k: 'all', t: 'הכל' }, { k: 'in', t: 'נכנסות' }, { k: 'out', t: 'יוצאות' },
+      { k: 'miss', t: 'לא נענו' }, { k: 'rec', t: 'מוקלטות' },
+    ];
+    const list = all.filter(c =>
+      UI.histFilter === 'all' ? true :
+      UI.histFilter === 'in' ? c.dir === 'in' :
+      UI.histFilter === 'out' ? c.dir === 'out' :
+      UI.histFilter === 'miss' ? (c.outcome && c.outcome !== 'נענתה') :
+      UI.histFilter === 'rec' ? c.recorded : true);
+    $('#stage').innerHTML = `
+      <div class="pane">
+        <div class="pane-h"><b>${ic('clock')} היסטוריית שיחות</b>
+          <span class="pane-n">${all.length} שיחות</span></div>
+        <div class="fl">${F.map(f => `<button class="fb ${UI.histFilter === f.k ? 'on' : ''}" data-f="${f.k}">${f.t}</button>`).join('')}</div>
+        ${list.length ? `<div class="hl">${list.map(rowH).join('')}</div>`
+          : '<p class="empty">אין שיחות בסינון הזה</p>'}
+      </div>`;
+    $$('#stage [data-f]').forEach(b => b.addEventListener('click', () => { UI.histFilter = b.dataset.f; history(); }));
+    $$('#stage [data-hcall]').forEach(b => b.addEventListener('click', () => TEL.dial(b.dataset.hcall)));
+    $$('#stage [data-hrec]').forEach(b => b.addEventListener('click', () => openRecording(b.dataset.hrec)));
+    $$('#stage [data-hcard]').forEach(b => b.addEventListener('click', async () => {
+      const c = await CRM.lookup(b.dataset.hcard);
+      if (c) { CRM.screenPop(c); go('crm'); } else alert2({ t: 'הלקוח אינו מזוהה במערכת', kind: 'warn' });
+    }));
+  }
+  function rowH(c) {
+    const miss = c.outcome && c.outcome !== 'נענתה';
+    const d = c.startedAt ? new Date(c.startedAt) : null;
+    const when = d ? d.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit' }) + ' · ' +
+      d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '';
+    return `<div class="h-r ${miss ? 'miss' : ''}">
+      <span class="h-d ${c.dir === 'in' ? 'in' : 'out'}">${ic(c.dir === 'in' ? 'phoneIn' : 'phone')}</span>
+      <div class="h-t"><b>${esc(c.phone)}</b>
+        <small>${esc(when)} · ${esc(c.outcome || '')}${c.transport ? ' · ' + esc(TEL.transportOf(c.transport).label) : ''}</small></div>
+      <span class="h-len">${STATS.fmtSec(c.seconds)}</span>
+      ${c.quality ? `<span class="h-q ${c.quality >= 4 ? 'ok' : c.quality >= 3.4 ? 'warn' : 'bad'}"
+        title="איכות ממוצעת">${c.quality}</span>` : '<span class="h-q off">—</span>'}
+      <div class="h-a">
+        ${c.recordingUrl || c.recordingId ? `<button class="hb rec" data-hrec="${esc(c.id)}" title="האזנה להקלטה">
+          ${ic('play')} הקלטה</button>` : ''}
+        <button class="hb" data-hcard="${esc(c.phone)}" title="כרטיס הלקוח">${ic('crm')}</button>
+        <button class="hb" data-hcall="${esc(c.phone)}" title="חייג שוב">${ic('phone')}</button>
+      </div>
+    </div>`;
+  }
+
+  /* ההקלטה יושבת במרכזייה. אנחנו לא מאחסנים אותה ולא חושפים את
+     הכתובת — לחיצה פותחת אותה ישירות דרך המרכזייה. */
+  function openRecording(callId) {
+    const c = (CRM.calls() || []).find(x => x.id === callId);
+    if (!c) return;
+    if (!CRM.can('record')) return alert2({ t: 'אין לך הרשאה להאזין להקלטות', kind: 'bad' });
+    const url = c.recordingUrl || ('pbx://recordings/' + (c.recordingId || ''));
+    modal('הקלטת שיחה', `
+      <div class="rec-box">
+        <div class="rec-h">${ic('rec')} <div><b>${esc(c.phone)}</b>
+          <small>${STATS.fmtSec(c.seconds)} · ${esc(c.outcome || '')}</small></div></div>
+        <audio class="rec-au" controls preload="none"></audio>
+        <p class="m-l sm">${ic('alert')} ההקלטה מאוחסנת במרכזייה בלבד. המערכת שומרת מזהה ולא קובץ,
+          והכתובת אינה מוצגת — הלחיצה פותחת אותה ישירות.</p>
+        <div class="rec-acts">
+          <button class="btn xs" id="recOpen">${ic('play')} פתח בנגן המרכזייה</button>
+          ${CRM.can('admin') ? `<button class="btn xs ghost" id="recCopy">העתק קישור למנהל</button>` : ''}
+        </div>
+      </div>`, w => {
+        const o = $('#recOpen', w);
+        o.addEventListener('click', () => {
+          /* TODO(server): החלפת המזהה בכתובת חתומה וקצרת-תוקף מהמרכזייה */
+          if (/^https?:/.test(url)) window.open(url, '_blank', 'noopener');
+          else alert2({ t: 'נדרשת מרכזייה מחוברת', kind: 'warn',
+            why: 'הקישור להקלטה מגיע מהמרכזייה בזמן אמת ואינו נשמר אצלנו.' });
+        });
+        const cp = $('#recCopy', w);
+        if (cp) cp.addEventListener('click', () => {
+          try { navigator.clipboard.writeText(url); toast('הקישור הועתק'); } catch (e) { toast('לא ניתן להעתיק'); }
+        });
+      });
   }
 
   /* ---------------- ביצועים ---------------- */
@@ -254,6 +392,8 @@
 
   /* ---------------- הגדרות ---------------- */
   function settings() {
+    /* מסך ההגדרות המלא חי בקובץ נפרד — כאן רק נפילה לאחור */
+    if (window.SETUI) return SETUI.render();
     const s = CRM.session() || {}, p = s.perms || {};
     $('#stage').innerHTML = `
       <div class="pane">
@@ -320,5 +460,5 @@
   }
   function close() { const h = $('#modalHost'); h.classList.remove('on'); h.innerHTML = ''; }
 
-  window.UIX = { rail, stage, go, phone, alert2, toast, modal, close, state: UI };
+  window.UIX = { rail, stage, go, phone, history, alert2, toast, modal, close, state: UI, openRecording };
 })();
