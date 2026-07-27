@@ -105,6 +105,22 @@ function openSvcTermsPanel(onDone, ctx) {
 
   /* draw בונה מחדש את הפאנל; render עוטף אותו בשמירת גלילה —
      בחירה בתוך הפאנל לא זורקת לראש. */
+  /* סגירה שומרת טיוטה: מי שבחר היקף ולא לחץ "הוסף תנאי" ימצא את
+     הבחירה במקומה כשיחזור, במקום להתחיל מאפס. */
+  const draftHasContent = () => {
+    const d = ctTermEdit; if (!d) return false;
+    return !!((d.title || '').trim() || (d.text || '').trim() || (d.svcs || []).length
+      || (d.types || []).length || (d.ctIds || []).length);
+  };
+  const closePanel = () => {
+    const ti = $('#stTitle', w), tx = $('#stText', w);
+    if (ctTermEdit) { if (ti) ctTermEdit.title = ti.value; if (tx) ctTermEdit.text = tx.value; }
+    const keep = draftHasContent() && !(ctTermEdit && ctTermEdit.id);
+    if (!draftHasContent()) ctTermEdit = null;
+    w.remove();
+    if (keep && typeof toast === 'function') toast('הטיוטה נשמרה — התנאי טרם נוסף. "הוסף תנאי" ישמור אותו');
+    if (typeof onDone === 'function') onDone();
+  };
   const render = () => (typeof ksKeep === 'function') ? ksKeep(draw) : draw();
   const draw = () => {
     const e = ctTermEdit;
@@ -255,13 +271,11 @@ function openSvcTermsPanel(onDone, ctx) {
       ctSvcTermsSave(); ctTermEdit = null; render();
     });
     const cn = $('#stCancel', w); if (cn) cn.addEventListener('click', () => { ctTermEdit = null; render(); });
-    const cl = $('#stClose', w); if (cl) cl.addEventListener('click', () => {
-      ctTermEdit = null; w.remove(); if (typeof onDone === 'function') onDone();
-    });
+    const cl = $('#stClose', w); if (cl) cl.addEventListener('click', () => { closePanel(); });
   };
 
   render();
-  w.addEventListener('mousedown', e => { if (e.target === w) { ctTermEdit = null; w.remove(); if (typeof onDone === 'function') onDone(); } });
+  w.addEventListener('mousedown', e => { if (e.target === w) closePanel(); });
   document.body.appendChild(w);
 }
 
