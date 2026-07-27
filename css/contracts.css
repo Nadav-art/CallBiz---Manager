@@ -258,3 +258,16 @@
   font-size: 11px; color: var(--text-2); line-height: 1.6; }
 .st-why svg { width: 12px; height: 12px; flex: 0 0 auto; margin-top: 2px; color: var(--brand); }
 .st-why b { color: var(--text); }
+
+/* ---------- טופס העריכה נפתח צמוד לתנאי שנערך ---------- */
+.st-item.editing { border-color: var(--brand); border-bottom-left-radius: 0; border-bottom-right-radius: 0;
+  border-bottom-style: dashed; background: color-mix(in srgb, var(--brand) 5%, transparent); }
+.st-inline { border: 1px solid var(--brand); border-top: 0;
+  border-radius: 0 0 12px 12px; margin-bottom: 2px;
+  /* הרשימה היא flex עם gap — מבטלים אותו כדי שהטופס יידבק לתנאי */
+  margin-top: calc(-1 * (9px + 1px));
+  background: color-mix(in srgb, var(--brand) 4%, transparent);
+  animation: stOpen .16s ease; overflow: hidden; }
+@keyframes stOpen { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
+.st-inline .st-form { border: 0; margin: 0; padding: 12px; background: transparent; }
+.st-inline .st-form-h { color: var(--brand); }

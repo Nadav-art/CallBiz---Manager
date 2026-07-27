@@ -121,54 +121,9 @@ function openSvcTermsPanel(onDone, ctx) {
     if (keep && typeof toast === 'function') toast('הטיוטה נשמרה — התנאי טרם נוסף. "הוסף תנאי" ישמור אותו');
     if (typeof onDone === 'function') onDone();
   };
-  const render = () => (typeof ksKeep === 'function') ? ksKeep(draw) : draw();
-  const draw = () => {
-    const e = ctTermEdit;
-    w.innerHTML = `<div class="cbc-box st-box">
-      <div class="cbc-head"><span class="cbc-ic">${ic('docs')}</span>
-        <b>סעיפים, תנאים והערות להסכם</b>
-        ${inCt ? `<span class="st-scope-tag">${esc(inCt.name)}</span>` : '<span class="st-scope-tag all">כל התבניות</span>'}</div>
-      <div class="st-scroll">
-      <p class="st-lead">${inCt
-        ? 'מה שתוסיפו כאן יישמר <b>לתבנית הזו בלבד</b>, באופן קבוע, ויופיע בכל הסכם שיופק ממנה.'
-        : 'מה שתוסיפו כאן חל על <b>כל התבניות</b> — או רק על אלה שתבחרו.'}
-        <b>תנאי נעול</b> לא ניתן לשינוי או להסרה בעסקה בודדת מחלון הצעת המחיר.
-        הנוסח המשפטי המלא נשאר בתבנית ההסכם.</p>
-
-      ${(function () {
-        /* מה שהמערכת אוספת לבד — שירות, סניף, הכנה. תצוגה בלבד. */
-        const lead = (typeof RECORDS !== 'undefined') ? RECORDS[0] : null;
-        const auto = (typeof ctCollectedTerms === 'function') ? ctCollectedTerms(lead, false)
-          .filter(x => !/^svcterm/.test(x.key)) : [];
-        if (!auto.length) return '';
-        return `<details class="st-auto"><summary>${ic('bolt')} <b>נאסף אוטומטית מהמערכת</b>
-          <small>${auto.length} סעיפים — משירות, מסניף ומהנחיות. מתעדכנים לבד.</small></summary>
-          <div class="st-auto-l">${auto.map(x => `<div class="st-auto-i">
-            <b>${esc(x.title)}</b><span>${esc(x.text)}</span><i>${esc(x.src)}</i></div>`).join('')}</div>
-        </details>`;
-      })()}
-
-      <div class="st-list">
-        ${(function () { const LIST = inCt ? ctTermsOfContract(inCt.id) : CT_SVC_TERMS; return LIST.length ? LIST.map(t => { const sc = ctTermScope(t); return `
-          <div class="st-item ${t.on === false ? 'off' : ''}">
-            <div class="st-item-top">
-              <b>${esc(t.title)}</b>
-              ${t.locked !== false ? `<span class="st-lock">${ic('lock')} נעול</span>` : `<span class="st-lock open">ניתן לשינוי בעסקה</span>`}
-              <div class="st-item-btns">
-                <button class="btn xs" data-sted="${t.id}">${ic('settings')} עריכה</button>
-                <button class="btn xs" data-stlock="${t.id}">${t.locked !== false ? 'שחרר נעילה' : 'נעל'}</button>
-                <button class="btn xs" data-sttog="${t.id}">${t.on === false ? 'הפעל' : 'השבת'}</button>
-                <button class="btn xs" data-stdel="${t.id}" title="מחק">${ic('close')}</button>
-              </div>
-            </div>
-            <div class="st-item-text">${esc(t.text)}</div>
-            <div class="st-scope"><span class="st-tag">${ic('layers')} ${esc(sc.svc)}</span>
-              <span class="st-tag dim">${ic('docs')} ${esc(sc.type)}</span></div>
-          </div>`; }).join('')
-        : `<p class="st-empty">${ic('alert')} עדיין לא הוגדרו תנאים${inCt ? ' לתבנית הזו' : ''}.</p>`; })()}
-      </div>
-
-      <div class="st-form">
+  /* הטופס נבנה כפונקציה — בעריכה הוא נפתח צמוד לתנאי עצמו,
+     ובהוספה הוא יושב בתחתית הרשימה. */
+  const formHTML = (e) => `<div class="st-form">
         <div class="st-form-h">${ic(e ? 'settings' : 'plus')} <b>${e ? 'עריכת תנאי' : 'תנאי חדש'}</b></div>
         <label class="st-f"><span>כותרת שהלקוח יראה</span>
           <input class="cc-inp" id="stTitle" placeholder="למשל: מדיניות ביטול" value="${esc((e && e.title) || '')}"></label>
@@ -203,7 +158,57 @@ function openSvcTermsPanel(onDone, ctx) {
           <button class="btn sm primary" id="stSave">${ic('check')} ${e ? 'שמור שינויים' : 'הוסף תנאי'}</button>
           ${e ? `<button class="btn sm" id="stCancel">ביטול</button>` : ''}
         </div>
+      </div>`;
+
+  const render = () => (typeof ksKeep === 'function') ? ksKeep(draw) : draw();
+  const draw = () => {
+    const e = ctTermEdit;
+    w.innerHTML = `<div class="cbc-box st-box">
+      <div class="cbc-head"><span class="cbc-ic">${ic('docs')}</span>
+        <b>סעיפים, תנאים והערות להסכם</b>
+        ${inCt ? `<span class="st-scope-tag">${esc(inCt.name)}</span>` : '<span class="st-scope-tag all">כל התבניות</span>'}</div>
+      <div class="st-scroll">
+      <p class="st-lead">${inCt
+        ? 'מה שתוסיפו כאן יישמר <b>לתבנית הזו בלבד</b>, באופן קבוע, ויופיע בכל הסכם שיופק ממנה.'
+        : 'מה שתוסיפו כאן חל על <b>כל התבניות</b> — או רק על אלה שתבחרו.'}
+        <b>תנאי נעול</b> לא ניתן לשינוי או להסרה בעסקה בודדת מחלון הצעת המחיר.
+        הנוסח המשפטי המלא נשאר בתבנית ההסכם.</p>
+
+      ${(function () {
+        /* מה שהמערכת אוספת לבד — שירות, סניף, הכנה. תצוגה בלבד. */
+        const lead = (typeof RECORDS !== 'undefined') ? RECORDS[0] : null;
+        const auto = (typeof ctCollectedTerms === 'function') ? ctCollectedTerms(lead, false)
+          .filter(x => !/^svcterm/.test(x.key)) : [];
+        if (!auto.length) return '';
+        return `<details class="st-auto"><summary>${ic('bolt')} <b>נאסף אוטומטית מהמערכת</b>
+          <small>${auto.length} סעיפים — משירות, מסניף ומהנחיות. מתעדכנים לבד.</small></summary>
+          <div class="st-auto-l">${auto.map(x => `<div class="st-auto-i">
+            <b>${esc(x.title)}</b><span>${esc(x.text)}</span><i>${esc(x.src)}</i></div>`).join('')}</div>
+        </details>`;
+      })()}
+
+      <div class="st-list">
+        ${(function () { const LIST = inCt ? ctTermsOfContract(inCt.id) : CT_SVC_TERMS; return LIST.length ? LIST.map(t => { const sc = ctTermScope(t); return `
+          <div class="st-item ${t.on === false ? 'off' : ''} ${(e && e.id === t.id) ? 'editing' : ''}">
+            <div class="st-item-top">
+              <b>${esc(t.title)}</b>
+              ${t.locked !== false ? `<span class="st-lock">${ic('lock')} נעול</span>` : `<span class="st-lock open">ניתן לשינוי בעסקה</span>`}
+              <div class="st-item-btns">
+                <button class="btn xs" data-sted="${t.id}">${ic('settings')} עריכה</button>
+                <button class="btn xs" data-stlock="${t.id}">${t.locked !== false ? 'שחרר נעילה' : 'נעל'}</button>
+                <button class="btn xs" data-sttog="${t.id}">${t.on === false ? 'הפעל' : 'השבת'}</button>
+                <button class="btn xs" data-stdel="${t.id}" title="מחק">${ic('close')}</button>
+              </div>
+            </div>
+            <div class="st-item-text">${esc(t.text)}</div>
+            <div class="st-scope"><span class="st-tag">${ic('layers')} ${esc(sc.svc)}</span>
+              <span class="st-tag dim">${ic('docs')} ${esc(sc.type)}</span></div>
+          </div>
+          ${(e && e.id === t.id) ? `<div class="st-inline">${formHTML(e)}</div>` : ''}`; }).join('')
+        : `<p class="st-empty">${ic('alert')} עדיין לא הוגדרו תנאים${inCt ? ' לתבנית הזו' : ''}.</p>`; })()}
       </div>
+
+      ${e && e.id ? '' : formHTML(e)}
 
       </div>
       <div class="cbc-actions"><button class="btn primary" id="stClose">${ic('check')} סיום</button></div>

@@ -95,3 +95,14 @@
   .set-subs .set-emp-bar { margin-inline-start: 0; flex: 1 1 100%;
     margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
 }
+
+/* ---------- כרטיס העובד: רוחב מלא וסימטרי לשעות הפעילות ---------- */
+.emp-profile { max-width: none; }        /* היה 1040px — לא סימטרי לשעות הפעילות */
+.emp-profile-top { width: 100%; }
+.emp-profile-head { display: flex; align-items: center; gap: 12px; width: 100%; }
+.emp-meta { flex: 1 1 auto; min-width: 0; }
+/* סטטוס הנוכחות — תצוגה בלבד, מקורו בצ׳אט */
+.emp-avail-view { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto;
+  font-size: 11.5px; color: var(--text-2); padding: 5px 11px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface-2); }
+.emp-avail-view i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }

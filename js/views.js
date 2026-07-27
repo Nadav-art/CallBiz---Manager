@@ -638,9 +638,10 @@ function empProfileCard(emp) {
           <b>${emp.name}</b>
           <small>${emp.dept} · ${emp.role}</small>
         </div>
-        <select class="avail-sel" id="empAvail">
-          ${Object.entries(AVAIL_STATES).map(([k, v]) => `<option value="${k}" ${emp.avail === k ? 'selected' : ''}>${v.label}</option>`).join('')}
-        </select>
+        <!-- סטטוס הנוכחות (זמין / לא בדף / לא מחובר) שייך לממשק הצ׳אט
+             ומתעדכן משם לבד — כאן הוא רק הציג בחירה שאין לה משמעות. -->
+        <span class="emp-avail-view" title="הסטטוס מתעדכן מממשק הצ׳אט">
+          <i style="background:${av.color}"></i>${av.label}</span>
       </div>
     </section>`;
 }
