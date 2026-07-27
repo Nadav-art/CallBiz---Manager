@@ -1478,6 +1478,12 @@ th.perm-hl { color: var(--brand-600); }
 .ad-rep b { color: oklch(50% 0.14 70); }
 .ad-actions { display: flex; gap: 8px; margin-top: 10px; }
 
+/* במסך רחב הרשימה נמתחה לכל הרוחב והשורות נראו ריקות —
+   רוחב קריאה מוגבל, ממורכז */
+.plat-list-card { max-width: 1080px; width: 100%; margin-inline: auto; }
+.plat-search, .plat-pills, .plat-head { max-width: 1080px; width: 100%; margin-inline: auto; }
+.plat-head { padding-inline: 0; }
+
 </style>
   <style>
 /* ============================================================

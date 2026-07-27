@@ -224,3 +224,9 @@
 .ad-rep { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: #fff; border: 1px solid oklch(92% 0.03 70); border-radius: 8px; padding: 8px 10px; font-size: 12px; margin-bottom: 5px; }
 .ad-rep b { color: oklch(50% 0.14 70); }
 .ad-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+/* במסך רחב הרשימה נמתחה לכל הרוחב והשורות נראו ריקות —
+   רוחב קריאה מוגבל, ממורכז */
+.plat-list-card { max-width: 1080px; width: 100%; margin-inline: auto; }
+.plat-search, .plat-pills, .plat-head { max-width: 1080px; width: 100%; margin-inline: auto; }
+.plat-head { padding-inline: 0; }
